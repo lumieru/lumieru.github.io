@@ -37,7 +37,7 @@ Of course, your server can be exploited for vulnerabilities, but that’s out of
 You also don’t trust the player with its position in the world. If you did, a hacked client would tell the server “**I’m at (10,10)**” and a second later “**I’m at (20,10)**”, possibly going through a wall or moving faster than the other players. Instead, the server _knows_ the player is at (10,10), the client tells the server “**I want to move one square to the right**”, the server updates its internal state with the new player position at (11,10), and then replies to the player “**You’re at (11, 10)**”:
 
   
-[![Effect of network delays.](http://prsht69js.bkt.clouddn.com/image/fpm1-01.png)](http://prsht69js.bkt.clouddn.com/image/fpm1-01.png)Effect of network delays.
+[![Effect of network delays.](http://blog.sensedevil.com/image/fpm1-01.png)](http://blog.sensedevil.com/image/fpm1-01.png)Effect of network delays.
 
 In summary: the game state is managed by the server alone. Clients send their actions to the server. The server updates the game state periodically, and then sends the new game state back to clients, who just render it on the screen.
 

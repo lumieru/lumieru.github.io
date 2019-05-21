@@ -53,7 +53,7 @@ NAT 不仅完美地解决了 lP 地址不足的问题，而且还能够有效地
 
 下面假设有如图1 所示网络拓扑结构图。
 
-[![图1.网络拓扑结构图](http://prsht69js.bkt.clouddn.com/image/nat1.jpg)](http://prsht69js.bkt.clouddn.com/image/nat1.jpg)
+[![图1.网络拓扑结构图](http://blog.sensedevil.com/image/nat1.jpg)](http://blog.sensedevil.com/image/nat1.jpg)
 
 Server （129.208.12.38 ）是公网上的服务器，NAT-A 和NAT-B 是两个NAT 设备（可能是集成NAT 功能的路由器，防火墙等），它们具有若干个合法公网IP ，在NAT-A 阻隔的私有网络中有若干台主机【ClientA-1 ，ClientA-N 】，在NAT-B 阻隔的私有网络中也有若干台主机【ClientB-1 ，ClientB-N 】。
 
@@ -61,7 +61,7 @@ Server （129.208.12.38 ）是公网上的服务器，NAT-A 和NAT-B 是两个NA
 
 假设主机ClientA-1 和主机ClientB-1 都和服务器Server 建立了“连接”，如图2 所示。
 
-[![图2.ClientA-1 ，ClientB-1 和Server 之间通信](http://prsht69js.bkt.clouddn.com/image/nat2.jpg)](http://prsht69js.bkt.clouddn.com/image/nat2.jpg)
+[![图2.ClientA-1 ，ClientB-1 和Server 之间通信](http://blog.sensedevil.com/image/nat2.jpg)](http://blog.sensedevil.com/image/nat2.jpg)
 
 由于NAT 的透明性，所以ClientA-1 和ClientB-1 不用关心和Server 通信的过程，它们只需要知道Server 开放服务的地址和端口号即可。
 
