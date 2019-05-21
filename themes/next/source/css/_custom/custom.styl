@@ -1,10 +1,12 @@
 // Custom styles.
-if hexo-config("custom_css.post_body_a.enable")
-  .post-body
-    a{
-      color: convert(hexo-config("custom_css.post_body_a.normal_color"));
-      &:hover {
-        color: convert(hexo-config("custom_css.post_body_a.hover_color"));
-        text-decoration: underline;
-      }
-    }
+// 文章内链接文本样式
+.post-body p a{
+  color: #0593d3;
+  border-bottom: none;
+  border-bottom: 1px solid #0593d3;
+  &:hover {
+    color: #fc6423;
+    border-bottom: none;
+    border-bottom: 1px solid #fc6423;
+  }
+}
