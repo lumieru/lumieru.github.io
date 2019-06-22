@@ -1,0 +1,1725 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="在浏览器中玩 移动蓝球 ：受 Player1 控制, 用左右箭头键 移动红球 ：受 Player2 控制, 用A和D键   canvas {    border: dotted 1px;    padding: 0;    background: lightgray;}This is a sample implementation of a client-server architecture d">
+<meta name="keywords" content="GabrielGambetta">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多人快节奏游戏五之演示Demo">
+<meta property="og:url" content="https://lumieru.github.io/2019/05/21/多人快节奏游戏五之演示Demo/index.html">
+<meta property="og:site_name" content="Lumieru的知识库">
+<meta property="og:description" content="在浏览器中玩 移动蓝球 ：受 Player1 控制, 用左右箭头键 移动红球 ：受 Player2 控制, 用A和D键   canvas {    border: dotted 1px;    padding: 0;    background: lightgray;}This is a sample implementation of a client-server architecture d">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-06-22T09:02:57.360Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="多人快节奏游戏五之演示Demo">
+<meta name="twitter:description" content="在浏览器中玩 移动蓝球 ：受 Player1 控制, 用左右箭头键 移动红球 ：受 Player2 控制, 用A和D键   canvas {    border: dotted 1px;    padding: 0;    background: lightgray;}This is a sample implementation of a client-server architecture d">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://lumieru.github.io/2019/05/21/多人快节奏游戏五之演示Demo/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>多人快节奏游戏五之演示Demo | Lumieru的知识库</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lumieru的知识库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/21/多人快节奏游戏五之演示Demo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">多人快节奏游戏五之演示Demo
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-21 10:19:35" itemprop="dateCreated datePublished" datetime="2019-05-21T10:19:35+08:00">2019-05-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="在浏览器中玩"><a href="#在浏览器中玩" class="headerlink" title="在浏览器中玩"></a>在浏览器中玩</h1><ul>
+<li><strong>移动蓝球</strong> ：受 Player1 控制, 用左右箭头键</li>
+<li><strong>移动红球</strong> ：受 Player2 控制, 用A和D键</li>
+</ul>
+<p><body></body></p>
+<div class="main"><br><br><style><br>canvas {<br>    border: dotted 1px;<br>    padding: 0;<br>    background: lightgray;<br>}</style><br><br><p>This is a sample implementation of a client-server architecture demonstrating the main concepts explained in my <a href="http://www.gabrielgambetta.com/client-side-prediction-live-demo.html" target="_blank" rel="noopener">Fast-Paced Multiplayer(原文出处)</a> series of articles. It won’t make much sense unless you’ve read the articles first.</p><br><p>The code is pure JavaScript and it’s fully contained in this page. It’s less than 500 lines of code, including a lot of comments, showing that once you really understand the concepts, implementing them is relatively straightforward.</p><br><p>Although it’s not production-quality code, you may use this code in your own applications. Credit is appreciated although not required.</p><br><div style="border: 5px solid blue; padding: 15px;"><br><p><b>Player 1 view</b> - move with LEFT and RIGHT arrow keys<br> Lag = <input type="text" id="player1_lag" size="5" value="250" onchange="updateParameters();">ms · <input type="checkbox" id="player1_prediction" onchange="updateParameters();">Prediction · <input type="checkbox" id="player1_reconciliation" onchange="updateParameters();">Reconciliation · <input type="checkbox" id="player1_interpolation" onchange="updateParameters();">Interpolation</p><br><canvas id="player1_canvas" width="920" height="75"><br></canvas><br><div id="player1_status" style="font-family:courier;"><br>Waiting for connection…<br></div><br></div><br><div style="height: 1em;"><br><br></div><br><div style="border: 2px solid grey; padding: 15px;"><br><p><b>Server view</b> · Update <input type="text" id="server_fps" size="5" value="3" onchange="updateParameters();"> times per second</p><br><canvas id="server_canvas" width="920" height="75"><br></canvas><br><div id="server_status" style="font-family:courier;"><br><br></div><br></div><br><div style="height: 1em;"><br><br></div><br><div style="border: 5px solid red; padding: 15px;"><br><p><b>Player 2 view</b> - move with A and D keys<br> Lag = <input type="text" id="player2_lag" size="5" value="150" onchange="updateParameters();">ms · <input type="checkbox" id="player2_prediction" onchange="updateParameters();">Prediction · <input type="checkbox" id="player2_reconciliation" onchange="updateParameters();">Reconciliation · <input type="checkbox" id="player2_interpolation" onchange="updateParameters();">Interpolation</p><br><canvas id="player2_canvas" width="920" height="75"><br></canvas><br><div id="player2_status" style="font-family:courier;"><br>Waiting for connection…<br></div><br></div>
+
+<p></p><h1 id="guided-tour">Guided Tour</h1><p></p>
+<p>Move the blue ball. There’s considerable delay between pressing the arrow keys and the blue ball actually moving. Without client-side prediction, the client only renders the new position of the ball only after a round-trip to the server. Because of the 250ms lag, this takes a while.</p><br><p>Set the <strong>player 1 Lag to 0ms</strong>, and try again. Now the client and the server move in sync because there’s no delay between them, but the movement isn’t smooth, because the server only updates its internal state 3 times per second. If you increase the <strong>update rate of the server to 60</strong>, we get smooth movement.</p><br><p>But this is not a very realistic scenario. Set the <strong>player 1 lag back to 250ms</strong>, and the <strong>server update rate back to 3</strong>. This is closer to the awful conditions where a real game still needs to work.</p><br><p>Client-side prediction and server reconciliation to the rescue! Enable both of them for Player 1 and move the blue ball. Now the movement is very smooth, and there’s no perceptible delay between pressing the arrow keys and moving the ball.</p><br><p>This still works if you make the conditions even worse - try setting the <strong>player 1 lag to 500ms</strong> and the <strong>server update rate to 1</strong>.</p><br><p>Now things look fantastic for player 1’s own entity, the blue ball. However, player 2’s view of this same entity looks terrible. Because the low update rate of the server, player 2 only gets a new position for player 1’s entity once per second, so the movement is very jumpy.</p><br><p>Enabling client-side prediction and server reconciliation for player 2 do nothing to smooth the movement of the blue ball, because these techniques only affect how a player renders its own entity. It does make a difference if you move the red ball, but now we have the same jumpiness in player 1’s view.</p><br><p>To solve this, we use entity interpolation. Enable <strong>entity interpolation for player 2</strong> and move the blue ball. Now it moves smoothly, but is always rendered “in the past” compared to player 1 and to the server.</p><br><p>You may notice the speed of the interpolated entities may vary. This is an artifact of the interpolation, caused by setting the server update rate too low in relationship with the speeds. This effect should disappear almost entirely if you set the <strong>server update rate to 10</strong>, which is still pretty low.</p><br><h1 id="summary">Summary</h1><br><p>Client-Side Prediction and Server Reconciliation are very powerful techniques to make multiplayer games feel responsive even under extremely bad network conditions. Therefore, they are a fundamental part of almost any client/server multiplayer network architecture.</p>
+
+
+<script>
+
+// =============================================================================
+//  An Entity in the world.
+// =============================================================================
+var Entity = function() {
+  this.x = 0;
+  this.speed = 2; // units/s
+  this.position_buffer = [];
+}
+
+// Apply user's input to this entity.
+Entity.prototype.applyInput = function(input) {
+  this.x += input.press_time*this.speed;
+}
+
+
+// =============================================================================
+//  A message queue with simulated network lag.
+// =============================================================================
+var LagNetwork = function() {
+  this.messages = [];
+}
+
+// "Send" a message. Store each message with the timestamp when it should be
+// received, to simulate lag.
+LagNetwork.prototype.send = function(lag_ms, message) {
+  this.messages.push({recv_ts: +new Date() + lag_ms,
+                      payload: message});
+}
+
+// Returns a "received" message, or undefined if there are no messages available
+// yet.
+LagNetwork.prototype.receive = function() {
+  var now = +new Date();
+  for (var i = 0; i < this.messages.length; i++) {
+    var message = this.messages[i];
+    if (message.recv_ts <= now) {
+      this.messages.splice(i, 1);
+      return message.payload;
+    }
+  }
+}
+
+
+// =============================================================================
+//  The Client.
+// =============================================================================
+var Client = function(canvas, status) {
+  // Local representation of the entities.
+  this.entities = {};
+
+  // Input state.
+  this.key_left = false;
+  this.key_right = false;
+
+  // Simulated network connection.
+  this.network = new LagNetwork();
+  this.server = null;
+  this.lag = 0;
+
+  // Unique ID of our entity. Assigned by Server on connection.
+  this.entity_id = null;
+
+  // Data needed for reconciliation.
+  this.client_side_prediction = false;
+  this.server_reconciliation = false;
+  this.input_sequence_number = 0;
+  this.pending_inputs = [];
+
+  // Entity interpolation toggle.
+  this.entity_interpolation = true;
+
+  // UI.
+  this.canvas = canvas;
+  this.status = status;
+
+  // Update rate.
+  this.setUpdateRate(50);
+}
+
+
+Client.prototype.setUpdateRate = function(hz) {
+  this.update_rate = hz;
+
+  clearInterval(this.update_interval);
+  this.update_interval = setInterval(
+    (function(self) { return function() { self.update(); }; })(this),
+    1000 / this.update_rate);
+}
+
+
+// Update Client state.
+Client.prototype.update = function() {
+  // Listen to the server.
+  this.processServerMessages();
+
+  if (this.entity_id == null) {
+    return;  // Not connected yet.
+  }
+
+  // Process inputs.
+  this.processInputs();
+
+  // Interpolate other entities.
+  if (this.entity_interpolation) {
+    this.interpolateEntities();
+  }
+
+  // Render the World.
+  renderWorld(this.canvas, this.entities);
+
+  // Show some info.
+  var info = "Non-acknowledged inputs: " + this.pending_inputs.length;
+  this.status.textContent = info;
+}
+
+
+// Get inputs and send them to the server.
+// If enabled, do client-side prediction.
+Client.prototype.processInputs = function() {
+  // Compute delta time since last update.
+  var now_ts = +new Date();
+  var last_ts = this.last_ts || now_ts;
+  var dt_sec = (now_ts - last_ts) / 1000.0;
+  this.last_ts = now_ts;
+
+  // Package player's input.
+  var input;
+  if (this.key_right) {
+    input = { press_time: dt_sec };
+  } else if (this.key_left) {
+    input = { press_time: -dt_sec };
+  } else {
+    // Nothing interesting happened.
+    return;
+  }
+
+  // Send the input to the server.
+  input.input_sequence_number = this.input_sequence_number++;
+  input.entity_id = this.entity_id;
+  this.server.network.send(this.lag, input);
+
+  // Do client-side prediction.
+  if (this.client_side_prediction) {
+    this.entities[this.entity_id].applyInput(input);
+  }
+
+  // Save this input for later reconciliation.
+  this.pending_inputs.push(input);
+}
+
+
+// Process all messages from the server, i.e. world updates.
+// If enabled, do server reconciliation.
+Client.prototype.processServerMessages = function() {
+  while (true) {
+    var message = this.network.receive();
+    if (!message) {
+      break;
+    }
+
+    // World state is a list of entity states.
+    for (var i = 0; i < message.length; i++) {
+      var state = message[i];
+
+      // If this is the first time we see this entity, create a local representation.
+      if (!this.entities[state.entity_id]) {
+        var entity = new Entity();
+        entity.entity_id = state.entity_id;
+        this.entities[state.entity_id] = entity;
+      }
+
+      var entity = this.entities[state.entity_id];
+
+      if (state.entity_id == this.entity_id) {
+        // Received the authoritative position of this client's entity.
+        entity.x = state.position;
+
+        if (this.server_reconciliation) {
+          // Server Reconciliation. Re-apply all the inputs not yet processed by
+          // the server.
+          var j = 0;
+          while (j < this.pending_inputs.length) {
+            var input = this.pending_inputs[j];
+            if (input.input_sequence_number <= state.last_processed_input) {
+              // Already processed. Its effect is already taken into account into the world update
+              // we just got, so we can drop it.
+              this.pending_inputs.splice(j, 1);
+            } else {
+              // Not processed by the server yet. Re-apply it.
+              entity.applyInput(input);
+              j++;
+            }
+          }
+        } else {
+          // Reconciliation is disabled, so drop all the saved inputs.
+          this.pending_inputs = [];
+        }
+      } else {
+        // Received the position of an entity other than this client's.
+
+        if (!this.entity_interpolation) {
+          // Entity interpolation is disabled - just accept the server's position.
+          entity.x = state.position;
+        } else {
+          // Add it to the position buffer.
+          var timestamp = +new Date();
+          entity.position_buffer.push([timestamp, state.position]);
+        }
+      }
+    }
+  }
+}
+
+
+Client.prototype.interpolateEntities = function() {
+  // Compute render timestamp.
+  var now = +new Date(); 
+  var render_timestamp = now - (1000.0 / server.update_rate);
+
+  for (var i in this.entities) { 
+    var entity = this.entities[i];
+
+    // No point in interpolating this client's entity.
+    if (entity.entity_id == this.entity_id) {
+      continue;
+    }
+
+    // Find the two authoritative positions surrounding the rendering timestamp.
+    var buffer = entity.position_buffer;
+
+    // Drop older positions.
+    while (buffer.length >= 2 && buffer[1][0] <= render_timestamp) {
+      buffer.shift();
+    }
+
+    // Interpolate between the two surrounding authoritative positions.
+    if (buffer.length >= 2 && buffer[0][0] <= render_timestamp && render_timestamp <= buffer[1][0]) {
+      var x0 = buffer[0][1];
+      var x1 = buffer[1][1];
+      var t0 = buffer[0][0];
+      var t1 = buffer[1][0];
+
+      entity.x = x0 + (x1 - x0) * (render_timestamp - t0) / (t1 - t0);
+    }
+  }
+}
+
+
+// =============================================================================
+//  The Server.
+// =============================================================================
+var Server = function(canvas, status) {
+  // Connected clients and their entities.
+  this.clients = [];
+  this.entities = [];
+
+  // Last processed input for each client.
+  this.last_processed_input = [];
+
+  // Simulated network connection.
+  this.network = new LagNetwork();
+
+  // UI.
+  this.canvas = canvas;
+  this.status = status;
+
+  // Default update rate.
+  this.setUpdateRate(10);
+}
+
+Server.prototype.connect = function(client) {
+  // Give the Client enough data to identify itself.
+  client.server = this;
+  client.entity_id = this.clients.length;
+  this.clients.push(client);
+
+  // Create a new Entity for this Client.
+  var entity = new Entity();
+  this.entities.push(entity);
+  entity.entity_id = client.entity_id;
+
+  // Set the initial state of the Entity (e.g. spawn point)
+  var spawn_points = [4, 6];
+  entity.x = spawn_points[client.entity_id];
+}
+
+Server.prototype.setUpdateRate = function(hz) {
+  this.update_rate = hz;
+
+  clearInterval(this.update_interval);
+  this.update_interval = setInterval(
+    (function(self) { return function() { self.update(); }; })(this),
+    1000 / this.update_rate);
+}
+
+Server.prototype.update = function() {
+  this.processInputs();
+  this.sendWorldState();
+  renderWorld(this.canvas, this.entities);
+}
+
+
+// Check whether this input seems to be valid (e.g. "make sense" according
+// to the physical rules of the World)
+Server.prototype.validateInput = function(input) {
+  if (Math.abs(input.press_time) > 1/40) {
+    return false;
+  }
+  return true;
+}
+
+
+Server.prototype.processInputs = function() {
+  // Process all pending messages from clients.
+  while (true) {
+    var message = this.network.receive();
+    if (!message) {
+      break;
+    }
+
+    // Update the state of the entity, based on its input.
+    // We just ignore inputs that don't look valid; this is what prevents clients from cheating.
+    if (this.validateInput(message)) {
+      var id = message.entity_id;
+      this.entities[id].applyInput(message);
+      this.last_processed_input[id] = message.input_sequence_number;
+    }
+
+  }
+
+  // Show some info.
+  var info = "Last acknowledged input: ";
+  for (var i = 0; i < this.clients.length; ++i) {
+    info += "Player " + i + ": #" + (this.last_processed_input[i] || 0) + "   ";
+  }
+  this.status.textContent = info;
+}
+
+
+// Send the world state to all the connected clients.
+Server.prototype.sendWorldState = function() {
+  // Gather the state of the world. In a real app, state could be filtered to avoid leaking data
+  // (e.g. position of invisible enemies).
+  var world_state = [];
+  var num_clients = this.clients.length;
+  for (var i = 0; i < num_clients; i++) {
+    var entity = this.entities[i];
+    world_state.push({entity_id: entity.entity_id,
+                      position: entity.x,
+                      last_processed_input: this.last_processed_input[i]});
+  }
+
+  // Broadcast the state to all the clients.
+  for (var i = 0; i < num_clients; i++) {
+    var client = this.clients[i];
+    client.network.send(client.lag, world_state);
+  }
+}
+
+
+// =============================================================================
+//  Helpers.
+// =============================================================================
+
+// Render all the entities in the given canvas.
+var renderWorld = function(canvas, entities) {
+  // Clear the canvas.
+  canvas.width = canvas.width;
+
+  var colours = ["blue", "red"];
+
+  for (var i in entities) { 
+    var entity = entities[i];
+
+    // Compute size and position.
+    var radius = canvas.height*0.9/2;
+    var x = (entity.x / 10.0)*canvas.width;
+
+    // Draw the entity.
+    var ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(x, canvas.height / 2, radius, 0, 2*Math.PI, false);
+    ctx.fillStyle = colours[entity.entity_id];
+    ctx.fill();
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "dark" + colours[entity.entity_id];
+    ctx.stroke();
+  }
+}
+
+
+var element = function(id) {
+  return document.getElementById(id);
+}
+
+// =============================================================================
+//  Get everything up and running.
+// =============================================================================
+
+// World update rate of the Server.
+var server_fps = 4;
+
+
+// Update simulation parameters from UI.
+var updateParameters = function() {
+  updatePlayerParameters(player1, "player1");
+  updatePlayerParameters(player2, "player2");
+  server.setUpdateRate(updateNumberFromUI(server.update_rate, "server_fps"));
+  return true;
+}
+
+
+var updatePlayerParameters = function(client, prefix) {
+  client.lag = updateNumberFromUI(player1.lag, prefix + "_lag");
+
+  var cb_prediction = element(prefix + "_prediction");
+  var cb_reconciliation = element(prefix + "_reconciliation");
+
+  // Client Side Prediction disabled => disable Server Reconciliation.
+  if (client.client_side_prediction && !cb_prediction.checked) {
+    cb_reconciliation.checked = false;
+  }
+
+  // Server Reconciliation enabled => enable Client Side Prediction.
+  if (!client.server_reconciliation && cb_reconciliation.checked) {
+    cb_prediction.checked = true;
+  }
+
+  client.client_side_prediction = cb_prediction.checked;
+  client.server_reconciliation = cb_reconciliation.checked;
+
+  client.entity_interpolation = element(prefix + "_interpolation").checked;
+}
+
+
+var updateNumberFromUI = function(old_value, element_id) {
+  var input = element(element_id);
+  var new_value = parseInt(input.value);
+  if (isNaN(new_value)) {
+    new_value = old_value;
+  }
+  input.value = new_value;
+  return new_value;
+}
+
+
+// When the player presses the arrow keys, set the corresponding flag in the client.
+var keyHandler = function(e) {
+  e = e || window.event;
+  if (e.keyCode == 39) {
+    player1.key_right = (e.type == "keydown");
+  } else if (e.keyCode == 37) {
+    player1.key_left = (e.type == "keydown");
+  } else if (e.key == 'd') { 
+    player2.key_right = (e.type == "keydown");
+  } else if (e.key == 'a') {
+    player2.key_left = (e.type == "keydown");
+  } else {
+    console.log(e)
+  }
+}
+document.body.onkeydown = keyHandler;
+document.body.onkeyup = keyHandler;
+
+
+// Setup a server, the player's client, and another player.
+var server = new Server(element("server_canvas"), element("server_status"));
+var player1 = new Client(element("player1_canvas"), element("player1_status"));
+var player2 = new Client(element("player2_canvas"), element("player2_status"));
+
+
+// Connect the clients to the server.
+server.connect(player1);
+server.connect(player2);
+
+
+// Read initial parameters from the UI.
+updateParameters();
+
+</script></div>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/GabrielGambetta/" rel="tag"><i class="fa fa-tag"></i> GabrielGambetta</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/21/多人快节奏游戏四之延迟补偿实现爆头/" rel="next" title="多人快节奏游戏四之延迟补偿实现爆头">
+                <i class="fa fa-chevron-left"></i> 多人快节奏游戏四之延迟补偿实现爆头
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/22/Paragon-Feature-Examples-Animation-Techniques-Feature-Highlight-Unreal-Engine/" rel="prev" title="Paragon Feature Examples: Animation Techniques | Feature Highlight | Unreal Engine">
+                Paragon Feature Examples: Animation Techniques | Feature Highlight | Unreal Engine <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lumieru</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#在浏览器中玩"><span class="nav-number">1.</span> <span class="nav-text">在浏览器中玩</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#guided-tour"><span class="nav-number">2.</span> <span class="nav-text">Guided Tour</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#summary"><span class="nav-number">3.</span> <span class="nav-text">Summary</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lumieru</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.1"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('复制成功');
+        else $(this).text('复制失败');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

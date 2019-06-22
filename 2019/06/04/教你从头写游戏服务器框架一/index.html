@@ -1,0 +1,1442 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="原文出处 前言大概已经有差不多一年没写技术文章了，原因是今年投入了一些具体游戏项目的开发。这些新的游戏项目，比较接近独立游戏的开发方式。我觉得公司的“祖传”服务器框架技术不太适合，所以从头写了一个游戏服务器端的框架，以便获得更好的开发效率和灵活性。现在项目将近上线，有时间就想总结一下，这样一个游戏服务器框架的设计和实现过程。 这个框架的基本运行环境是 Linux ，采用 C++ 编写。为了能在各种">
+<meta name="keywords" content="ServerFramework">
+<meta property="og:type" content="article">
+<meta property="og:title" content="教你从头写游戏服务器框架一">
+<meta property="og:url" content="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架一/index.html">
+<meta property="og:site_name" content="Lumieru的知识库">
+<meta property="og:description" content="原文出处 前言大概已经有差不多一年没写技术文章了，原因是今年投入了一些具体游戏项目的开发。这些新的游戏项目，比较接近独立游戏的开发方式。我觉得公司的“祖传”服务器框架技术不太适合，所以从头写了一个游戏服务器端的框架，以便获得更好的开发效率和灵活性。现在项目将近上线，有时间就想总结一下，这样一个游戏服务器框架的设计和实现过程。 这个框架的基本运行环境是 Linux ，采用 C++ 编写。为了能在各种">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://blog.sensedevil.com/image/GameServer1_1.webp">
+<meta property="og:updated_time" content="2019-06-22T09:02:57.361Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="教你从头写游戏服务器框架一">
+<meta name="twitter:description" content="原文出处 前言大概已经有差不多一年没写技术文章了，原因是今年投入了一些具体游戏项目的开发。这些新的游戏项目，比较接近独立游戏的开发方式。我觉得公司的“祖传”服务器框架技术不太适合，所以从头写了一个游戏服务器端的框架，以便获得更好的开发效率和灵活性。现在项目将近上线，有时间就想总结一下，这样一个游戏服务器框架的设计和实现过程。 这个框架的基本运行环境是 Linux ，采用 C++ 编写。为了能在各种">
+<meta name="twitter:image" content="http://blog.sensedevil.com/image/GameServer1_1.webp">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架一/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>教你从头写游戏服务器框架一 | Lumieru的知识库</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lumieru的知识库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架一/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">教你从头写游戏服务器框架一
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-04 13:09:20" itemprop="dateCreated datePublished" datetime="2019-06-04T13:09:20+08:00">2019-06-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://mp.weixin.qq.com/s?__biz=MzA5ODExMTkwMA==&amp;mid=2650255962&amp;idx=1&amp;sn=c2878b66c8813bcd5151b384bfb4218a&amp;chksm=88958aa9bfe203bf4537c4d1c459333490fe186384e4a718ef697c512aba9918223cbf975bfb&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">原文出处</a></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>大概已经有差不多一年没写技术文章了，原因是今年投入了一些具体游戏项目的开发。这些新的游戏项目，比较接近独立游戏的开发方式。我觉得公司的“祖传”服务器框架技术不太适合，所以从头写了一个游戏服务器端的框架，以便获得更好的开发效率和灵活性。现在项目将近上线，有时间就想总结一下，这样一个游戏服务器框架的设计和实现过程。</p>
+<p>这个框架的基本运行环境是 Linux ，采用 C++ 编写。为了能在各种环境上运行和使用，所以采用了 gcc 4.8 这个“古老”的编译器，以 C99 规范开发。</p>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>由于“越通用的代码，就是越没用的代码”，所以在设计之初，我就认为应该使用分层的模式来构建整个系统。按照游戏服务器的一般需求划分，最基本的可以分为两层：</p>
+<ol>
+<li><p>底层基础功能：包括通信、持久化等非常通用的部分，关注的是性能、易用性、扩展性等指标。</p>
+</li>
+<li><p>高层逻辑功能：包括具体的游戏逻辑，针对不同的游戏会有不同的设计。</p>
+</li>
+</ol>
+<p><img src="http://blog.sensedevil.com/image/GameServer1_1.webp" alt></p>
+<p>我希望能有一个基本完整的“底层基础功能”的框架，可以被复用于多个不同的游戏。由于目标是开发一个 适合独立游戏开发 的游戏服务器框架。所以最基本的需求分析为：</p>
+<p><strong>功能性需求</strong></p>
+<ol>
+<li><p>并发：所有的服务器程序，都会碰到这个基本的问题：如何处理并发任务。一般来说，会有多线程、异步两种技术。多线程编程在编码上比较符合人类的思维习惯，但带来了“锁”这个问题。而异步非阻塞的模型，其程序执行的情况是比较简单的，而且也能比较充分的利用硬件性能，但是问题是很多代码需要以“回调”的形式编写，对于复杂的业务逻辑来说，显得非常繁琐，可读性非常差。虽然这两种方案各有利弊，也有人结合这两种技术希望能各取所长，但是我更倾向于基础是使用异步、单线程、非阻塞的调度方式，因为这个方案是最清晰简单的。为了解决“回调”的问题，我们可以在其上再添加其他的抽象层，比如协程或者添加线程池之类的技术予以改善。</p>
+</li>
+<li><p>通信：支持 请求响应 模式以及 通知 模式的通信（广播视为一种多目标的通知）。游戏有很多登录、买卖、打开背包之类的功能，都是明确的有请求和响应的。而大量的联机游戏中，多个客户端的位置、HP 等东西都需要经过网络同步，其实就是一种“主动通知”的通信方式。</p>
+</li>
+<li><p>持久化：可以存取 对象 。游戏存档的格式非常复杂，但其索引的需求往往都是根据玩家 ID 来读写就可以。在很多游戏主机如 PlayStation 上，以前的存档都是可以以类似“文件”的方式存放在记忆卡里的。所以游戏持久化最基本的需求，就是一个 key-value 存取模型。当然，游戏中还会有更复杂的持久化需求，比如排行榜、拍卖行等，这些需求应该额外对待，不适合包含在一个最基本的通用底层中。</p>
+</li>
+<li><p>缓存：支持远程、分布式的对象缓存。游戏服务基本上都是“带状态”的服务，因为游戏要求响应延迟非常苛刻，基本上都需要利用服务器进程的内存来存放过程数据。但是游戏的数据，往往是变化越快的，价值越低，比如经验值、金币、HP，而等级、装备等变化比较慢的，价值则越高，这种特征，非常适合用一个缓存模型来处理。</p>
+</li>
+<li><p>协程：可以用 C++ 来编写协程代码，避免大量回调函数分割代码。这个是对于异步代码非常有用的特性，能大大提高代码的可读性和开发效率。特别是把很多底层涉及IO的功能，都提供了协程化 API，使用起来就会像同步的 API 一样轻松惬意。</p>
+</li>
+<li><p>脚本：初步设想是支持可以用 Lua 来编写业务逻辑。游戏需求变化是出了名快的，用脚本语言编写业务逻辑正好能提供这方面的支持。实际上脚本在游戏行业里的使用非常广泛。所以支持脚本，也是一个游戏服务器框架很重要的能力。</p>
+</li>
+<li><p>其他功能：包括定时器、服务器端的对象管理等等。这些功能很常用，所以也需要包含在框架中，但已经有很多成熟方案，所以只要选取常见易懂的模型即可。比如对象管理，我会采用类似 Unity 的组件模型来实现。</p>
+</li>
+</ol>
+<p><strong>非功能性需求</strong></p>
+<ol>
+<li><p>灵活性：支持可替换的通信协议；可替换的持久化设备（如数据库）；可替换的缓存设备（如 memcached/redis）；以静态库和头文件的方式发布，不对使用者代码做过多的要求。游戏的运营环境比较复杂，特别是在不同的项目之间，可能会使用不同的数据库、不同的通信协议。但是游戏本身业务逻辑很多都是基于对象模型去设计的，所以应该有一层能够基于“对象”来抽象所有这些底层功能的模型。这样才能让多个不同的游戏，都基于一套底层进行开发。</p>
+</li>
+<li><p>部署便利性：支持灵活的配置文件、命令行参数、环境变量的引用；支持单独进程启动，而无须依赖数据库、消息队列中间件等设施。一般游戏都会有至少三套运行环境，包括一个开发环境、一个内测环境、一个外测或运营环境。一个游戏的版本更新，往往需要更新多个环境。所以如何能尽量简化部署就成为一个很重要的问题。我认为一个好的服务器端框架，应该能让这个服务器端程序，在无配置、无依赖的情况下独立启动，以符合在开发、测试、演示环境下快速部署。并且能很简单的通过配置文件、或者命令行参数的不同，在集群化下的外部测试或者运营环境下启动。</p>
+</li>
+<li><p>性能：很多游戏服务器，都会使用异步非阻塞的方式来编程。因为异步非阻塞可以很好的提高服务器的吞吐量，而且可以很明确的控制多个用户任务并发下的代码执行顺序，从而避免多线程锁之类的复杂问题。所以这个框架我也希望是以异步非阻塞作为基本的并发模型。这样做还有另外一个好处，就是可以手工的控制具体的进程，充分利用多核 CPU 服务器的性能。当然异步代码可读性因为大量的回调函数，会变得很难阅读，幸好我们还可以用“协程”来改善这个问题。</p>
+</li>
+<li><p>扩展性：支持服务器之间的通信，进程状态管理，类似 SOA 的集群管理。自动容灾和自动扩容，其实关键点是服务进程的状态同步和管理。我希望一个通用的底层，可以把所有的服务器间调用，都通过一个统一的集权管理模型管理起来，这样就可以不再每个项目去关心集群间通信、寻址等问题。</p>
+</li>
+</ol>
+<a id="more"></a>
+<p>一旦需求明确下来，基本的层级结构也可以设计了：</p>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>功能</th>
+<th>约束</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>逻辑层</td>
+<td>实现更具体的业务逻辑</td>
+<td>能调用所有下层代码，但应主要依赖接口层</td>
+</tr>
+<tr>
+<td>实现层</td>
+<td>对各种具体的通信协议、存储设备等功能的实现</td>
+<td>满足下层的接口层来做实现，禁止同层间互相调用</td>
+</tr>
+<tr>
+<td>接口层</td>
+<td>定义了各模块的基本使用方式，用以隔离具体的实现和设计，从而提供互相替换的能力</td>
+<td>本层之间代码可以互相调用，但禁止调用上层代码</td>
+</tr>
+<tr>
+<td>工具层</td>
+<td>提供通用的 C++ 工具库功能，如 log/json/ini/日期时间/字符串处理 等等</td>
+<td>不应该调用其他层代码，也不应该调用同层其他模块</td>
+</tr>
+<tr>
+<td>第三方库</td>
+<td>提供诸如 redis/tcaplus 或者其他现成功能，其地位和“工具层”一样</td>
+<td>不应该调用其他层代码，甚至不应该修改其源码</td>
+</tr>
+</tbody>
+</table>
+<p>最后，整体的架构模块类似：</p>
+<table><tr><th>说明</th><th>通信</th><th>处理器</th><th>缓存</th><th>持久化</th></tr><tr><th>功能实现</th><td>Tcp <br> Udp <br> Kcp <br> Tlv <br> Line</td><td>JsonHandler <br> ObjectProcessor</td><td>Session <br> LocalCache <br> RedisMap <br> RamMap <br> ZooKeeperMap</td><td>FileDataStore <br> RedisDataStroe</td></tr><tr><th>接口定义</th><td>Transfer <br> Protocol</td><td>Server <br> Client <br> Processor</td><td>DataMap <br> Serializable</td><td>DataStore</td></tr><tr><th>工具类库</th><td colspan="4">Config <br> LOG <br> JSON <br> Coroutine</td></tr></table>
+
+<h2 id="通信模块"><a href="#通信模块" class="headerlink" title="通信模块"></a>通信模块</h2><p>对于通信模块来说，需要有灵活的可替换协议的能力，就必须按一定的层次进行进一步的划分。对于游戏来说，最底层的通信协议，一般会使用 TCP 和 UDP 这两种，在服务器之间，也会使用消息队列中间件一类通信软件。框架必须要有能同事支持这几通信协议的能力。故此设计了一个层次为: <em>Transport</em></p>
+<p>在协议层面，最基本的需求有“分包”“分发”“对象序列化”等几种需求。如果要支持“请求-响应”模式，还需要在协议中带上“序列号”的数据，以便对应“请求”和“响应”。另外，游戏通常都是一种“会话”式的应用，也就是一系列的请求，会被视为一次“会话”，这就需要协众需要有类似 <code>Session ID</code> 这种数据。为了满足这些需求，设计一个层次为： <em>Protocol</em></p>
+<p>拥有了以上两个层次，是可以完成最基本的协议层能力了。但是，我们往往希望业务数据的协议包，能自动化的成为编程中的 对象，所以在处理消息体这里，需要一个可选的额外层次，用来把字节数组，转换成对象。所以我设计了一个特别的处理器：<em>ObjectProcessor</em> ，去规范通信模块中对象序列化、反序列化的接口。</p>
+<table>
+<thead>
+<tr>
+<th>输入</th>
+<th>层次</th>
+<th>功能</th>
+<th>输出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>data</td>
+<td><em>Transport</em></td>
+<td>通信</td>
+<td>buffer</td>
+</tr>
+<tr>
+<td>buffer</td>
+<td><em>Protocol</em></td>
+<td>分包</td>
+<td><em>Message</em></td>
+</tr>
+<tr>
+<td><em>Message</em></td>
+<td><em>Processor</em></td>
+<td>分发</td>
+<td>object</td>
+</tr>
+<tr>
+<td>object</td>
+<td>处理模块</td>
+<td>处理</td>
+<td>业务逻辑</td>
+</tr>
+</tbody>
+</table>
+<h3 id="Transport"><a href="#Transport" class="headerlink" title="Transport"></a>Transport</h3><p>此层次是为了统一各种不同的底层传输协议而设置的，最基本应该支持 TCP 和 UDP 这两种协议。对于通信协议的抽象，其实在很多底层库也做的非常好了，比如 Linux 的 socket 库，其读写 API 甚至可以和文件的读写通用。C# 的 Socket 库在 TCP 和 UDP 之间，其 api 也几乎是完全一样的。但是由于作用游戏服务器，很多时候还会接入一些特别的“接入层”，比如一些代理服务器，或者一些消息中间件，这些 API 可是五花八门的。另外，在 html5 游戏（比如微信小游戏）和一些页游领域，还有用 HTTP 服务器作为游戏服务器的传统（如使用 WebSocket 协议），这样就需要一个完全不同的传输层了。</p>
+<p>服务器传输层在异步模型下的基本使用序列，就是：</p>
+<ol>
+<li><p>在主循环中，不断尝试读取有什么数据可读</p>
+</li>
+<li><p>如果上一步返回有数据到达了，则读取数据</p>
+</li>
+<li><p>读取数据处理后，需要发送数据，则向网络写入数据</p>
+</li>
+</ol>
+<p>根据上面三个特点，可以归纳出一个基本的接口：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Transport</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:   </span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 初始化Transport对象，输入Config对象配置最大连接数等参数，可以是一个新建的Config对象。</span></span><br><span class="line"><span class="comment">    */</span>   </span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Init</span><span class="params">(Config* config)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 检查是否有数据可以读取，返回可读的事件数。后续代码应该根据此返回值循环调用Read()提取数据。</span></span><br><span class="line"><span class="comment">    * 参数fds用于返回出现事件的所有fd列表，len表示这个列表的最大长度。如果可用事件大于这个数字，并不影响后续可以Read()的次数。</span></span><br><span class="line"><span class="comment">    * fds的内容，如果出现负数，表示有一个新的终端等待接入。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Peek</span><span class="params">(<span class="keyword">int</span>* fds, <span class="keyword">int</span> len)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 读取网络管道中的数据。数据放在输出参数 peer 的缓冲区中。</span></span><br><span class="line"><span class="comment">    * @param peer 参数是产生事件的通信对端对象。</span></span><br><span class="line"><span class="comment">    * @return 返回值为可读数据的长度，如果是 0 表示没有数据可以读，返回 -1 表示连接需要被关闭。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Read</span><span class="params">( Peer* peer)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 写入数据，output_buf, buf_len为想要写入的数据缓冲区，output_peer为目标队端，</span></span><br><span class="line"><span class="comment">    * 返回值表示成功写入了的数据长度。-1表示写入出错。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Write</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* output_buf, <span class="keyword">int</span> buf_len, <span class="keyword">const</span> Peer&amp; output_peer)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 关闭一个对端的连接</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">ClosePeer</span><span class="params">(<span class="keyword">const</span> Peer&amp; peer)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 关闭Transport对象。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Close</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面的定义中，可以看到需要有一个 Peer 类型。这个类型是为了代表通信的客户端（对端）对象。在一般的 Linux 系统中，一般我们用 fd （File Description）来代表。但是因为在框架中，我们还需要为每个客户端建立接收数据的缓存区，以及记录通信地址等功能，所以在 fd 的基础上封装了一个这样的类型。这样也有利于把 UDP 通信以不同客户端的模型，进行封装。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">///@brief 此类型负责存放连接过来的客户端信息和数据缓冲区</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Peer</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:	</span><br><span class="line">    <span class="keyword">int</span> buf_size_;      <span class="comment">///&lt; 缓冲区长度</span></span><br><span class="line">    <span class="keyword">char</span>* <span class="keyword">const</span> buffer_;<span class="comment">///&lt; 缓冲区起始地址</span></span><br><span class="line">    <span class="keyword">int</span> produced_pos_;  <span class="comment">///&lt; 填入了数据的长度</span></span><br><span class="line">    <span class="keyword">int</span> consumed_pos_;  <span class="comment">///&lt; 消耗了数据的长度</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">GetFd</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">SetFd</span><span class="params">(<span class="keyword">int</span> fd)</span></span>;    <span class="comment">/// 获得本地地址</span></span><br><span class="line">    <span class="function"><span class="keyword">const</span> struct sockaddr_in&amp; <span class="title">GetLocalAddr</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">SetLocalAddr</span><span class="params">(<span class="keyword">const</span> struct sockaddr_in&amp; localAddr)</span></span>;    <span class="comment">/// 获得远程地址</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">const</span> struct sockaddr_in&amp; <span class="title">GetRemoteAddr</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">SetRemoteAddr</span><span class="params">(<span class="keyword">const</span> struct sockaddr_in&amp; remoteAddr)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> fd_;                            <span class="comment">///&lt; 收发数据用的fd</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">remote_addr_</span>;</span>    <span class="comment">///&lt; 对端地址</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">sockaddr_in</span> <span class="title">local_addr_</span>;</span>     <span class="comment">///&lt; 本端地址</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><em>游戏使用 UDP 协议的特点</em>：一般来说 UDP 是无连接的，但是对于游戏来说，是肯定需要有明确的客户端的，所以就不能简单用一个 UDP socket 的fd 来代表客户端，这就造成了上层的代码无法简单在 UDP 和 TCP 之间保持一致。因此这里使用 Peer 这个抽象层，正好可以解决这个问题。这也可以用于那些使用某种消息队列中间件的情况，因为可能这些中间件，也是多路复用一个 fd 的，甚至可能就不是通过使用 fd 的 API 来开发的。</p>
+<p>对于上面的 Transport 定义，对于 TCP 的实现者来说，是非常容易能完成的。但是对于 UDP 的实现者来说，则需要考虑如何充分利用 Peer ，特别是 Peer.fd_ 这个数据。我在实现的时候，使用了一套虚拟的 fd 机制，通过一个客户端的 IPv4 地址到 int 的对应 Map ，来对上层提供区分客户端的功能。在 Linux 上，这些 IO 都可以使用 epoll 库来实现，在 Peek() 函数中读取 IO 事件，在 Read()/Write() 填上 socket 的调用就可以了。</p>
+<p>另外，为了实现服务器之间的通信，还需要设计和 Tansport 对应的一个类型：Connector 。这个抽象基类，用于以客户端模型对服务器发起请求。其设计和 Transport 大同小异。除了 Linux 环境下的 Connecotr ，我还实现了在 C# 下的代码，以便用 Unity 开发的客户端可以方便的使用。由于 .NET 本身就支持异步模型，所以其实现也不费太多功夫。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * @brief 客户端使用的连接器类，代表传输协议，如 TCP 或 UDP</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Connector</span> &#123;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:    <span class="keyword">virtual</span> ~Connector() &#123;&#125;    </span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * @brief 初始化建立连接等</span></span><br><span class="line"><span class="comment">     * @param config 需要的配置</span></span><br><span class="line"><span class="comment">     * @return 0 为成功</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Init</span><span class="params">(Config* config)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * @brief 关闭</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Close</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * @brief 读取是否有网络数据到来</span></span><br><span class="line"><span class="comment">     * 读取有无数据到来，返回值为可读事件的数量，通常为1</span></span><br><span class="line"><span class="comment">     * 如果为0表示没有数据可以读取。</span></span><br><span class="line"><span class="comment">     * 如果返回 -1 表示出现网络错误，需要关闭此连接。</span></span><br><span class="line"><span class="comment">     * 如果返回 -2 表示此连接成功连上对端。</span></span><br><span class="line"><span class="comment">     * @return 网络数据的情况</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Peek</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * @brief 读取网络数 </span></span><br><span class="line"><span class="comment">     * 读取连接里面的数据，返回读取到的字节数，如果返回0表示没有数据，</span></span><br><span class="line"><span class="comment">     * 如果buffer_length是0, 也会返回0，</span></span><br><span class="line"><span class="comment">     * @return 返回-1表示连接需要关闭（各种出错也返回0）</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Read</span><span class="params">(<span class="keyword">char</span>* ouput_buffer, <span class="keyword">int</span> buffer_length)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * @brief 把input_buffer里的数据写入网络连接，返回写入的字节数。</span></span><br><span class="line"><span class="comment">     * @return 如果返回-1表示写入出错，需要关闭此连接。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Write</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* input_buffer, <span class="keyword">int</span> buffer_length)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    Connector()&#123;&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="Protocol"><a href="#Protocol" class="headerlink" title="Protocol"></a>Protocol</h3><p>对于通信“协议”来说，其实包含了许许多多的含义。在众多的需求中，我所定义的这个协议层，只希望完成四个最基本的能力：</p>
+<ol>
+<li><p>分包：从流式传输层切分出一个个单独的数据单元，或者把多个“碎片”数据拼合成一个完整的数据单元的能力。一般解决这个问题，需要在协议头部添加一个“长度”字段。</p>
+</li>
+<li><p>请求响应对应：这对于异步非阻塞的通信模式下，是非常重要的功能。因为可能在一瞬间发出了很多个请求，而回应则会不分先后的到达。协议头部如果有一个不重复的“序列号”字段，就可以对应起哪个回应是属于哪个请求的。</p>
+</li>
+<li><p>会话保持：由于游戏的底层网络，可能会使用 UDP 或者 HTTP 这种非长连接的传输方式，所以要在逻辑上保持一个会话，就不能单纯的依靠传输层。加上我们都希望程序有抗网络抖动、断线重连的能力，所以保持会话成为一个常见的需求。我参考在 Web 服务领域的会话功能，设计了一个 Session 功能，在协议中加上 Session ID 这样的数据，就能比较简单的保持会话。</p>
+</li>
+<li><p>分发：游戏服务器必定会包含多个不同的业务逻辑，因此需要多种不同数据格式的协议包，为了把对应格式的数据转发。</p>
+</li>
+</ol>
+<p>除了以上三个功能，实际上希望在协议层处理的能力，还有很多，最典型的就是对象序列化的功能，还有压缩、加密功能等等。我之所以没有把对象序列化的能力放在 Protocol 中，原因是对象序列化中的“对象”本身是一个业务逻辑关联性非常强的概念。在 C++ 中，并没有完整的“对象”模型，也缺乏原生的反射支持，所以无法很简单的把代码层次通过“对象”这个抽象概念划分开来。但是我也设计了一个 ObjectProcessor ，把对象序列化的支持，以更上层的形式结合到框架中。这个 Processor 是可以自定义对象序列化的方法，这样开发者就可以自己选择任何“编码、解码”的能力，而不需要依靠底层的支持。</p>
+<p>至于压缩和加密这一类功能，确实是可以放在 Protocol 层中实现，甚至可以作为一个抽象层次加入 Protocol ，可能只有一个 Protocol 层不足以支持这么丰富的功能，需要好像 Apache Mina 这样，设计一个“调用链”的模型。但是为了简单起见，我觉得在具体需要用到的地方，再额外添加 Protocol 的实现类就好，比如添加一个“带压缩功能的 TLV Protocol 类型”之类的。</p>
+<p>消息本身被抽象成一个叫 Message 的类型，它拥有“服务名字”“会话ID”两个消息头字段，用以完成“分发”和“会话保持”功能。而消息体则被放在一个字节数组中，并记录下字节数组的长度。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> MessageType &#123;</span><br><span class="line">    TypeError, <span class="comment">///&lt; 错误的协议</span></span><br><span class="line">    TypeRequest, <span class="comment">///&lt; 请求类型，从客户端发往服务器</span></span><br><span class="line">    TypeResponse, <span class="comment">///&lt; 响应类型，服务器收到请求后返回</span></span><br><span class="line">    TypeNotice  <span class="comment">///&lt; 通知类型，服务器主动通知客户端</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">///@brief 通信消息体的基类</span></span><br><span class="line"><span class="comment">///基本上是一个 char[] 缓冲区</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Message</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> MAX_MAESSAGE_LENGTH;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> MAX_HEADER_LENGTH;</span><br><span class="line">  </span><br><span class="line">    MessageType type;  <span class="comment">///&lt; 此消息体的类型(MessageType)信息</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">virtual</span> ~Message();    <span class="keyword">virtual</span> Message&amp; <span class="keyword">operator</span>=(<span class="keyword">const</span> Message&amp; right);</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * @brief 把数据拷贝进此包体缓冲区</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">SetData</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* input_ptr, <span class="keyword">int</span> input_length)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">///@brief 获得数据指针</span></span><br><span class="line">    <span class="function"><span class="keyword">inline</span> <span class="keyword">char</span>* <span class="title">GetData</span><span class="params">()</span> <span class="keyword">const</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> data_;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">     <span class="comment">///@brief 获得数据长度</span></span><br><span class="line">    <span class="function"><span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">GetDataLen</span><span class="params">()</span> <span class="keyword">const</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> data_len_;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">char</span>* <span class="title">GetHeader</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">GetHeaderLen</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    Message();</span><br><span class="line">    Message(<span class="keyword">const</span> Message&amp; message);</span><br><span class="line"> </span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">char</span>* data_;                  <span class="comment">// 包体内容缓冲区</span></span><br><span class="line">    <span class="keyword">int</span> data_len_;                <span class="comment">// 包体长度</span></span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>根据之前设计的“请求响应”和“通知”两种通信模式，需要设计出三种消息类型继承于 Message，他们是：</p>
+<ul>
+<li><p>Request 请求包</p>
+</li>
+<li><p>Response 响应包</p>
+</li>
+<li><p>Notice 通知包</p>
+</li>
+</ul>
+<p>Request 和 Response 两个类，都有记录序列号的 seq_id 字段，但 Notice 没有。Protocol 类就是负责把一段 buffer 字节数组，转换成 Message 的子类对象。所以需要针对三种 Message 的子类型都实现对应的 Encode() / Decode() 方法。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Protocol</span> &#123;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">virtual</span> ~Protocol() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * @brief 把请求消息编码成二进制数据</span></span><br><span class="line"><span class="comment">     * 编码，把msg编码到buf里面，返回写入了多长的数据，如果超过了 len，则返回-1表示错误。</span></span><br><span class="line"><span class="comment">     * 如果返回 0 ，表示不需要编码，框架会直接从 msg 的缓冲区读取数据发送。</span></span><br><span class="line"><span class="comment">     * @param buf 目标数据缓冲区</span></span><br><span class="line"><span class="comment">     * @param offset 目标偏移量</span></span><br><span class="line"><span class="comment">     * @param len 目标数据长度</span></span><br><span class="line"><span class="comment">     * @param msg 输入消息对象</span></span><br><span class="line"><span class="comment">     * @return 编码完成所用的字节数，如果 &lt; 0 表示出错</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Encode</span><span class="params">(<span class="keyword">char</span>* buf, <span class="keyword">int</span> offset, <span class="keyword">int</span> len, <span class="keyword">const</span> Request&amp; msg)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 编码，把msg编码到buf里面，返回写入了多长的数据，如果超过了 len，则返回-1表示错误。</span></span><br><span class="line"><span class="comment">     * 如果返回 0 ，表示不需要编码，框架会直接从 msg 的缓冲区读取数据发送。</span></span><br><span class="line"><span class="comment">     * @param buf 目标数据缓冲区</span></span><br><span class="line"><span class="comment">     * @param offset 目标偏移量</span></span><br><span class="line"><span class="comment">     * @param len 目标数据长度</span></span><br><span class="line"><span class="comment">     * @param msg 输入消息对象</span></span><br><span class="line"><span class="comment">     * @return 编码完成所用的字节数，如果 &lt; 0 表示出错</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Encode</span><span class="params">(<span class="keyword">char</span>* buf, <span class="keyword">int</span> offset, <span class="keyword">int</span> len, <span class="keyword">const</span> Response&amp; msg)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 编码，把msg编码到buf里面，返回写入了多长的数据，如果超过了 len，则返回-1表示错误。</span></span><br><span class="line"><span class="comment">     * 如果返回 0 ，表示不需要编码，框架会直接从 msg 的缓冲区读取数据发送。</span></span><br><span class="line"><span class="comment">     * @param buf 目标数据缓冲区</span></span><br><span class="line"><span class="comment">     * @param offset 目标偏移量</span></span><br><span class="line"><span class="comment">     * @param len 目标数据长度</span></span><br><span class="line"><span class="comment">     * @param msg 输入消息对象</span></span><br><span class="line"><span class="comment">     * @return 编码完成所用的字节数，如果 &lt; 0 表示出错</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Encode</span><span class="params">(<span class="keyword">char</span>* buf, <span class="keyword">int</span> offset, <span class="keyword">int</span> len, <span class="keyword">const</span> Notice&amp; msg)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 开始编码，会返回即将解码出来的消息类型，以便使用者构造合适的对象。</span></span><br><span class="line"><span class="comment">     * 实际操作是在进行“分包”操作。</span></span><br><span class="line"><span class="comment">     * @param buf 输入缓冲区</span></span><br><span class="line"><span class="comment">     * @param offset 输入偏移量</span></span><br><span class="line"><span class="comment">     * @param len 缓冲区长度</span></span><br><span class="line"><span class="comment">     * @param msg_type 输出参数，表示下一个消息的类型，只在返回值 &gt; 0 的情况下有效，否则都是 TypeError</span></span><br><span class="line"><span class="comment">     * @return 如果返回0表示分包未完成，需要继续分包。如果返回-1表示协议包头解析出错。其他返回值表示这个消息包占用的长度。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">DecodeBegin</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* buf, <span class="keyword">int</span> offset, <span class="keyword">int</span> len,</span></span></span><br><span class="line"><span class="function"><span class="params">                            MessageType* msg_type)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解码，把之前DecodeBegin()的buf数据解码成具体消息对象。</span></span><br><span class="line"><span class="comment">     * @param request 输出参数，解码对象会写入此指针</span></span><br><span class="line"><span class="comment">     * @return 返回0表示成功，-1表示失败。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Decode</span><span class="params">(Request* request)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解码，把之前DecodeBegin()的buf数据解码成具体消息对象。</span></span><br><span class="line"><span class="comment">     * @param request 输出参数，解码对象会写入此指针</span></span><br><span class="line"><span class="comment">     * @return 返回0表示成功，-1表示失败。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Decode</span><span class="params">(Response* response)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 解码，把之前DecodeBegin()的buf数据解码成具体消息对象。</span></span><br><span class="line"><span class="comment">     * @param request 输出参数，解码对象会写入此指针</span></span><br><span class="line"><span class="comment">     * @return 返回0表示成功，-1表示失败。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Decode</span><span class="params">(Notice* notice)</span> </span>= <span class="number">0</span>;<span class="keyword">protected</span>:</span><br><span class="line"></span><br><span class="line">    Protocol() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这里有一点需要注意，由于 C++ 没有内存垃圾搜集和反射的能力，在解释数据的时候，并不能一步就把一个 char[] 转换成某个子类对象，而必须分成两步处理。</p>
+<ol>
+<li><p>先通过 DecodeBegin() 来返回，将要解码的数据是属于哪个子类型的。同时完成分包的工作，通过返回值来告知调用者，是否已经完整的收到一个包。</p>
+</li>
+<li><p>调用对应类型为参数的 Decode() 来具体把数据写入对应的输出变量。</p>
+</li>
+</ol>
+<p>对于 Protocol 的具体实现子类，我首先实现了一个 LineProtocol ，是一个非常不严谨的，基于文本ASCII编码的，用空格分隔字段，用回车分包的协议。用来测试这个框架是否可行。因为这样可以直接通过 telnet 工具，来测试协议的编解码。然后我按照 TLV （Type Length Value）的方法设计了一个二进制的协议。大概的定义如下：</p>
+<p>协议分包： [消息类型:int:2] [消息长度:int:4] [消息内容:bytes:消息长度]</p>
+<p>消息类型取值:</p>
+<ul>
+<li><p>0x00 Error</p>
+</li>
+<li><p>0x01 Request</p>
+</li>
+<li><p>0x02 Response</p>
+</li>
+<li><p>0x03 Notice</p>
+</li>
+</ul>
+<table><thead style="box-sizing: border-box;"><tr style="box-sizing: border-box;background: rgb(240, 243, 250);"><th style="box-sizing: border-box;padding: 8px;text-align: left;background-color: rgb(238, 238, 238);line-height: 1.42857;vertical-align: bottom;font-weight: 400;font-size: 15px;border-top-width: 1px;border-bottom-width: 2px;border-top-color: rgb(221, 221, 221);">包类型</th><th style="box-sizing: border-box;padding: 8px;text-align: left;background-color: rgb(238, 238, 238);line-height: 1.42857;vertical-align: bottom;font-weight: 400;font-size: 15px;border-top-width: 1px;border-bottom-width: 2px;border-top-color: rgb(221, 221, 221);">字段</th><th style="box-sizing: border-box;padding: 8px;text-align: left;background-color: rgb(238, 238, 238);line-height: 1.42857;vertical-align: bottom;font-weight: 400;font-size: 15px;border-top-width: 1px;border-bottom-width: 2px;border-top-color: rgb(221, 221, 221);">编码细节</th></tr></thead><tbody style="box-sizing: border-box;"><tr style="box-sizing: border-box;"><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;" rowspan="4" colspan="1" align="center" valign="middle">Request<br></td><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">服务名</td><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">[字段:int:2][长度:int:2][字符串内容:chars:消息长度]</td></tr><tr style="box-sizing: border-box;"><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">序列号</td><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">[字段:int:2][整数内容:int:4]</td></tr><tr style="box-sizing: border-box;"><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">会话ID</td><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">[字段:int:2][整数内容:int:4]</td></tr><tr style="box-sizing: border-box;"><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">消息体</td><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">[字段:int:2][长度:int:2][字符串内容:chars:消息长度]</td></tr><tr style="box-sizing: border-box;"><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;" rowspan="4" colspan="1">Response<br><br></td><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">服务名</td><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">[字段:int:2][长度:int:2][字符串内容:chars:消息长度]</td></tr><tr style="box-sizing: border-box;"><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">序列号</td><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">[字段:int:2][整数内容:int:4]</td></tr><tr style="box-sizing: border-box;"><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">会话ID</td><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">[字段:int:2][整数内容:int:4]</td></tr><tr style="box-sizing: border-box;"><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">消息体</td><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">[字段:int:2][长度:int:2][字符串内容:chars:消息长度]</td></tr><tr style="box-sizing: border-box;"><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;" rowspan="2" colspan="1">Notice<br></td><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">服务名</td><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">[字段:int:2][长度:int:2][字符串内容:chars:消息长度]</td></tr><tr style="box-sizing: border-box;"><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">消息体</td><td style="box-sizing: border-box;padding: 8px;line-height: 1.42857;vertical-align: top;border-top: none;">[字段:int:2][长度:int:2][字符串内容:chars:消息长度]</td></tr></tbody></table>
+
+<p>一个名为 TlvProtocol 的类型完成对这个协议的实现。</p>
+<h3 id="Processor"><a href="#Processor" class="headerlink" title="Processor"></a>Processor</h3><p>处理器层是我设计用来对接具体业务逻辑的抽象层，它主要通过输入参数 Request 和 Peer 来获得客户端的输入数据，然后通过 Server 类的 Reply()/Inform() 来返回 Response 和 Notice 消息。实际上 Transport 和 Protocol 的子类们，都属于 <em>net</em> 模块，而各种 Processor 和 Server/Client 这些功能类型，属于另外一个 <em>processor</em> 模块。这样设计的原因，是希望所有 <em>processor</em> 模块的代码单向的依赖 <em>net</em> 模块的代码，但反过来不成立。</p>
+<p>Processor 基类非常简单，就是一个处理函数回调函数入口 <code>Process()</code>：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">///@brief 处理器基类，提供业务逻辑回调接口</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Processor</span> &#123;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Processor();</span><br><span class="line">    <span class="keyword">virtual</span> ~Processor();</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 初始化一个处理器，参数server为业务逻辑提供了基本的能力接口。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Init</span><span class="params">(Server* server, Config* config = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 处理请求-响应类型包实现此方法，返回值是0表示成功，否则会被记录在错误日志中。</span></span><br><span class="line"><span class="comment">     * 参数peer表示发来请求的对端情况。其中 Server 对象的指针，可以用来调用 Reply(),</span></span><br><span class="line"><span class="comment">     * Inform() 等方法。如果是监听多个服务器，server 参数则会是不同的对象。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Process</span><span class="params">(<span class="keyword">const</span> Request&amp; request, <span class="keyword">const</span> Peer&amp; peer,</span></span></span><br><span class="line"><span class="function"><span class="params">                        Server* server)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关闭清理处理器所占用的资源</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Close</span><span class="params">()</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>设计完 Transport/Protocol/Processor 三个通信处理层次后，就需要一个组合这三个层次的代码，那就是 Server 类。这个类在 Init() 的时候，需要上面三个类型的子类作为参数，以组合成不同功能的服务器，如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">TlvProtocol tlv_protocol;   <span class="comment">//  Type Length Value 格式分包协议，需要和客户端一致</span></span><br><span class="line">TcpTransport tcp_transport; <span class="comment">// 使用 TCP 的通信协议，默认监听 0.0.0.0:6666</span></span><br><span class="line">EchoProcessor echo_processor;   <span class="comment">// 业务逻辑处理器</span></span><br><span class="line">Server server;  <span class="comment">// DenOS 的网络服务器主对象</span></span><br><span class="line">server.Init(&amp;tcp_transport, &amp;tlv_protocol, &amp;echo_processor);    <span class="comment">// 组装一个游戏服务器对象：TLV 编码、TCP 通信和回音服务</span></span><br></pre></td></tr></table></figure>
+<p>Server 类型还需要一个 Update() 函数，让用户进程的“主循环”不停的调用，用来驱动整个程序的运行。这个 Update() 函数的内容非常明确：</p>
+<ol>
+<li><p>检查网络是否有数据需要处理（通过 Transport 对象）</p>
+</li>
+<li><p>有数据的话就进行解码处理（通过 Protocol 对象）</p>
+</li>
+<li><p>解码成功后进行业务逻辑的分发调用（通过 Processor 对象）</p>
+</li>
+</ol>
+<p>另外，Server 还需要处理一些额外的功能，比如维护一个会话缓存池（Session），提供发送 Response 和 Notice 消息的接口。当这些工作都完成后，整套系统已经可以用来作为一个比较“通用”的网络消息服务器框架存在了。剩下的就是添加各种 Transport/Protocol/Processor 子类的工作。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Server</span> &#123;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Server();</span><br><span class="line">    <span class="keyword">virtual</span> ~Server();</span><br><span class="line"> </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 初始化服务器，需要选择组装你的通信协议链</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Init</span><span class="params">(Transport* transport, Protocol* protocol, Processor* processor, Config* config = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 阻塞方法，进入主循环。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Start</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 需要循环调用驱动的方法。如果返回值是0表示空闲。其他返回值表示处理过的任务数。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Update</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">ClosePeer</span><span class="params">(Peer* peer, <span class="keyword">bool</span> is_clear = <span class="literal">false</span>)</span></span>; <span class="comment">//关闭当个连接，is_clear 表示是否最终整体清理</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 关闭服务器</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Close</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 对某个客户端发送通知消息，</span></span><br><span class="line"><span class="comment">     * 参数peer代表要通知的对端。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Inform</span><span class="params">(<span class="keyword">const</span> Notice&amp; notice, <span class="keyword">const</span> Peer&amp; peer)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 对某个  Session ID 对应的客户端发送通知消息，返回 0 表示可以发送，其他值为发送失败。</span></span><br><span class="line"><span class="comment">     * 此接口能支持断线重连，只要客户端已经成功连接，并使用旧的 Session ID，同样有效。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Inform</span><span class="params">(<span class="keyword">const</span> Notice&amp; notice, <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; session_id)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 对某个客户端发来的Request发回回应消息。</span></span><br><span class="line"><span class="comment">     * 参数response的成员seqid必须正确填写，才能正确回应。</span></span><br><span class="line"><span class="comment">     * 返回0成功，其它值（-1）表示失败。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Reply</span><span class="params">(Response* response, <span class="keyword">const</span> Peer&amp; peer)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 对某个 Session ID 对应的客户端发送回应消息。</span></span><br><span class="line"><span class="comment">     * 参数 response 的 seqid 成员系统会自动填写会话中记录的数值。</span></span><br><span class="line"><span class="comment">     * 此接口能支持断线重连，只要客户端已经成功连接，并使用旧的 Session ID，同样有效。</span></span><br><span class="line"><span class="comment">     * 返回0成功，其它值（-1）表示失败。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Reply</span><span class="params">(Response* response, <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; session_id)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 会话功能</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function">Session* <span class="title">GetSession</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; session_id = <span class="string">""</span>, <span class="keyword">bool</span> use_this_id = <span class="literal">false</span>)</span></span>;</span><br><span class="line">    <span class="function">Session* <span class="title">GetSessionByNumId</span><span class="params">(<span class="keyword">int</span> session_id = <span class="number">0</span>)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">IsExist</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; session_id)</span></span>;</span><br><span class="line">   </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>有了 Server 类型，肯定也需要有 Client 类型。而 Client 类型的设计和 Server 类似，但就不是使用 Transport 接口作为传输层，而是 Connector 接口。不过 Protocol 的抽象层是完全重用的。Client 并不需要 Processor 这种形式的回调，而是直接传入接受数据消息就发起回调的接口对象 ClientCallback。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ClientCallback</span> &#123;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">  </span><br><span class="line">    ClientCallback() &#123;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">virtual</span> ~ClientCallback() &#123;</span><br><span class="line">         <span class="comment">// Do nothing</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     *  当连接建立成功时回调此方法。</span></span><br><span class="line"><span class="comment">     * @return 返回 -1 表示不接受这个连接，需要关闭掉此连接。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">OnConnected</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 当网络连接被关闭的时候，调用此方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">OnDisconnected</span><span class="params">()</span> </span>&#123;        <span class="comment">// Do nothing</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 收到响应，或者请求超时，此方法会被调用。</span></span><br><span class="line"><span class="comment">     * @param response 从服务器发来的回应</span></span><br><span class="line"><span class="comment">     * @return 如果返回非0值，服务器会打印一行错误日志。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Callback</span><span class="params">(<span class="keyword">const</span> Response&amp; response)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 当请求发生错误，比如超时的时候，返回这个错误</span></span><br><span class="line"><span class="comment">     * @param err_code 错误码</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">OnError</span><span class="params">(<span class="keyword">int</span> err_code)</span></span>&#123;</span><br><span class="line">        WARN_LOG(<span class="string">"The request is timeout, err_code: %d"</span>, err_code);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 收到通知消息时，此方法会被调用</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Callback</span><span class="params">(<span class="keyword">const</span> Notice&amp; notice)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回此对象是否应该被删除。此方法会被在 Callback() 调用前调用。</span></span><br><span class="line"><span class="comment">     * @return 如果返回 true，则会调用 delete 此对象的指针。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">bool</span> <span class="title">ShouldBeRemoved</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Client</span> :</span> <span class="keyword">public</span> Updateable &#123;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    Client();    <span class="keyword">virtual</span> ~Client();</span><br><span class="line"></span><br><span class="line">     <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 连接服务器</span></span><br><span class="line"><span class="comment">     * @param connector 传输协议，如 TCP， UDP ...</span></span><br><span class="line"><span class="comment">     * @param protocol 分包协议，如 TLV, Line, TDR ...</span></span><br><span class="line"><span class="comment">     * @param notice_callback 收到通知后触发的回调对象，如果传输协议有“连接概念”（如TCP/TCONND），建立、关闭连接时也会调用。</span></span><br><span class="line"><span class="comment">     * @param config 配置文件对象，将读取以下配置项目：MAX_TRANSACTIONS_OF_CLIENT 客户端最大并发连接数; BUFFER_LENGTH_OF_CLIENT客户端收包缓存；CLIENT_RESPONSE_TIMEOUT 客户端响应等待超时时间。</span></span><br><span class="line"><span class="comment">     * @return 返回 0 表示成功，其他表示失败</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Init</span><span class="params">(Connector* connector, Protocol* protocol,</span></span></span><br><span class="line"><span class="function"><span class="params">             ClientCallback* notice_callback = <span class="literal">NULL</span>, Config* config = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * callback 参数可以为 NULL，表示不需要回应，只是单纯的发包即可。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">SendRequest</span><span class="params">(Request* request, ClientCallback* callback = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 返回值表示有多少数据需要处理，返回-1为出错，需要关闭连接。返回0表示没有数据需要处理。</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Update</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">OnExit</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Close</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">Connector* <span class="title">connector</span><span class="params">()</span> </span>;</span><br><span class="line">    <span class="function">ClientCallback* <span class="title">notice_callback</span><span class="params">()</span> </span>;</span><br><span class="line">    <span class="function">Protocol* <span class="title">protocol</span><span class="params">()</span> </span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>至此，客户端和服务器端基本设计完成，可以直接通过编写测试代码，来检查是否运行正常。</p>
+<p><strong>下期将推送这个系列后一篇《数据持久化模块和缓存模块》,感谢关注。</strong></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ServerFramework/" rel="tag"><i class="fa fa-tag"></i> ServerFramework</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/24/Unity的AnimationCurve的实现方法/" rel="next" title="Unity的AnimationCurve的实现方法">
+                <i class="fa fa-chevron-left"></i> Unity的AnimationCurve的实现方法
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/04/教你从头写游戏服务器框架二/" rel="prev" title="教你从头写游戏服务器框架二">
+                教你从头写游戏服务器框架二 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lumieru</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#需求"><span class="nav-number">2.</span> <span class="nav-text">需求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#通信模块"><span class="nav-number">3.</span> <span class="nav-text">通信模块</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Transport"><span class="nav-number">3.1.</span> <span class="nav-text">Transport</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Protocol"><span class="nav-number">3.2.</span> <span class="nav-text">Protocol</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Processor"><span class="nav-number">3.3.</span> <span class="nav-text">Processor</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lumieru</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.1"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('复制成功');
+        else $(this).text('复制失败');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="原文出处 协程使用异步非阻塞编程，确实能获得很好的性能。但是在代码上，确非常不直观。因为任何一个可能阻塞的操作，都必须要要通过“回调”函数来链接。比如一个玩家登录，你需要先读数据库，然后读一个远程缓冲服务器（如 redis），然后返回登录结果：用户名、等级……在这个过程里，有两个可能阻塞的操作，你就必须把这个登录的程序，分成三个函数来编写：一个是收到客户端数据包的回调，第二个是读取数据库后的回调，">
+<meta name="keywords" content="ServerFramework">
+<meta property="og:type" content="article">
+<meta property="og:title" content="教你从头写游戏服务器框架三">
+<meta property="og:url" content="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架三/index.html">
+<meta property="og:site_name" content="Lumieru的知识库">
+<meta property="og:description" content="原文出处 协程使用异步非阻塞编程，确实能获得很好的性能。但是在代码上，确非常不直观。因为任何一个可能阻塞的操作，都必须要要通过“回调”函数来链接。比如一个玩家登录，你需要先读数据库，然后读一个远程缓冲服务器（如 redis），然后返回登录结果：用户名、等级……在这个过程里，有两个可能阻塞的操作，你就必须把这个登录的程序，分成三个函数来编写：一个是收到客户端数据包的回调，第二个是读取数据库后的回调，">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://blog.sensedevil.com/image/GameServer3_1.webp">
+<meta property="og:image" content="http://blog.sensedevil.com/image/GameServer3_2.webp">
+<meta property="og:image" content="http://blog.sensedevil.com/image/GameServer3_3.webp">
+<meta property="og:updated_time" content="2019-06-22T09:02:57.361Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="教你从头写游戏服务器框架三">
+<meta name="twitter:description" content="原文出处 协程使用异步非阻塞编程，确实能获得很好的性能。但是在代码上，确非常不直观。因为任何一个可能阻塞的操作，都必须要要通过“回调”函数来链接。比如一个玩家登录，你需要先读数据库，然后读一个远程缓冲服务器（如 redis），然后返回登录结果：用户名、等级……在这个过程里，有两个可能阻塞的操作，你就必须把这个登录的程序，分成三个函数来编写：一个是收到客户端数据包的回调，第二个是读取数据库后的回调，">
+<meta name="twitter:image" content="http://blog.sensedevil.com/image/GameServer3_1.webp">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架三/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>教你从头写游戏服务器框架三 | Lumieru的知识库</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lumieru的知识库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架三/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">教你从头写游戏服务器框架三
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-04 13:09:31" itemprop="dateCreated datePublished" datetime="2019-06-04T13:09:31+08:00">2019-06-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://mp.weixin.qq.com/s/zjgAOGxDqA2BMj71xfW63Q" target="_blank" rel="noopener">原文出处</a></p>
+<h2 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h2><p>使用异步非阻塞编程，确实能获得很好的性能。但是在代码上，确非常不直观。因为任何一个可能阻塞的操作，都必须要要通过“回调”函数来链接。比如一个玩家登录，你需要先读数据库，然后读一个远程缓冲服务器（如 redis），然后返回登录结果：用户名、等级……在这个过程里，有两个可能阻塞的操作，你就必须把这个登录的程序，分成三个函数来编写：一个是收到客户端数据包的回调，第二个是读取数据库后的回调，第三个是读取缓冲服务器后的回调。</p>
+<p>这种情况下，代码被放在三个函数里，对于阅读代码的人来说，是一种负担。因为我们阅读代码，比如通过日志、coredump 去查问题，往往会直接切入到某一个函数里。这个被切入阅读的函数，很可能就是一个回调函数，对于这个函数为什么会被调用，属于什么流程，单从这个函数的代码是很难理解的。</p>
+<p>另外一个负担，是关于开发过程的。我们知道回调函数的代码，是需要“上下文”的，也就是发起回调时的数据状态的。为了让回调函数能获得发起函数的一个变量内容，我们就必须把这个变量内容放到某个“上下文”的变量中，然后传给回调函数。由于业务逻辑的变化，这种需要传递的上下文变量会不停的变化，反复的编写“放入”“取出”上下文的代码，也是一种重复的编码劳动。而且上下文本身的设置可能也不够安全，因为你无法预计，哪个回调函数会怎么样的修改这个上下文对象，这也是很多难以调试的 BUG 的来源。</p>
+<p>为了解决这个问题，出现了所谓的协程技术。我们可以认为，协程技术提供给我们一种特殊的 return 语句：yield。这个语句会类似 return 一样从函数中返回，但你可以用另外一个特殊的语句 resume(id) 来从新从 yield 语句下方开始运行代码。更重要的是，在 resume 之后，之前整个函数中的所有临时变量，都是可以继续访问的。</p>
+<p>当然，做 resume(id) 的时候，肯定是在进程的所谓“主循环”中，而这个 id 参数，则代表了被中断了的函数。这种可以被中断的函数调用过程，就叫协程。而这个 id ，则是代表了协程的一个数字。异步调用的上下文变量，就被自动的以这个协程函数的“栈”所取代，也就是说，协程函数中的所有局部变量，都自动的成为了上下文的内容。这样就再也不用反复的编写“放入”“取出”上下文内容的代码了。</p>
+<p><img src="http://blog.sensedevil.com/image/GameServer3_1.webp" alt></p>
+<p>我使用了 <a href="https://github.com/Tencent/Pebble/tree/master/src/common" target="_blank" rel="noopener">https://github.com/Tencent/Pebble/tree/master/src/common</a> 项目下的 coroutine.cpp/.h 作为协程的实现者。</p>
+<p>游戏开发中，协程确实能大大的提高开发效率。因此我认为协程也应该是 Game Server 所应该具备的能力。特别是在处理业务逻辑的 Handler 的 Process() 函数，本身就应该是一个协程函数。所以我设计了一个 CoroutineProcessor 的类，为普通的 Processor 添加上协程的能力。——基于装饰器模式。这样任何的 Processor::Process() 函数，就自然的在一个协程之中。</p>
+<p>因为有了协程的支持，那些可能产生阻塞而要求编写回调的功能，就可以统一的变成以协程使用的 API 了：</p>
+<ol>
+<li><p>DataStore -&gt; CoroutineDataStore</p>
+</li>
+<li><p>Cache -&gt; CoroutineCache</p>
+</li>
+<li><p>Client -&gt; CoroutineClient</p>
+</li>
+</ol>
+<p><img src="http://blog.sensedevil.com/image/GameServer3_2.webp" alt></p>
+<p>使用协程的 API，就完全不需要各种 Callback 类型的参数了，完全提供一个返回结果用的输出参数即可。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* @brief DataStore 的具备协程能力的装饰器类型。</span></span><br><span class="line"><span class="comment">* @attention 除了定义变量语句和 Update() 以外，其他的操作都需要在协程中调用。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CoroutineDataStore</span> :</span> <span class="keyword">public</span> Updateable&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    CoroutineDataStore(DataStore* data_store, CoroutineSchedule* schedule);</span><br><span class="line">    <span class="keyword">virtual</span> ~CoroutineDataStore();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Init</span><span class="params">(Config* cfg, <span class="built_in">std</span>::<span class="built_in">string</span>* err_msg)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 读取一个数据对象，通过 key ，把数据放入到输出参数 value。</span></span><br><span class="line"><span class="comment">    * 此函数会在调用过程中使用协程的 yield 出去。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Get</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp;key, Serializable* value)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 写入一个数据对象，写入 key ，value</span></span><br><span class="line"><span class="comment">    * 写入结果从返回值获得，返回 0 表示成功，其他值表示失败。</span></span><br><span class="line"><span class="comment">    * 此函数会在调用过程中使用协程的 yield 出去。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Put</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp;key, <span class="keyword">const</span> Serializable&amp; value)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 删除一个数据对象，通过 key</span></span><br><span class="line"><span class="comment">    * 写入结果从返回值获得，返回 0 表示成功，其他值表示失败。</span></span><br><span class="line"><span class="comment">    * 此函数会在调用过程中使用协程的 yield 出去</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Remove</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Update</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    DataStore* data_store_;</span><br><span class="line">    CoroutineSchedule* schedule_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h2 id="服务器对象管理"><a href="#服务器对象管理" class="headerlink" title="服务器对象管理"></a>服务器对象管理</h2><h3 id="组件模型"><a href="#组件模型" class="headerlink" title="组件模型"></a>组件模型</h3><p>一般来说服务器上，主要是运行各种各样处理请求的代码为主（通常叫 Handler）。然而，我们也会有一些需要持续运行的逻辑代码，比如处理匹配玩家战斗的逻辑，检查玩家是否超时发呆的逻辑，循环处理支付订单等等。这些代码的很多功能，同时还需要被各种 Handler 所调用。所以我们必须要有一种能让所有的这些自定义代码，以一种标准的方式在进程中互相引用，以及管理生命周期的方法。</p>
+<p>借鉴于 Unity, 我觉得使用所谓的组件模型是很好的。它的特点包括：</p>
+<ol>
+<li><p>组件之间通过 Application::GetComponet(name) 的方式互相调用。以一个字符串作为索引，就可以方便的获得对于的对象。组件自己通过 Application::Register(com_obj) 注册到系统中去，注册的名字自己实现 string GetName() 的接口去提供。</p>
+</li>
+<li><p>每个组件有预定的几个回调函数，提供进程生命周期的调用机会。包括：</p>
+</li>
+</ol>
+<ul>
+<li><p>初始化：Init()</p>
+</li>
+<li><p>主循环更新：Update()</p>
+</li>
+<li><p>关闭：Close()</p>
+</li>
+</ul>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 代表一个应用程序组件，所有的应用程序组件应该继承此对象</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Component</span> :</span> <span class="keyword">public</span> Updateable &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">    Component();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">virtual</span> ~Component();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 返回此组件的名字</span></span><br><span class="line"><span class="comment">    * @return 名字</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">virtual</span> <span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">GetName</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 初始化过程会调用此方法</span></span><br><span class="line"><span class="comment">    * @param app 进程对象</span></span><br><span class="line"><span class="comment">    * @param cfg 配置</span></span><br><span class="line"><span class="comment">    * @return 返回 0 表示成功，其他表示失败</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Init</span><span class="params">(Application* app, Config* cfg)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 更新过程会调用此方法</span></span><br><span class="line"><span class="comment">    * @return 返回更新处理的负载，0 表示没有负载，负数表示出错或需要停止对此组件进行更新</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Update</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 应用停止时会调用此方法</span></span><br><span class="line"><span class="comment">    * @return 返回 0 表示可以退出，返回 &gt;0 表示需要等待返回值的秒数，返回 &lt; 0 表示出错退出</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 设置组件被加入的应用程序，用于让组件继承者能简单的获取 Application 对象</span></span><br><span class="line"><span class="comment">    * @note 如果一个组件被加入多个不同的 Application，必须使用 @see Init() 方法来具体保存 Application 对象，</span></span><br><span class="line"><span class="comment">    * 因为此处修改的成员对象 app_ 将是最后一次被添加进的 Application 对象。</span></span><br><span class="line"><span class="comment">    * @param app 要设置的 Application 对象。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">set_app</span><span class="params">(Application* app)</span></span>&#123;</span><br><span class="line">        app_ = app;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">    Application* app_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="Server-对象"><a href="#Server-对象" class="headerlink" title="Server 对象"></a>Server 对象</h3><p>由于一个游戏服务器，所集成的功能实在是太多了，比如配置不同的协议、不同的处理器、提供数据库功能等等。要让这样一个服务器对象启动起来，需要大量的“组装代码”。为了节省这种代码，我设计了一个 LocalServer 的类型，作为一个 Server 模板，简化网络层的组装。使用者可以继承这个类，用来实现各种不同的 Server。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LocalServerApp</span> :</span> <span class="keyword">public</span> Application &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    LocalServerApp();</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">virtual</span> ~LocalServerApp();</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Init</span><span class="params">(Config* cfg = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Exit</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">set_transport</span><span class="params">(Transport* transport)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">set_protocol</span><span class="params">(Protocol* protocol)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">set_processor</span><span class="params">(Processor* processor)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    Transport* transport_;</span><br><span class="line">    Protocol* protocol_;</span><br><span class="line">    Processor* processor_;</span><br><span class="line">    Server* server_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这个简单的类，可以通过 setter 方法来自定义网络层的组件，否则就是最常用的 TCP， TLV， Echo 这种服务器。而且这个类还是继承于 Application 的，这样可以让数据库或者其他的组件，也很方便的利用组件系统安装到服务器上。</p>
+<h2 id="集群功能"><a href="#集群功能" class="headerlink" title="集群功能"></a>集群功能</h2><h3 id="需求分析"><a href="#需求分析" class="headerlink" title="需求分析"></a>需求分析</h3><p>游戏常常是一个带状态的服务。所以集群功能非常困难。</p>
+<p>有一些框架，试图把状态从逻辑进程中搬迁出来，放在缓冲服务器中，但是往往满足不了性能需求。另外一些框架，则把集群定义成一个固定的层次架构，通过复杂的消息转发规则，来试图“把请求发到装载状态的进程上”，但这导致了运维部署的巨大复杂性。</p>
+<p>为了解决这些问题，我觉得有几个设计决策是必须要订立的：</p>
+<ol>
+<li><p>使用 SOA 的模式：集群中心的地址作为集群的地址，通过服务名来分割逻辑</p>
+</li>
+<li><p>提供给用户自定义路由的接口：由于集群中的进程都带有状态，要把请求发给哪个进程，并不能完全自动选择，所以必须要用户提供代码来选择</p>
+</li>
+</ol>
+<p><img src="http://blog.sensedevil.com/image/GameServer3_3.webp" alt></p>
+<p>作为 SOA 模式下的集群，必须定义每个服务的“合同”格式。由于一个游戏服务器，可能存在各种不同的通信协议和编码协议，所以这个合同必须要能包含所有这些内容。在传统的 RPC 设计中，比如 WebService ，就采用了 WSDL 的格式，但是现在这种风格更多的被 RESTful 所取代。因此我决定使用类似 URL 类型的字符串来表述合同：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">tcp://1.1.1.1:8888/tlv</span><br></pre></td></tr></table></figure>
+<p>这样的合同描述，可以包含通信协议，IP地址和端口，编码协议三个部分，如果需要，还可以在 PATH 部分继续添加，如增加 QueryString 等。</p>
+<h3 id="集群中心"><a href="#集群中心" class="headerlink" title="集群中心"></a>集群中心</h3><p>根据之前的设计，集群中心地址，即事集群的地址。而集群中心，为了避免单点故障，自己也必须是一个集群。能符合这个要求的可用开源软件，非 ZooKeeper 莫属。</p>
+<p>所以我直接把集群中心的功能，使用 ZooKeeper 来实现。虽然 ZooKeeper 的 API 设计也足够优秀了，但是作为异步非阻塞的框架，还是必须要做一层封装和抽象。在编译 C 的 ZK 客户端 API 时，也碰到了一个讨厌的问题，就是这个 API 使用了一个旧版本的测试框架库 cppunit-devel ，在新版本的 Linux 发行版 CentOS 和 Ubuntu 中，直接从源安装的版本都和这个版本不兼容，没办法只好去官网上下载 cppunit-1.13 的源代码来编译安装。</p>
+<p>为了方便使用 ZooKeeper ，我先实现了一个 ZooKeeperMap 的类，属于 cache 模块的 DataMap 的子类，用以完成标准的 Key-Value 存取。实际上在这里是为了完成链接 ZooKeeper 和初始化的功能。</p>
+<p>如前文的合同所设计，当获得一个“合同”字符串的时候，是需要“构造”出一个使用对应合同的客户端对象的。不同的协议对应着不同类型的对象，在这里就需要一种类似“反射”生成对象的技术。对于没有这种反射能力的 C++ 来说，我添加了一个“注册”模板方法，这个模板方法会把注册的类的构造工厂方法，记录到一个 map 里面。当然，这对于注册的类的构造器是有要求，需要有无参数构造器，或者是带“字符串，数字”构造器。当然，如果写错了也不要紧，只是不能编译成功而已。这也是静态绑定的好处之一了。</p>
+<p>整个集群中心，最核心的接口其实就三个：</p>
+<ol>
+<li><p>注册一个合同，包括提供的“服务名”和“合同”，这个合同内容必须是能让客户端访问到自己的通信地址。</p>
+</li>
+<li><p>查询合同，通过输入“服务名”，获得所有提供这个服务的合同列表</p>
+</li>
+<li><p>通过合同构建客户端，得到的客户端对象就是可以发送请求给对应合同的服务提供进程。</p>
+</li>
+</ol>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* @brief 集群中心客户端</span></span><br><span class="line"><span class="comment">* 每个 DenOS 进程启动时，都会向 ZooKeeper 注册自己的服务。</span></span><br><span class="line"><span class="comment">* 此类型的对象，就是作为每个进程中，代表集群中心的存在。</span></span><br><span class="line"><span class="comment">* ZooKeeper 默认根据 2 个 tick （心跳），大概为 3 秒，是否收到，来决定客户端是否死掉。</span></span><br><span class="line"><span class="comment">* 在 DenOS 中，可以使用配置项目 ZK_RECV_TIMEOUT 参数（单位为毫秒）来决定这个超时时间。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Center</span> :</span> <span class="keyword">public</span> ZooKeeperMap &#123;</span><br><span class="line">    <span class="function"><span class="keyword">friend</span> <span class="keyword">void</span> <span class="title">ContractsWatcher</span><span class="params">(<span class="keyword">zhandle_t</span> *zh, <span class="keyword">int</span> type, <span class="keyword">int</span> state, <span class="keyword">const</span> <span class="keyword">char</span> *path,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 <span class="keyword">void</span> *watcherCtx)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> last_error_code_; <span class="comment">// 用来测试最后一个操作是否成功的变量</span></span><br><span class="line">    <span class="built_in">std</span>::<span class="built_in">map</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>, <span class="built_in">std</span>::<span class="built_in">string</span>&gt; service_process_; <span class="comment">// key: 服务名字，value 服务节点名字</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 构造一个集群中心客户端</span></span><br><span class="line"><span class="comment">    * @param urls ZooKeeper 的连接参数，形如："127.0.0.1:2181,10.1.2.3:2182,192.168.3.23:2183"</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    Center(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; urls = <span class="string">"127.0.0.1:2181"</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">virtual</span> ~Center();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// 驱动整个异步流程</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Update</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 往集群中声明注册服务</span></span><br><span class="line"><span class="comment">    * @param name 服务的名字</span></span><br><span class="line"><span class="comment">    * @param contract 服务的通信方式</span></span><br><span class="line"><span class="comment">    * @return 返回 0 表示已经发起注册流程，其他值表示失败</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">RegisterService</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; name, <span class="keyword">const</span> Contract&amp; contract)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 注册一个类作为对应协议字符串名字</span></span><br><span class="line"><span class="comment">    * 如果这个类是 Connector 的子类，必须要有一个形如 XXConnector(const string&amp; p1, int p2) 这样的构造器。</span></span><br><span class="line"><span class="comment">    * 或者这个类是 Protocol 的子类，必须要有一个无参数构造器。</span></span><br><span class="line"><span class="comment">    * @param reg_name 协议字符串名字，如 tcp/udp/kcp/tconnd 或者 tlv/line/tdr</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">RegProto</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; reg_name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (reg_name.empty())</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">            </span><br><span class="line">        constructors_[reg_name] = <span class="keyword">new</span> DefaultConstructor&lt;T&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">template</span>&lt;<span class="keyword">typename</span> T&gt;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">RegConn</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; reg_name)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (reg_name.empty())</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">            </span><br><span class="line">        constructors_[reg_name] = <span class="keyword">new</span> StrIntConstructor&lt;T&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 查询一个服务去发起请求</span></span><br><span class="line"><span class="comment">    * 注意这是一个异步的接口，有可能会返回 -1 表示服务合同还未拿到。需要重复的去获取。</span></span><br><span class="line"><span class="comment">    * @param name 服务的名字</span></span><br><span class="line"><span class="comment">    * @param callback 当获得对应的服务的客户端的回调</span></span><br><span class="line"><span class="comment">    * @param client_cb 预期每个新的 Client 所注册的默认回调，用来接收连接、中断、收听通知。</span></span><br><span class="line"><span class="comment">    * @param route_param 用来传给路由器的自定义路由相关数据</span></span><br><span class="line"><span class="comment">    * @return 如果返回 0 表示成功，失败则会是其他数值</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">QueryService</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; name,</span></span></span><br><span class="line"><span class="function"><span class="params">                     GetServiceClientCallback* callback,</span></span></span><br><span class="line"><span class="function"><span class="params">                     ClientCallback* client_cb = <span class="literal">NULL</span>, Router* router = <span class="literal">NULL</span>,</span></span></span><br><span class="line"><span class="function"><span class="params">                     <span class="keyword">void</span>* route_param = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 根据合同缓存获得客户端对象</span></span><br><span class="line"><span class="comment">    * @param cache 合同缓存对象</span></span><br><span class="line"><span class="comment">    * @param client_cb 预期每个新的 Client 所注册的默认回调，用来接收连接、中断、收听通知。</span></span><br><span class="line"><span class="comment">    * @param router 路由器对象</span></span><br><span class="line"><span class="comment">    * @param route_param 路由参数</span></span><br><span class="line"><span class="comment">    * @return 客户端对象指针，无需主动 delete，因为会缓存起来</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function">Client* <span class="title">GetClientByContracts</span><span class="params">(ContractCache* cache,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 ClientCallback* client_cb, Router* router,</span></span></span><br><span class="line"><span class="function"><span class="params">                                 <span class="keyword">void</span>* route_param)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 获得存放集群的 ZK 基础路径</span></span><br><span class="line"><span class="comment">    * @return ZNode 基础路径</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="keyword">inline</span> <span class="keyword">const</span> <span class="built_in">std</span>::<span class="function"><span class="built_in">string</span>&amp; <span class="title">cluster_prefix</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> CLUSTER_PREFIX;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 获得建立进程用的 ZK 标记 (Create flags)</span></span><br><span class="line"><span class="comment">    * @return zk 的 create flags</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">inline</span> <span class="keyword">int</span> <span class="title">process_flags</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> process_flags_;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// 在 ZK 写入本进程对此服务的合约</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">AddProcessContract</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; service_name,</span></span></span><br><span class="line"><span class="function"><span class="params">                            <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; contract_data)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// 清理相关对象</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">CloseClient</span><span class="params">(Client* client)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">SetContractsCache</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; service_name,</span></span></span><br><span class="line"><span class="function"><span class="params">                           ContractCache* cache)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/*---------------------------------- 继承自 ZooKeeper 为了实现功能用 -----------------------------------*/</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/// 建立存储节点父目录时，增加一个监听器，监听这些节点增加和删除变化</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">CreatePrefixNode</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/// 初始化 zookeeper 客户端连接，会修改 ZKMAP_KEY_PREFIX 为集群专用路径</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Init</span><span class="params">(Config* config = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 清理掉生成的客户端对象</span></span><br><span class="line"><span class="comment">    * @param client 客户端对象</span></span><br><span class="line"><span class="comment">    * @param content 相关的服务名字</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">ClearClientMember</span><span class="params">(Client* client, <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; content)</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h3 id="服务器间通信"><a href="#服务器间通信" class="headerlink" title="服务器间通信"></a>服务器间通信</h3><p>在上面所说的集群中心功能中，最后一项“获得客户端”的方法，是需要用户输入一个 Router 类型的对象的。其原因就是，游戏服务器往往都是带状态，所以必须要让调用者有办法选择具体的服务提供者。比如游戏中的聊天功能，一般都支持“组队聊天”的功能，这个功能，需要把消息转发到不同的服务器进程上，因为队伍中的玩家可能登录在不同的服务器上。那么，如果玩家本身登录的规则，就是根据自己的 ID 做某种哈希去选择服务器进程的，那么，这个聊天功能，只要让 Router 对象也按同样的哈希方法去选择服务器进程，就能正确的发送消息了。当然了，根据某种类似“服务器进程ID”去选择服务器，也是一种路由方式，可以写入 Router 中去。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* @brief 路由器基类</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Router</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">    Router();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">virtual</span> ~Router();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 决定服务路由的接口</span></span><br><span class="line"><span class="comment">    * 此接口默认实现是取 cache 中的第一个非空结果</span></span><br><span class="line"><span class="comment">    * @param cache 需要选择的所有合同的缓存集合</span></span><br><span class="line"><span class="comment">    * @param content 输出参数，具体选择的合同的内容</span></span><br><span class="line"><span class="comment">    * @param route_param 用来提供给路由算法运行的额外参数</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">RouteToSevice</span><span class="params">(<span class="keyword">const</span> ContractCache&amp; cache, <span class="built_in">std</span>::<span class="built_in">string</span>* content,</span></span></span><br><span class="line"><span class="function"><span class="params">                               <span class="keyword">void</span>* route_param = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>路由器的写法非常简单，也附带了一个 route_param 用来帮助传递一些路由选择所需的数据。当然你也可以构造多个不同的 Router 子类对象，用对象成员属性来携带更复杂的路由参数。</p>
+<p>当我们选择出了合同，就可以利用 Center 的功能去发起服务请求了。下面是单元测试的部分代码，展示了如何在服务器之间调用服务：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 获取客户端</span></span><br><span class="line">DEBUG_LOG(<span class="string">"========== Getting Client =========="</span>);</span><br><span class="line">Center* center = obj_pro_reg.center();</span><br><span class="line">TestGetClientCallback callback;</span><br><span class="line">TestClientCallback cli_cb;</span><br><span class="line">center-&gt;QueryService(handler.service_name_, &amp;callback, &amp;cli_cb);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">    usleep(<span class="number">100</span>);</span><br><span class="line">    svr-&gt;Update();</span><br><span class="line">&#125;</span><br><span class="line">EXPECT_EQ(<span class="number">0</span>, callback.err_code_);</span><br><span class="line">EXPECT_TRUE(cli_cb.is_connected_);</span><br><span class="line">ASSERT_TRUE(callback.client_ != <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 访问服务器</span></span><br><span class="line">DEBUG_LOG(<span class="string">"========== Requesting Service =========="</span>);</span><br><span class="line">Client* client = callback.client_;</span><br><span class="line">Request req;</span><br><span class="line"><span class="function"><span class="built_in">string</span> <span class="title">data</span><span class="params">(<span class="string">"I love JMX!"</span>)</span></span>;</span><br><span class="line">req.service = handler.service_name_;</span><br><span class="line">req.SetData(data.c_str(), data.length());</span><br><span class="line">client-&gt;SendRequest(&amp;req, &amp;cli_cb);</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">    usleep(<span class="number">100</span>);</span><br><span class="line">    svr-&gt;Update();</span><br><span class="line">&#125;</span><br><span class="line">EXPECT_EQ(data, cli_cb.resp_data_);</span><br></pre></td></tr></table></figure>
+<p>在一般的异步编程中，访问集群中的服务，需要两个回调（组赛）过程，一个是通过集群中心查询合同，一个是请求服务。这样显然会让代码分散在不同的函数中，阅读起来非常不方便。所以我又使用了协程功能，封装了集群和客户端的能力，让整个过程可以用同步代码的写法来完成。</p>
+<h2 id="展望"><a href="#展望" class="headerlink" title="展望"></a>展望</h2><p>写到这里，基本上关于一个游戏服务器框架的主体功能设计，都基本完成了。但是，一个游戏中还包含了很多不同的能力需要考虑。比如说排行榜、拍卖行、战斗记录日志等等，这个功能往往不能靠上文所述的 key-value 数据能力简单解决。而需要额外直接的对一些特殊的设施，比如 redis/MySQL 直接编程，这些部分，也只能放在框架之外处理了。也许以后，我会总结出更好的抽象层，能把带排序、模糊搜索、大容量记录的功能，一起放入框架的想法。另外，对于 cache 模块（缓冲），使用一致的 API 风格，去操作真正的分布式缓冲，还是一个未能很好解决的课题。虽然 Orcal Conherence 提供了很好的参考方案，但是限于时间和精力，也只能用简单的二级缓存来部分模拟其能力，这一方面也是值得去深入研究的部分。</p>
+<p>总结一下，游戏服务器框架，其实基本能力也非常简单：</p>
+<ol>
+<li><p>网络功能：提供请求响应、通知两种能力即可组合大部分功能</p>
+</li>
+<li><p>缓存功能：提供二级缓存的远程缓冲功能，也可以满足很多需求</p>
+</li>
+<li><p>持久化功能：以 key-value 方式的存储足以满足很多用户存档的需求</p>
+</li>
+</ol>
+<p>对于现代服务器系统，需要增加的能力还有：</p>
+<ol>
+<li><p>集群功能：可以用 SOA 但自定义路由的方式，提供集群服务</p>
+</li>
+<li><p>协程功能：避免大量异步回调的代码阅读问题</p>
+</li>
+<li><p>组件功能：给框架一个结合不同体系代码的接口</p>
+</li>
+</ol>
+<p>全文完。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ServerFramework/" rel="tag"><i class="fa fa-tag"></i> ServerFramework</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/04/教你从头写游戏服务器框架二/" rel="next" title="教你从头写游戏服务器框架二">
+                <i class="fa fa-chevron-left"></i> 教你从头写游戏服务器框架二
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/14/KBEngine源码解读一/" rel="prev" title="KBEngine源码解读一">
+                KBEngine源码解读一 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lumieru</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#协程"><span class="nav-number">1.</span> <span class="nav-text">协程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#服务器对象管理"><span class="nav-number">2.</span> <span class="nav-text">服务器对象管理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#组件模型"><span class="nav-number">2.1.</span> <span class="nav-text">组件模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Server-对象"><span class="nav-number">2.2.</span> <span class="nav-text">Server 对象</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#集群功能"><span class="nav-number">3.</span> <span class="nav-text">集群功能</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#需求分析"><span class="nav-number">3.1.</span> <span class="nav-text">需求分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#集群中心"><span class="nav-number">3.2.</span> <span class="nav-text">集群中心</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#服务器间通信"><span class="nav-number">3.3.</span> <span class="nav-text">服务器间通信</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#展望"><span class="nav-number">4.</span> <span class="nav-text">展望</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lumieru</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.1"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('复制成功');
+        else $(this).text('复制失败');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

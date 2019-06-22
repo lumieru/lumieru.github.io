@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="自我总结这篇文章只是介绍, 之后的文章才是正题. 此篇文章大体介绍了 :  文本格式传输的低效率问题， 为了可读性而产生了太多冗余无用数据 为什么不用目前已经有了的库比如Protocol Buffers：因为我们不需要版本信息，也不需要什么跨语言的支持。所以让我们直接忽略掉这些功能并用我们自己的不带属性的二进制流进行代替，在这个过程中我们可以获得更多的控制性和灵活性 要注意大小端的问题 实现一个位">
+<meta name="keywords" content="GafferOnGames">
+<meta property="og:type" content="article">
+<meta property="og:title" content="构建游戏网络协议一之数据包的读取和写入">
+<meta property="og:url" content="https://lumieru.github.io/2019/05/20/构建游戏网络协议一之数据包的读取和写入/index.html">
+<meta property="og:site_name" content="Lumieru的知识库">
+<meta property="og:description" content="自我总结这篇文章只是介绍, 之后的文章才是正题. 此篇文章大体介绍了 :  文本格式传输的低效率问题， 为了可读性而产生了太多冗余无用数据 为什么不用目前已经有了的库比如Protocol Buffers：因为我们不需要版本信息，也不需要什么跨语言的支持。所以让我们直接忽略掉这些功能并用我们自己的不带属性的二进制流进行代替，在这个过程中我们可以获得更多的控制性和灵活性 要注意大小端的问题 实现一个位">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-06-22T09:02:57.362Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="构建游戏网络协议一之数据包的读取和写入">
+<meta name="twitter:description" content="自我总结这篇文章只是介绍, 之后的文章才是正题. 此篇文章大体介绍了 :  文本格式传输的低效率问题， 为了可读性而产生了太多冗余无用数据 为什么不用目前已经有了的库比如Protocol Buffers：因为我们不需要版本信息，也不需要什么跨语言的支持。所以让我们直接忽略掉这些功能并用我们自己的不带属性的二进制流进行代替，在这个过程中我们可以获得更多的控制性和灵活性 要注意大小端的问题 实现一个位">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://lumieru.github.io/2019/05/20/构建游戏网络协议一之数据包的读取和写入/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>构建游戏网络协议一之数据包的读取和写入 | Lumieru的知识库</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lumieru的知识库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/构建游戏网络协议一之数据包的读取和写入/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">构建游戏网络协议一之数据包的读取和写入
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-20 15:22:58" itemprop="dateCreated datePublished" datetime="2019-05-20T15:22:58+08:00">2019-05-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="自我总结"><a href="#自我总结" class="headerlink" title="自我总结"></a>自我总结</h1><p>这篇文章只是介绍, 之后的文章才是正题. 此篇文章大体介绍了 :</p>
+<ul>
+<li>文本格式传输的低效率问题， 为了可读性而产生了太多冗余无用数据</li>
+<li>为什么不用目前已经有了的库比如Protocol Buffers：因为我们不需要版本信息，也不需要什么跨语言的支持。所以让我们直接忽略掉这些功能并用我们自己的不带属性的二进制流进行代替，在这个过程中我们可以获得更多的控制性和灵活性</li>
+<li>要注意大小端的问题</li>
+<li>实现一个位打包器， 工作在32位或者64位的级别， 而不是是工作在字节这个级别。因为现代机器对这个长度进行了专门的优化而不应该像1985年那样在字节的级别对缓冲区进行处理。</li>
+<li>要注意防止恶意数据包的问题 ：<ul>
+<li>我们需要实现一个方法来判断整数值是否超出预期范围，如果超出了就要中止网络包的读取和解析，因为会有一些不怀好意的人给我们发送恶意网络包希望我们的程序和内存崩溃掉。网络包的读取和解析的中止必须是自动化的，而且不能使用异常处理，因为异常处理太慢了会拖累我们的程序。</li>
+<li>如果独立的读取和写入函数是手动编解码的，那么维护它们真的是一个噩梦。我们希望能够为包一次性的编写好序列化代码并且没有任何运行时的性能消耗（主要是额外的分支、虚化等等）。</li>
+</ul>
+</li>
+<li>我们为了不想自己手动检查各种可能会被攻击的地方， 需要实现检查自动化， 在下一篇文章 <a href="/2019/05/20/构建游戏网络协议二之序列化策略/" title="构建游戏网络协议二之序列化策略">构建游戏网络协议二之序列化策略</a> 里将会说。<br><strong>. . .</strong></li>
+</ul>
+<h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><a href="https://gafferongames.com/post/reading_and_writing_packets/" target="_blank" rel="noopener">原文出处</a></p>
+<p>原文标题 : <strong>Reading and Writing Packets</strong> (<em>Best practices for reading and writing packets</em>)</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Hi, I’m <a href="https://gafferongames.com/about" target="_blank" rel="noopener">Glenn Fiedler</a> and welcome to <strong><a href="https://gafferongames.com/categories/building-a-game-network-protocol/" target="_blank" rel="noopener">Building a Game Network Protocol</a></strong>.</p>
+<p>In this article we’re going to explore how AAA multiplayer games like first person shooters read and write packets. We’ll start with text based formats then move into binary hand-coded binary formats and bitpacking.</p>
+<p>At the end of this article and the next, you should understand exactly how to implement your own packet read and write the same way the pros do it.</p>
+<a id="more"></a>
+<h2 id="Background"><a href="#Background" class="headerlink" title="Background"></a>Background</h2><p>Consider a web server. It listens for requests, does some work asynchronously and sends responses back to clients. It’s stateless and generally not real-time, although a fast response time is great. Web servers are most often IO bound.</p>
+<p>Game server are different. They’re a headless version of the game running in the cloud. As such they are stateful and CPU bound. The traffic patterns are different too. Instead of infrequent request/response from tens of thousands of clients, a game server has far fewer clients, but processes a continuous stream of input packets sent from each client 60 times per-second, and broadcasts out the state of the world to clients 10, 20 or even 60 times per-second.</p>
+<p>And this state is <strong>huge</strong>. Thousands of objects with hundreds of properties each. Game network programmers spend a lot of their time optimizing exactly how this state is sent over the network with crazy bit-packing tricks, hand-coded binary formats and delta encoding.</p>
+<p>What would happen if we just encoded this world state as XML?</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">world_update</span> <span class="attr">world_time</span>=<span class="string">”0.0”</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">object</span> <span class="attr">id</span>=<span class="string">”1”</span> <span class="attr">class</span>=<span class="string">”player”</span>&gt;</span></span><br><span class="line">    &lt;property name=”position” value=”(0,0,0)”&lt;/property&gt;</span><br><span class="line">    &lt;property name=”orientation” value=”(1,0,0,0)”&lt;/property&gt;</span><br><span class="line">    &lt;property name=”velocity” value=”(10,0,0)”&lt;/property&gt;</span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">”health”</span> <span class="attr">value</span>=<span class="string">”100”</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">”weapon”</span> <span class="attr">value</span>=<span class="string">”110”</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    … 100s more properties per-object …</span><br><span class="line"> <span class="tag">&lt;/<span class="name">object</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">object</span> <span class="attr">id</span>=<span class="string">”100”</span> <span class="attr">class</span>=<span class="string">”grunt”</span>&gt;</span></span><br><span class="line">   &lt;property name=”position” value=”(100,100,0)”&lt;/property&gt;</span><br><span class="line">   &lt;property name=”health” value=”10”&lt;/property&gt;</span><br><span class="line"> <span class="tag">&lt;/<span class="name">object</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">object</span> <span class="attr">id</span>=<span class="string">”110”</span> <span class="attr">class</span>=<span class="string">”weapon”</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">type</span>=<span class="string">”semi-automatic”</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">ammo_in_clip</span>=<span class="string">”8”</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">round_in_chamber</span>=<span class="string">”true”</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">object</span>&gt;</span></span><br><span class="line"> … 1000s more objects …</span><br><span class="line"><span class="tag">&lt;/<span class="name">world_update</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>Pretty verbose… it’s hard to see how this would be practical for a large world.</p>
+<p>JSON is a bit more compact:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  “world_time”: 0.0,</span><br><span class="line">  “objects”: &#123;</span><br><span class="line">    1: &#123;</span><br><span class="line">      “class”: “player”,</span><br><span class="line">      “position”: “(0,0,0)”,</span><br><span class="line">      “orientation”: “(1,0,0,0)”,</span><br><span class="line">      “velocity”: “(10,0,0)”,</span><br><span class="line">      “health”: 100,</span><br><span class="line">      “weapon”: 110</span><br><span class="line">    &#125;</span><br><span class="line">    100: &#123;</span><br><span class="line">      “class”: “grunt”,</span><br><span class="line">      “position”: “(100,100,0)”,</span><br><span class="line">      “health”: 10</span><br><span class="line">    &#125;</span><br><span class="line">    110: &#123;</span><br><span class="line">      “class”: “weapon”,</span><br><span class="line">      “type: “semi-automatic”</span><br><span class="line">      “ammo_in_clip”: 8,</span><br><span class="line">      “round_in_chamber”: 1</span><br><span class="line">    &#125;</span><br><span class="line">    // etc…</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>But it still suffers from the same problem: the description of the data is larger than the data itself. What if instead of fully describing the world state in each packet, we split it up into two parts?</p>
+<ol>
+<li><p>A schema that describes the set of object classes and properties per-class, <strong>sent only once</strong> when a client connects to the server.</p>
+</li>
+<li><p>Data sent rapidly from server to client, <strong>which is encoded relative to the schema</strong>.</p>
+</li>
+</ol>
+<p>The schema could look something like this:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  “classes”: &#123;</span><br><span class="line">    0: “player” &#123;</span><br><span class="line">      “properties”: &#123;</span><br><span class="line">        0: &#123;</span><br><span class="line">          “name”: “position”,</span><br><span class="line">          “type”: “vec3f”</span><br><span class="line">        &#125;</span><br><span class="line">        1: &#123;</span><br><span class="line">          “name”: “orientation”,</span><br><span class="line">          “type”: “quat4f”</span><br><span class="line">        &#125;</span><br><span class="line">        2: &#123;</span><br><span class="line">          “name”: “velocity”,</span><br><span class="line">          “type”: “vec3f”</span><br><span class="line">        &#125;</span><br><span class="line">        3: &#123;</span><br><span class="line">          “name”: “health”,</span><br><span class="line">          “type”: “float”</span><br><span class="line">        &#125;</span><br><span class="line">        4: &#123;</span><br><span class="line">          “name”: “weapon”,</span><br><span class="line">          “type”: “object”,</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    1: “grunt”: &#123;</span><br><span class="line">      “properties”: &#123;</span><br><span class="line">        0: &#123;</span><br><span class="line">          “name”: “position”,</span><br><span class="line">          “type”: “vec3f”</span><br><span class="line">        &#125;</span><br><span class="line">        1: &#123;</span><br><span class="line">          “name”: “health”,</span><br><span class="line">          “type”: “float”</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    2: “weapon”: &#123;</span><br><span class="line">      “properties”: &#123;</span><br><span class="line">        0: &#123;</span><br><span class="line">          “name”: “type”,</span><br><span class="line">          “type”: “enum”,</span><br><span class="line">          “enum_values”: [ “revolver”, “semi-automatic” ]</span><br><span class="line">        &#125;</span><br><span class="line">        1: &#123;</span><br><span class="line">          “name”: “ammo_in_clip”,</span><br><span class="line">          “type”: “integer”,</span><br><span class="line">          “range”: “0..9”,</span><br><span class="line">        &#125;</span><br><span class="line">        2: &#123;</span><br><span class="line">          “name”: “round_in_chamber”,</span><br><span class="line">          “type”: “integer”,</span><br><span class="line">          “range”: “0..1”</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>The schema is quite big, but that’s beside the point. It’s sent only once, and now the client knows the set of classes in the game world and the number, name, type and range of properties per-class.</p>
+<p>With this knowledge we can make the rapidly sent portion of the world state much more compact:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  “world_time”: 0.0,</span><br><span class="line">  “objects”: &#123;</span><br><span class="line">    1: [0,”(0,0,0)”,”(1,0,0,0)”,”(10,0,0)”,100,110],</span><br><span class="line">    100: [1,”(100,100,0)”,10],</span><br><span class="line">    110: [2,1,8,1]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>And we can compress it even further by switching to a custom text format:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0.0  </span><br><span class="line">1:0,0,0,0,1,0,0,0,10,0,0,100,110  </span><br><span class="line">100:1,100,100,0,10  </span><br><span class="line">110:2,1,8,1</span><br></pre></td></tr></table></figure>
+<p>As you can see, it’s much more about what you <strong>don’t send</strong> than what you do.</p>
+<h2 id="The-Inefficiencies-of-Text"><a href="#The-Inefficiencies-of-Text" class="headerlink" title="The Inefficiencies of Text"></a>The Inefficiencies of Text</h2><p>We’ve made good progress on our text format so far, moving from a highly attributed stream that fully describes the data (more description than actual data) to an unattributed text format that’s an order of magnitude more efficient.</p>
+<p>But there are inherent inefficiencies when using text format for packets:</p>
+<ul>
+<li><p>We are most often sending data in the range <strong>A-Z</strong>, <strong>a-z</strong> and <strong>0-1</strong>, plus a few other symbols. This wastes the remainder of the <strong>0-255</strong> range for each character sent. From an information theory standpoint, this is an inefficient encoding.</p>
+</li>
+<li><p>The text representation of integer values are in the general case much less efficient than the binary format. For example, in text format the worst case unsigned 32 bit integer <strong>4294967295</strong> takes 10 bytes, but in binary format it takes just four.</p>
+</li>
+<li><p>In text, even the smallest numbers in <strong>0-9</strong> range require at least one byte, but in binary, smaller values like <strong>0, 11, 31, 100</strong> can be sent with fewer than 8 bits if we know their range ahead of time.</p>
+</li>
+<li><p>If an integer value is negative, you have to spend a whole byte on <strong>’-’</strong> to indicate that.</p>
+</li>
+<li><p>Floating point numbers waste one byte specifying the decimal point.</p>
+</li>
+<li><p>The text representation of numerical values are variable length: <strong>“5”</strong>, <strong>“12345”</strong>, <strong>“3.141593”. </strong>Because of this we need to spend one byte on a separator after each value so we know when it ends.</p>
+</li>
+<li><p>Newlines <strong>‘\n’</strong> or some other separator are required to distinguish between the set of variables belonging to one object and the next. When you have thousands of objects, this really adds up.</p>
+</li>
+</ul>
+<p>In short, if we wish to optimize any further, it’s necessary to switch to a binary format.</p>
+<h2 id="Switching-to-a-Binary-Format"><a href="#Switching-to-a-Binary-Format" class="headerlink" title="Switching to a Binary Format"></a>Switching to a Binary Format</h2><p>In the web world there are some really great libraries that read and write binary formats like <a href="http://bjson.org/" target="_blank" rel="noopener">BJSON</a>, <a href="https://developers.google.com/protocol-buffers/" target="_blank" rel="noopener">Protocol Buffers</a>, <a href="https://google.github.io/flatbuffers/" target="_blank" rel="noopener">Flatbuffers</a>, <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Thrift</a>, <a href="https://capnproto.org/" target="_blank" rel="noopener">Cap’n Proto</a> and <a href="http://msgpack.org/index.html" target="_blank" rel="noopener">MsgPack</a>.</p>
+<p>In manay cases, these libraries are great fit for building your game network protocol. But in the fast-paced world of first person shooters where efficiency is paramount, a hand-tuned binary protocol is still the gold standard.</p>
+<p>There are a few reasons for this. Web binary formats are designed for situations where versioning of data is _extremely_important. If you upgrade your backend, older clients should be able to keep talking to it with the old format. Data formats are also expected to be language agnostic. A backend written in Golang should be able to talk with a web client written in JavaScript and other server-side components written in Python or Java.</p>
+<p>Game servers are completely different beasts. The client and server are almost always written in the same language (C++), and versioning is much simpler. If a client with an incompatible version tries to connect, that connection is simply rejected. There’s simply no need for compatibility across different versions.</p>
+<p>So if you don’t need versioning and you don’t need cross-language support what are the benefits for these libraries? Convenience. Ease of use. Not needing to worry about creating, testing and debugging your own binary format.</p>
+<p>But this convenience is offset by the fact that these libraries are less efficient and less flexible than a binary protocol we can roll ourselves. So while I encourage you to evaluate these libraries and see if they suit your needs, for the rest of this article, we’re going to move forward with a custom binary protocol.</p>
+<h2 id="Getting-Started-with-a-Binary-Format"><a href="#Getting-Started-with-a-Binary-Format" class="headerlink" title="Getting Started with a Binary Format"></a>Getting Started with a Binary Format</h2><p>One option for creating a custom binary protocol is to use the in-memory format of your data structures in C/C++ as the over-the-wire format. People often start here, so although I don’t recommend this approach, lets explore it for a while before we poke holes in it.</p>
+<p>First define the set of packets, typically as a union of structs:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Packet</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">enum</span> PacketTypeEnum &#123; PACKET_A, PACKET_B, PACKET_C &#125;;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">uint8_t</span> packetType;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">union</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">PacketA</span></span></span><br><span class="line"><span class="class">        &#123;</span></span><br><span class="line">            <span class="keyword">int</span> x,y,z;</span><br><span class="line">        &#125; a;</span><br><span class="line"></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">PacketB</span></span></span><br><span class="line"><span class="class">        &#123;</span></span><br><span class="line">            <span class="keyword">int</span> numElements;</span><br><span class="line">            <span class="keyword">int</span> elements[MaxElements];</span><br><span class="line">        &#125; b;</span><br><span class="line"></span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">PacketC</span></span></span><br><span class="line"><span class="class">        &#123;</span></span><br><span class="line">            <span class="keyword">bool</span> x;</span><br><span class="line">            <span class="keyword">short</span> y;</span><br><span class="line">            <span class="keyword">int</span> z;</span><br><span class="line">        &#125; c;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>When writing the packet, set the first byte in the packet to the packet type number (0, 1 or 2). Then depending on the packet type, memcpy the appropriate union struct into the packet. On read do the reverse: read in the first byte, then according to the packet type, copy the packet data to the corresponding struct.</p>
+<p>It couldn’t get simpler. So why do most games avoid this approach?</p>
+<p>The first reason is that different compilers and platforms provide different packing of structs. If you go this route you’ll spend a lot of time with <strong>#pragma pack</strong> trying to make sure that different compilers and different platforms lay out the structures in memory exactly the same way.</p>
+<p>The next one is endianness. Most computers are mostly <a href="https://en.wikipedia.org/wiki/Endianness#Little-endian" target="_blank" rel="noopener">little endian</a> these days but historically some architectures like PowerPC were <a href="https://en.wikipedia.org/wiki/Endianness#Big-endian" target="_blank" rel="noopener">big endian</a>. If you need to support communication between little endian and big endian machines, the memcpy the struct in and out of the packet approach simply won’t work. At minimum you need to write a function to swap bytes between host and network byte order on read and write for each variable in your struct.</p>
+<p>There are other issues as well. If a struct contains pointers you can’t just serialize that value over the network and expect a valid pointer on the other side. Also, if you have variable sized structures, such as an array of 32 elements, but most of the time it’s empty or only has a few elements, it’s wasteful to always send the array at worst case size. A better approach would support a variable length encoding that only sends the actual number of elements in the array.</p>
+<p>But ultimately, what really drives a stake into the heart of this approach is <strong>security</strong>. It’s a <em>massive</em> security risk to take data coming in over the network and trust it, and that’s exactly what you do if you just copy a block of memory sent over the network into your struct. Wheee! What if somebody constructs a malicious <strong>PacketB</strong> and sends it to you with <strong>numElements</strong> = 0xFFFFFFFF?</p>
+<p>You should, no you <em>must</em>, at minimum do some sort of per-field checking that values are in range vs. blindly accepting what is sent to you. This is why the memcpy struct approach is rarely used in professional games.</p>
+<h2 id="Read-and-Write-Functions"><a href="#Read-and-Write-Functions" class="headerlink" title="Read and Write Functions"></a>Read and Write Functions</h2><p>The next level of sophistication is read and write functions per-packet.</p>
+<p>Start with the following simple operations:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">WriteInteger</span><span class="params">( Buffer &amp; buffer, <span class="keyword">uint32_t</span> value )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">WriteShort</span><span class="params">( Buffer &amp; buffer, <span class="keyword">uint16_t</span> value )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">WriteChar</span><span class="params">( Buffer &amp; buffer, <span class="keyword">uint8_t</span> value )</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">uint32_t</span> ReadInteger( Buffer &amp; buffer );</span><br><span class="line"><span class="keyword">uint16_t</span> ReadShort( Buffer &amp; buffer );</span><br><span class="line"><span class="keyword">uint8_t</span> ReadByte( Buffer &amp; buffer );</span><br></pre></td></tr></table></figure>
+<p>These operate on a structure which keeps track of the current position:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Buffer</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">uint8_t</span>  data;     <span class="comment">// pointer to buffer data</span></span><br><span class="line">    <span class="keyword">int</span> size;           <span class="comment">// size of buffer data (bytes)</span></span><br><span class="line">    <span class="keyword">int</span> index;          <span class="comment">// index of next byte to be read/written</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>The write integer function looks something like this:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">WriteInteger</span><span class="params">( Buffer &amp; buffer, <span class="keyword">uint32_t</span> value )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    assert( buffer.index + <span class="number">4</span> &lt;= size );</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> BIG_ENDIAN</span></span><br><span class="line">    ((<span class="keyword">uint32_t</span>)(buffer.data+buffer.index)) = bswap( value );</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span> <span class="comment">// #ifdef BIG_ENDIAN</span></span></span><br><span class="line">    ((<span class="keyword">uint32_t</span>)(buffer.data+buffer.index)) = value;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// #ifdef BIG_ENDIAN</span></span></span><br><span class="line">    buffer.index += <span class="number">4</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>And the read integer function looks like this:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint32_t</span> ReadInteger( Buffer &amp; buffer )</span><br><span class="line">&#123;</span><br><span class="line">    assert( buffer.index + <span class="number">4</span> &lt;= size );</span><br><span class="line">    <span class="keyword">uint32_t</span> value;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> BIG_ENDIAN</span></span><br><span class="line">    value = bswap( ((<span class="keyword">uint32_t</span>)(buffer.data+buffer.index)) );</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span> <span class="comment">// #ifdef BIG_ENDIAN</span></span></span><br><span class="line">    value = ((<span class="keyword">uint32_t</span>)(buffer.data+buffer.index));</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// #ifdef BIG_ENDIAN</span></span></span><br><span class="line">    buffer.index += <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Now, instead of copying across packet data in and out of structs, we implement read and write functions for each packet type:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PacketA</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> x,y,z;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Write</span><span class="params">( Buffer &amp; buffer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        WriteInteger( buffer, x );</span><br><span class="line">        WriteInteger( buffer, y );</span><br><span class="line">        WriteInteger( buffer, z );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Read</span><span class="params">( Buffer &amp; buffer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ReadInteger( buffer, x );</span><br><span class="line">        ReadInteger( buffer, y );</span><br><span class="line">        ReadInteger( buffer, z );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PacketB</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> numElements;</span><br><span class="line">    <span class="keyword">int</span> elements[MaxElements];</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Write</span><span class="params">( Buffer &amp; buffer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        WriteInteger( buffer, numElements );</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">            WriteInteger( buffer, elements[i] );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Read</span><span class="params">( Buffer &amp; buffer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ReadInteger( buffer, numElements );</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">            ReadInteger( buffer, elements[i] );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PacketC</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">bool</span> x;</span><br><span class="line">    <span class="keyword">short</span> y;</span><br><span class="line">    <span class="keyword">int</span> z;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Write</span><span class="params">( Buffer &amp; buffer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        WriteByte( buffer, x );</span><br><span class="line">        WriteShort( buffer, y );</span><br><span class="line">        WriteInt( buffer, z );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Read</span><span class="params">( Buffer &amp; buffer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ReadByte( buffer, x );</span><br><span class="line">        ReadShort( buffer, y );</span><br><span class="line">        ReadInt( buffer, z );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>When reading and writing packets, start the packet with a byte specifying the packet type via ReadByte/WriteByte, then according to the packet type, call the read/write on the corresponding packet struct in the union.</p>
+<p>Now we have a system that allows machines with different endianness to communicate and supports variable length encoding of elements.</p>
+<h2 id="Bitpacking"><a href="#Bitpacking" class="headerlink" title="Bitpacking"></a>Bitpacking</h2><p>What if we have a value in the range [0,1000] we really only need 10 bits to represent all possible values. Wouldn’t it be nice if we could write just 10 bits, instead of rounding up to 16? What about boolean values? It would be nice to send these as one bit instead of 8!</p>
+<p>One way to implement this is to manually organize your C++ structures into packed integers with bitfields and union tricks, such as grouping all bools together into one integer type via bitfield and serializing them as a group. But this is tedious and error prone and there’s no guarantee that different C++ compilers pack bitfields in memory exactly the same way.</p>
+<p>A much more flexible way that trades a small amount of CPU on packet read and write for convenience is a <strong>bitpacker</strong>. This is code that reads and writes non-multiples of 8 bits to a buffer.</p>
+<h2 id="Writing-Bits"><a href="#Writing-Bits" class="headerlink" title="Writing Bits"></a>Writing Bits</h2><p>Many people write bitpackers that work at the byte level. This means they flush bytes to memory as they are filled. This is simpler to code, but the ideal is to read and write words at a time, because modern machines are optimized to work this way instead of farting across a buffer at byte level like it’s 1985.</p>
+<p>If you want to write 32 bits at a time, you’ll need a scratch word twice that size, eg. uint64_t. The reason is that you need the top half for overflow. For example, if you have just written a value 30 bits long into the scratch buffer, then write another value that is 10 bits long you need somewhere to store 30 + 10 = 40 bits.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint64_t</span> scratch;</span><br><span class="line"><span class="keyword">int</span> scratch_bits;</span><br><span class="line"><span class="keyword">int</span> word_index;</span><br><span class="line"><span class="keyword">uint32_t</span>  buffer;</span><br></pre></td></tr></table></figure>
+<p>When we start writing with the bitpacker, all these variables are cleared to zero except <strong>buffer</strong> which points to the start of the packet we are writing to. Because we’re accessing this packet data at a word level, not byte level, make sure packet buffers lengths are a multiple of 4 bytes.</p>
+<p>Let’s say we want to write 3 bits followed by 10 bits, then 24. Our goal is to pack this tightly in the scratch buffer and flush that out to memory, 32 bits at a time. Note that 3 + 10 + 24 = 37. We have to handle this case where the total number of bits don’t evenly divide into 32. This is actually the <em>common case</em>.</p>
+<p>At the first step, write the 3 bits to <strong>scratch</strong> like this:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxx</span><br></pre></td></tr></table></figure>
+<p><strong>scratch_bits</strong> is now 3.</p>
+<p>Next, write 10 bits:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yyyyyyyyyyxxx</span><br></pre></td></tr></table></figure>
+<p><strong>scratch_bits</strong> is now 13 (3+10).</p>
+<p>Next write 24 bits:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zzzzzzzzzzzzzzzzzzzzzzzzyyyyyyyyyyxxx</span><br></pre></td></tr></table></figure>
+<p><strong>scratch_bits</strong> is now 37 (3+10+24). We’re straddling the 32 bit word boundary in our 64 bit <strong>scratch</strong> variable and have 5 bits in the upper 32 bits (overflow). Flush the lower 32 bits of <strong>scratch</strong> to memory, advance <strong>word_index</strong> by one, shift <strong>scratch</strong> right by 32 and subtract 32 from <strong>scratch_bits</strong>.</p>
+<p><strong>scratch</strong> now looks like this:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zzzzz</span><br></pre></td></tr></table></figure>
+<p>We’ve finished writing bits but we still have data in scratch that’s not flushed to memory. For this data to be included in the packet we need to make sure to flush any remaining bits in <strong>scratch</strong> to memory at the end of writing.</p>
+<p>When we flush a word to memory it is converted to little endian byte order. To see why this is important consider what happens if we flush bytes to memory in big endian order:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DCBA000E</span><br></pre></td></tr></table></figure>
+<p>Since we fill bits in the word from right to left, the last byte in the packet E is actually on the right. If we try to send this buffer in a packet of 5 bytes (the actual amount of data we have to send) the packet catches 0 for the last byte instead of E. Ouch!</p>
+<p>But when we write to memory in little endian order, bytes are reversed back out in memory like this:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ABCDE000</span><br></pre></td></tr></table></figure>
+<p>And we can write 5 bytes to the network and catch E at the end. Et voilà!</p>
+<h2 id="Reading-Bits"><a href="#Reading-Bits" class="headerlink" title="Reading Bits"></a>Reading Bits</h2><p>To read the bitpacked data, start with the buffer sent over the network:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ABCDE</span><br></pre></td></tr></table></figure>
+<p>The bit reader has the following state:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint64_t</span> scratch;</span><br><span class="line"><span class="keyword">int</span> scratch_bits;</span><br><span class="line"><span class="keyword">int</span> total_bits;</span><br><span class="line"><span class="keyword">int</span> num_bits_read;</span><br><span class="line"><span class="keyword">int</span> word_index;</span><br><span class="line"><span class="keyword">uint32_t</span>  buffer;</span><br></pre></td></tr></table></figure>
+<p>To start all variables are cleared to zero except <strong>total_bits</strong> which is set to the size of the packet as bytes 8, and <strong>buffer</strong>which points to the start of the packet.</p>
+<p>The user requests a read of 3 bits. Since <strong>scratch_bits</strong> is zero, it’s time to read in the first word. Read in the word to <strong>scratch</strong>, shifted left by <strong>scratch_bits</strong> (0). Add 32 to <strong>scratch_bits</strong>.</p>
+<p>The value of <strong>scratch</strong> is now:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zzzzzzzzzzzzzzzzzzzyyyyyyyyyyxxx</span><br></pre></td></tr></table></figure>
+<p>Read off the low 3 bits, giving the expected value of:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxx</span><br></pre></td></tr></table></figure>
+<p>Shift <strong>scratch</strong> to the right 3 bits and subtract 3 from <strong>scratch_bits</strong>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zzzzzzzzzzzzzzzzzzzyyyyyyyyyy</span><br></pre></td></tr></table></figure>
+<p>Read off another 10 bits in the same way, giving the expected value of:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yyyyyyyyyy</span><br></pre></td></tr></table></figure>
+<p>Scratch now looks like:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zzzzzzzzzzzzzzzzzzz</span><br></pre></td></tr></table></figure>
+<p>The next read asks for 24 bits but <strong>scratch_bits</strong> is only 19 (=32-10-3).</p>
+<p>It’s time to read in the next word. Shifting the word in memory left by <strong>scratch_bits</strong> (19) and or it on top of <strong>scratch</strong>.</p>
+<p>Now we have all the bits necessary for z in <strong>scratch</strong>:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zzzzzzzzzzzzzzzzzzzzzzzz</span><br></pre></td></tr></table></figure>
+<p>Read off 24 bits and shift <strong>scratch</strong> right by 24. <strong>scratch</strong> is now all zeros.</p>
+<p>We’re done!</p>
+<h2 id="Beyond-Bitpacking"><a href="#Beyond-Bitpacking" class="headerlink" title="Beyond Bitpacking"></a>Beyond Bitpacking</h2><p>Reading and writing integer values into a packet by specifying the number of bits to read/write is not the most user friendly option.</p>
+<p>Consider this example:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxElements = <span class="number">32</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PacketB</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> numElements;</span><br><span class="line">    <span class="keyword">int</span> elements[MaxElements];</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Write</span><span class="params">( BitWriter &amp; writer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        WriteBits( writer, numElements, <span class="number">6</span> );</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">            WriteBits( writer, elements[i] );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Read</span><span class="params">( BitReader &amp; reader )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ReadBits( reader, numElements, <span class="number">6</span> );</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">            ReadBits( reader, elements[i] );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>This code looks fine at first glance, but let’s assume that some time later you, or somebody else on your team, increases <strong>MaxElements</strong> from 32 to 200 but forget to update the number of bits required to <strong>7</strong>（注意看<code>WriteBits( writer, numElements, 6 )</code>的6， 现在需要7了）. Now the high bit of <strong>numElements</strong> are being silently truncated on send. It’s pretty hard to track something like this down after the fact.</p>
+<p>The simplest option is to just turn it around and define the maximum number of elements in terms of the number of bits sent:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxElementBits = <span class="number">7</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxElements = ( <span class="number">1</span> &lt;&lt; MaxElementBits ) - <span class="number">1</span>;</span><br></pre></td></tr></table></figure>
+<p>Another option is to get fancy and work out the number of bits required at compile time:</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">uint32_t</span> x&gt; <span class="class"><span class="keyword">struct</span> <span class="title">PopCount</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">enum</span> &#123; a = x - ( ( x &gt;&gt; <span class="number">1</span> ) &amp; <span class="number">0x55555555</span> ),</span><br><span class="line">           b = ( ( ( a &gt;&gt; <span class="number">2</span> ) &amp; <span class="number">0x33333333</span> ) + ( a &amp; <span class="number">0x33333333</span> ) ),</span><br><span class="line">           c = ( ( ( b &gt;&gt; <span class="number">4</span> ) + b ) &amp; <span class="number">0x0f0f0f0f</span> ),</span><br><span class="line">           d = c + ( c &gt;&gt; <span class="number">8</span> ),</span><br><span class="line">           e = d + ( d &gt;&gt; <span class="number">16</span> ),</span><br><span class="line">    result = e &amp; <span class="number">0x0000003f</span> &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">uint32_t</span> x&gt; <span class="class"><span class="keyword">struct</span> <span class="title">Log2</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">enum</span> &#123; a = x | ( x &gt;&gt; <span class="number">1</span> ),</span><br><span class="line">           b = a | ( a &gt;&gt; <span class="number">2</span> ),</span><br><span class="line">           c = b | ( b &gt;&gt; <span class="number">4</span> ),</span><br><span class="line">           d = c | ( c &gt;&gt; <span class="number">8</span> ),</span><br><span class="line">           e = d | ( d &gt;&gt; <span class="number">16</span> ),</span><br><span class="line">           f = e &gt;&gt; <span class="number">1</span>,</span><br><span class="line">    result = PopCount&lt;f&gt;::result &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">int64_t</span> min, <span class="keyword">int64_t</span> max&gt; <span class="class"><span class="keyword">struct</span> <span class="title">BitsRequired</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">uint32_t</span> result =</span><br><span class="line">        ( min == max ) ? <span class="number">0</span> : ( Log2&lt;<span class="keyword">uint32_t</span>(max-min)&gt;::result + <span class="number">1</span> );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> BITS_REQUIRED( min, max ) BitsRequired<span class="meta-string">&lt;min,max&gt;::result</span></span></span><br></pre></td></tr></table></figure>
+<p>Now you can’t mess up the number of bits, and you can specify non-power of two maximum values and it everything works out.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxElements = <span class="number">32</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxElementBits = BITS_REQUIRED( <span class="number">0</span>, MaxElements );</span><br></pre></td></tr></table></figure>
+<p>But be careful when array sizes aren’t a power of two! In the example above <strong>MaxElements</strong> is 32, so <strong>MaxElementBits</strong> is 6. This seems fine because all values in [0,32] fit in 6 bits. The problem is that there are additional values within 6 bits that are <em>outside</em> our array bounds: [33,63]. An attacker can use this to construct a malicious packet that corrupts memory!</p>
+<p>This leads to the <em>inescapable</em> conclusion that it’s not enough to just specify the number of bits required when reading and writing a value, we must also check that it is within the valid range: [min,max]. This way if a value is outside of the expected range we can detect that and abort read.</p>
+<p>I used to implement this using C++ exceptions, but when I profiled, I found it to be incredibly slow. In my experience, it’s much faster to take one of two approaches: set a flag on the bit reader that it should abort, or return false from read functions on failure. But now, in order to be completely safe on read you must to check for error on every read operation.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxElements = <span class="number">32</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxElementBits = BITS_REQUIRED( <span class="number">0</span>, MaxElements );</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PacketB</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> numElements;</span><br><span class="line">    <span class="keyword">int</span> elements[MaxElements];</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Write</span><span class="params">( BitWriter &amp; writer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        WriteBits( writer, numElements, MaxElementBits );</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">        &#123;</span><br><span class="line">            WriteBits( writer, elements[i], <span class="number">32</span> );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Read</span><span class="params">( BitReader &amp; reader )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ReadBits( reader, numElements, MaxElementBits );</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ( numElements &gt; MaxElements )</span><br><span class="line">        &#123;</span><br><span class="line">            reader.Abort();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> ( reader.IsOverflow() )</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line"></span><br><span class="line">            ReadBits( buffer, elements[i], <span class="number">32</span> );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>If you miss any of these checks, you expose yourself to buffer overflows and infinite loops when reading packets. Clearly you don’t want this to be a manual step when writing a packet read function. <em>You want it to be automatic</em>, just read the NEXT ARTICLE.</p>
+<h1 id="译文"><a href="#译文" class="headerlink" title="译文"></a>译文</h1><p><a href="http://gad.qq.com/program/translateview/7165591" target="_blank" rel="noopener">译文出处</a></p>
+<p><strong>译者：陈敬凤（nunu） 审校：崔国军（飞扬971）</strong></p>
+<h2 id="导论"><a href="#导论" class="headerlink" title="导论"></a>导论</h2><p>大家好，我是格伦·菲德勒。欢迎大家阅读我新开的这个系列教程：《构建游戏网络协议》。</p>
+<p>在这个系列文章中，我将完全从头开始为动作游戏（比如说第一人称射击游戏、近身格斗和实时多人在线战斗竞技场游戏都是动作游戏）基于UDP协议构建一个专业级别的游戏网络协议。我所使用的工具只包括我的Macbook Pro、 Sublime Text 3（这是一个很好用的编辑器，非常值得一试）、我信赖的C++编译器和一组UDP套接字。</p>
+<p>我写这个系列文章的目的是分享在过去十年里我在这个领域学到的有关游戏网络方面的专业知识，因为似乎没有人写过这些方面的东西。所以其他的网络程序员到底是如何想如何做的，我想通过这个系列文章来进行一定的分享。如果你觉得这篇文章有价值的话，请在patreon上支持我的写作，这样我可以有机会来写更多的文章。如果你对我的工作进行支持和捐赠的话，你还可以访问到这个系列文章的示例源代码(这些源代码都是开源的,所以您可以使用任何你想用的地方甚至是商业内容上！)以及一个密码以便访问这个网站上还没有发表的一些文章。</p>
+<p>关于我的情况，已经说得足够多了，现在让我们开始这个系列文章把！</p>
+<h2 id="对数据包的读取和写入"><a href="#对数据包的读取和写入" class="headerlink" title="对数据包的读取和写入"></a>对数据包的读取和写入</h2><p>你是否有想过多人在线游戏是如何读取和写入数据包的？</p>
+<p>如果你有web开发的背景话，你可能会使用XML、JSON或YAML以文本格式来通过网络发送数据。但大多数游戏网络程序员会嘲笑这种对游戏数据进行编码的建议。他们可能会说：”哈哈哈，这真的很有趣。你不是认真的对吧？“哦。你…是认真的。你被解雇了。你可以收拾东西回家了。</p>
+<p>我只是开了一个玩笑，但是玩笑归玩笑，为什么这种方法不好？</p>
+<p>一个网页服务器位于网络上的某个位置，监听请求并发送响应。这些请求和响应都是无状态的并且对实时性要求非常非常低（当然有个快速的响应是非常重要的，但是如果不是这种情况也没什么关系）。因为无状态和请求/响应的频率非常低，所以具有非常良好的扩展性。但是多人在线游戏的服务器与这种网页服务器完全是不同的。它是以每秒60次的速度来对游戏世界的状态进行模拟。它是实时的并且有状态的，并且需要把所有的状态以每秒20次或者30次的频率下发给客户端。因为整个游戏世界有几千个物体，每个物体可能会有几百个状态，所以下发给客户端的状态可能是海量的。</p>
+<p>如果你使用文本格式(如XML或JSON)对这个游戏状态进行编码的话，有可能这种方法是非常低效的。</p>
+<p>让我们举个简单的例子，看下下面这个XML文档：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">world_update</span> <span class="attr">world_time</span>=<span class="string">“0.0”</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">object</span> <span class="attr">id</span>=<span class="string">“1”</span> <span class="attr">class</span>=<span class="string">“player”</span>&gt;</span></span><br><span class="line">    &lt;property name=“position” value=“(0,0,0)” &lt;=”” property=“”&gt;</span><br><span class="line">    &lt;property name=“orientation” value=“(1,0,0,0)” &lt;=”” property=“”&gt;</span><br><span class="line">    &lt;property name=“velocity” value=“(10,0,0)” &lt;=”” property=“”&gt;</span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">“health”</span> <span class="attr">value</span>=<span class="string">“100”</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">“weapon”</span> <span class="attr">value</span>=<span class="string">“110”</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    … 100s more properties per-object …</span><br><span class="line">   <span class="tag">&lt;/<span class="name">property</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span><span class="tag">&lt;/<span class="name">object</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">object</span> <span class="attr">id</span>=<span class="string">“100”</span> <span class="attr">class</span>=<span class="string">“grunt”</span>&gt;</span></span><br><span class="line">   &lt;property name=“position” value=“(100,100,0)” &lt;=”” property=“”&gt;</span><br><span class="line">   &lt;property name=“health” value=“10” &lt;=”” property=“”&gt;</span><br><span class="line"> <span class="tag">&lt;/<span class="name">property</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span><span class="tag">&lt;/<span class="name">object</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;<span class="name">object</span> <span class="attr">id</span>=<span class="string">“110”</span> <span class="attr">class</span>=<span class="string">“weapon”</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">type</span>=<span class="string">“semi-automatic”</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">ammo_in_clip</span>=<span class="string">“8”</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">   <span class="tag">&lt;<span class="name">property</span> <span class="attr">round_in_chamber</span>=<span class="string">“true”</span>&gt;</span><span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"> <span class="tag">&lt;/<span class="name">object</span>&gt;</span></span><br><span class="line"> … 1000s more objects …</span><br><span class="line"><span class="tag">&lt;/<span class="name">world_update</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>这看上去真的很让人讨厌。我们可以做得更好吗?当然。。。使用JSON来编码的话文本量可以少一些：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  “world_time”: 0.0,</span><br><span class="line">  “objects”: &#123;</span><br><span class="line">    1: &#123;</span><br><span class="line">      “class”: “player”,</span><br><span class="line">      “position”: “(0,0,0)”,</span><br><span class="line">      “orientation”: “(1,0,0,0)”,</span><br><span class="line">      “velocity”: “(10,0,0)”,</span><br><span class="line">      “health”: 100,</span><br><span class="line">      “weapon”: 110</span><br><span class="line">    &#125;</span><br><span class="line">    100: &#123;</span><br><span class="line">      “class”: “grunt”,</span><br><span class="line">      “position”: “(100,100,0)”,</span><br><span class="line">      “health”: 10</span><br><span class="line">    &#125;</span><br><span class="line">    110: &#123;</span><br><span class="line">      “class”: “weapon”,</span><br><span class="line">      “type: “semi-automatic“</span><br><span class="line">      “ammo_in_clip“: 8,</span><br><span class="line">      “round_in_chamber”: 1 </span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>但要注意的是描述数据的属性比实际要发送的数据还大。这糟透了。</p>
+<p>但是如果我们把数据分成两个部分呢?</p>
+<ol>
+<li>一个模式来描述物体类的几何以及每个类的属性。</li>
+<li>数据相对于该模式进行编码来快速下发给各个客户端。</li>
+</ol>
+<p>下面是JSON的一个模式。它只会被下发一次：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  “classes”: &#123;</span><br><span class="line">    0: “player” &#123;</span><br><span class="line">      “properties”: &#123;</span><br><span class="line">        0: &#123;</span><br><span class="line">          “name”: “position”,</span><br><span class="line">          “type”: “vec3f”</span><br><span class="line">        &#125;</span><br><span class="line">        1: &#123;</span><br><span class="line">          “name”: “orientation”,</span><br><span class="line">          “type”: “quat4f”</span><br><span class="line">        &#125;</span><br><span class="line">        2: &#123;</span><br><span class="line">          “name”: “velocity”,</span><br><span class="line">          “type”: “vec3f”</span><br><span class="line">        &#125;</span><br><span class="line">        3: &#123;</span><br><span class="line">          “name”: “health”,</span><br><span class="line">          “type”: “float”</span><br><span class="line">        &#125;</span><br><span class="line">        4: &#123;</span><br><span class="line">          “name”: “weapon”,</span><br><span class="line">          “type”: “object”, </span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    1: “grunt”: &#123;</span><br><span class="line">      “properties”: &#123;</span><br><span class="line">        0: &#123;</span><br><span class="line">          “name”: “position”,</span><br><span class="line">          “type”: “vec3f”</span><br><span class="line">        &#125;</span><br><span class="line">        1: &#123;</span><br><span class="line">          “name”: “health”,</span><br><span class="line">          “type”: “float”</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    2: “weapon”: &#123;</span><br><span class="line">      “properties”: &#123;</span><br><span class="line">        0: &#123;</span><br><span class="line">          “name”: “type”,</span><br><span class="line">          “type”: “enum”,</span><br><span class="line">          “enum_values”: [ “revolver”, “semi-automatic” ]</span><br><span class="line">        &#125;</span><br><span class="line">        1: &#123;</span><br><span class="line">          “name”: “ammo_in_clip”,</span><br><span class="line">          “type”: “integer”,</span><br><span class="line">          “range”: “0..9”,</span><br><span class="line">        &#125;</span><br><span class="line">        2: &#123;</span><br><span class="line">          “name”: “round_in_chamber”,</span><br><span class="line">          “type”: “integer”,</span><br><span class="line">          “range”: “0..1”</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;  </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在我们可以更加紧凑的进行状态更新(每秒进行20次或30次状态更新…)：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  “world_time”: 0.0,</span><br><span class="line">  “objects”: &#123;</span><br><span class="line">    1: [0,“(0,0,0)”,“(1,0,0,0)”,“(10,0,0)”,100,110],</span><br><span class="line">    100: [1,“(100,100,0)”,10],</span><br><span class="line">    110: [2,1,8,1]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这确实更好一点了。但是我们为什么不能直接下发一个简单的文本格式而没有任何废话吗?</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">0.0</span><br><span class="line">1:0,0,0,0,1,0,0,0,10,0,0,100,110</span><br><span class="line">100:1,100,100,0,10</span><br><span class="line">110:2,1,8,1</span><br></pre></td></tr></table></figure>
+<p>这比原来紧凑多了。当然它在没有模式的情况下是完全不可读的，但是这也是整个问题的所在。</p>
+<h2 id="文本格式存在的问题"><a href="#文本格式存在的问题" class="headerlink" title="文本格式存在的问题"></a>文本格式存在的问题</h2><p>我们确实取得了一些进展，但是我们仍然在使用文本格式，所以就继承了文本格式固有的低效。</p>
+<p>为什么？</p>
+<p>让我们以一个浮点数为例来分析这个问题。在二进制格式中一个浮点数需要占据4个字节，但是在文本格式下一个浮点数需要多的多的空间。让我们举个简单的例子：“3.141592653589793”一共用了17个字节（并没有包括终止符‘\0’）。当然你可以说让我们把这个浮点数缩短到6位有效数字的情况。但是就算我们这样处理了，所得到的“3.141593”所占据的空间仍然是二进制表示法的2倍大小。<br>更糟糕的是如果你有一个很大的表示位置的数值，比如”12134.534112”。 你仍然需要6位精度的准确性所以现在你需要使用12个字节来表示这个浮点数。而这样所占据的空间是二进制表示法的3倍大小。你还会为每一个‘,’分隔符浪费一个字节。</p>
+<p>我希望你能看到，在多人在线游戏中使用文本格式进行通信是完全不可行的。“但是格伦，整个互联网都是构建于文本格式之上的，为什么在多人在线游戏中使用文本格式进行通信完全不可行？”。恩，我认为这是那些创造互联网的人在这个过程中犯下的一些错误。(译注：原作者的这个结论下的太武断了，我觉得主要是因为互联网和游戏通信协议的面向对象不同，游戏通信协议面向的目标是非常特定而且固定的，这使得他们可以提前沟通到底以什么格式来传输协议，或者说不需要传输任何解读的标签就能够互相理解，而这种互相理解的基础是通过其他方式已经进行了沟通，但是互联网的通信则是完全不同的，它要非常的通用，兼顾更多的需求，而且根本就不知道是谁来解读这些信息，所以信息的可读性就非常非常的重要，因为我们没有其他的管道进行通信，只能凭借传输过去的信息本身来解读，所以互联网的协议才是设计成这样。)。可读性可能在这些早期协议很重要，但我可以向你保证，让人们很容易来阅读这些协议和修改你的游戏的网络协议正好是硬币的两面，根本没有办法兼得。</p>
+<p>而且因为带宽是非常关键的要素，并且你希望在每秒用尽可能少的比特数来传递尽可能多的游戏内容，所以你完全没有办法使用文本格式，必须切换成二进制格式。</p>
+<h2 id="切换成二进制格式"><a href="#切换成二进制格式" class="headerlink" title="切换成二进制格式"></a>切换成二进制格式</h2><p>在网络世界中存在一些用来读取和写入二进制格式的库，比如<a href="http://bjson.org/" target="_blank" rel="noopener">BJSON</a>,、<a href="https://developers.google.com/protocol-buffers/" target="_blank" rel="noopener">Protocol Buffers</a>、 <a href="https://google.github.io/flatbuffers/" target="_blank" rel="noopener">Flatbuffers</a>、 <a href="https://thrift.apache.org/" target="_blank" rel="noopener">Thrift</a>、 <a href="https://capnproto.org/" target="_blank" rel="noopener">Cap’n Proto</a> 和 <a href="http://msgpack.org/index.html" target="_blank" rel="noopener">MsgPack</a>。这几乎都是常识了。</p>
+<p>这些库其实都还不错。借助接口描述语言和一些代码生成工具的帮助能够读取和写入（这通常被称为序列化）你的游戏数据结构成为二进制格式，而这些二进制数据会在网络上进行传递。在网络的另外一侧，这些数据会被反序列化并且转换回原始的数据结构。</p>
+<p>使用二进制格式进行传说网络数据的优点有：1) 你不必自己动手写一个序列化层。2）这些库往往是语言无关的，所以你可以在程序的前端（也就是客户端）使用一种语言而在程序的后端（也就是服务端）使用另外一种语言，而在这种情况下手，程序的前端和程序的后端仍然是可以进行通信的。3)提供了版本信息，这样的话，如果你的客户端使用的是一个比较旧版本的协议，而服务器使用的是一个比较新版本的协议的话，它们仍然是可以进行通信的。反过来也是一样。</p>
+<p>这些库看上去很棒，但是它们是实现你的游戏的网络协议的一种很棒的方法么？</p>
+<p>其实情况并不总是如此。如果你有一个协议，这个协议是负责向网页服务器进行请求和接受响应，但是需要支持多种语言并且版本信息对你来说非常的重要，那么在这种情况下，因为有了可以支持这些功能的库的存在，你再自己去实现自己的带版本信息的序列化层和多语言支持就是一件特别傻的事情。如果你的游戏需要从一台机器上远程调用另外一台机器的函数。那么可能只用这些已有的库就是完全没问题的。。。</p>
+<p>但是在性能至关重要的网络通信的情况下，比如我们在这篇文章中讨论的这种情况（对于第一人称射击游戏游戏、动作游戏等等），游戏网络的基本单位是状态而不是远程函数调用。同时,跨语言支持二进制格式所能提供的好处很小，这是因为客户端和服务器通常情况下都是使用一种语言进行开发的（比如C++）。这些游戏也不需要复杂的版本信息和版本验证机制，因为如何客户端试图以一个不同的协议版本与服务器进行连接的话，那么服务器可以直接拒绝这个连接就好。有一种特别简单但是有效的办法可以解决版本的问题，就是绕过客户端永远用和服务器相同的协议版本进行连接。</p>
+<p>所以如果你的协议不是大部分使用远程函数调用的话，你其实根本就不需要版本信息，也不需要什么跨语言的支持，到底这么做有什么好处？从我的观点来看好处其实并不多。所以让我们直接忽略掉这些功能并用我们自己的不带属性的二进制流进行代替，在这个过程中我们可以获得更多的控制性和灵活性。</p>
+<h2 id="如何开始使用二进制格式"><a href="#如何开始使用二进制格式" class="headerlink" title="如何开始使用二进制格式"></a>如何开始使用二进制格式</h2><p>如果你在用C或C++对你的游戏进行编码，你可能想知道为什么不能直接使用memcpy（这是一个函数，可以直接进行内存拷贝, 将n字节长的内容从一个内存地址复制到另一个地址）把我的结构拷贝到数据包里面？很多人会经常从这里开始，因此尽管我不推荐这种方法，还是让我们看下这个方法，看看如果用这个方法来进行网络包传递的话会有哪些问题。</p>
+<p>首先要定义你的数据包的集合，通常情况下这是结构的”联合“（C语言的一种语法名字）：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Packet</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">enum</span> PacketTypeEnum &#123; PACKET_A, PACKET_B, PACKET_C &#125;;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">uint8_t</span> packetType;</span><br><span class="line">  </span><br><span class="line">    <span class="keyword">union</span></span><br><span class="line">    &#123;</span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">PacketA</span></span></span><br><span class="line"><span class="class">        &#123;</span></span><br><span class="line">            <span class="keyword">int</span> x,y,z;</span><br><span class="line">        &#125; a;</span><br><span class="line"> </span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">PacketB</span></span></span><br><span class="line"><span class="class">        &#123;</span></span><br><span class="line">            <span class="keyword">int</span> numElements;</span><br><span class="line">            <span class="keyword">int</span> elements[MaxElements];</span><br><span class="line">        &#125; b;</span><br><span class="line"> </span><br><span class="line">        <span class="class"><span class="keyword">struct</span> <span class="title">PacketC</span></span></span><br><span class="line"><span class="class">        &#123;</span></span><br><span class="line">            <span class="keyword">bool</span> x;</span><br><span class="line">            <span class="keyword">short</span> y;</span><br><span class="line">            <span class="keyword">int</span> z;</span><br><span class="line">        &#125; c;</span><br><span class="line">    &#125;; </span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>当对数据包进行写入的时候，设置数据包的第一个字节为数据包的类型（0或者1或者2）。然后依据数据包的类型，使用memcpy函数将合适的联合结构拷贝到数据包里面。在读取数据包的时候进行完全相反的操作：读取的数据包的第一个字节，然后根据数据包的类型就能判断出这个数据包还有多少字节没有读取。然后使用memcpy函数将数据包的数据拷贝到合适的联合结构里面。</p>
+<p>这种方法没有办法更加简化了，所以这就完了么？不完全是这样的！我不推荐这种方法，因为它有一些很讨厌的问题。</p>
+<p>首先，不同的编译器和平台对于数据结构的打包方式是完全不同的。如果你走这条路的话，你会花很多时间来使用#pragma来努力确保在不同平台的不同的编译器上布局结构在内存中使用完全相同的方式。让这种方式可以在32位和64位架构上都能顺利工作是一个很有“意思”的过程。这并不是说这是不可能的，但它肯定不是一件容易的事情。</p>
+<p>下一个比较大的问题是字节顺序。现代计算机大多是使用小端这种字节顺序（英特尔的中央处理器都是如此），但PowerPC的内核使用大端这种字节顺序。历史上的网络数据通过用大端这种字节顺序（网络字节顺序）来进行发送，但没有理由让你遵循这一传统。在我的代码里面，我使用的是小端这种字节顺序，这么做的原因是使用这个字节顺序在最常见的平台（英特尔）上在打包和解包中所要做的工作量最少。</p>
+<p>如果你需要支持使用小端字节顺序的机器和使用大端字节顺序的机器之间进行通信的话，只是使用memcpy函数来将结构体拷贝到数据包的方法根本行不通。你至少需要编写一个函数来在结构被读取以后对它的每个属性的字节顺序进行调整，然后才能顺利的读取和写入。</p>
+<p>还有一些其他的小问题。很显然，如果你的结构中包含指针，你不能直接把指针进行序列化然后在网络上进行传递然后期望在网络的另外一端反序列化这个指针以后，这个指针在那边还能够正常的使用。另外，如果你有可变大小的结构，比如说一个可以多达32个元素的数组，但是它在大多数时间里面都是空的或者只有很少一些元素，但是为了防止最差的情况你总是需要假设它有32个元素并且进行序列化和反序列化，这非常非常的浪费。一个更好的办法是让你可以对你的可变长度的结构进行编码，能够把长度信息编码到数据结构本身，这样在序列化和反序列化的时候都能妥善处理这个问题。</p>
+<p>我觉得真正影响这个方法的可用性的最后一个问题是安全性。如果使用这种方法，你相当于直接把整个C++结构中的数据包直接拷贝，然后在网络上进行发送。你到底在想什么？!!如果有人构造了一个恶意的数据包，并把这个包的长度标记为0xFFFFFFFF发送给你的话，这样你在处理这个数据包的时候，将导致你耗费尽所有的内存空间。</p>
+<p>这是一个巨大的安全风险，让你的原始数据直接在网络上进行传输并且选择相信这些在网络上接收到的数据。。你应该，至少，对这些值进行一个取值范围的检查，让这些值确保落在你期望的范围之内，而不是盲目的相信所有发送给你的数据。</p>
+<h2 id="读取和写入函数"><a href="#读取和写入函数" class="headerlink" title="读取和写入函数"></a>读取和写入函数</h2><p>这个复杂度导致的下一个问题就是每个数据包的读取和写入函数。让我们先从以下几个简单的操作开始：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">WriteInteger</span><span class="params">( Buffer &amp; buffer, <span class="keyword">uint32_t</span> value )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">WriteShort</span><span class="params">( Buffer &amp; buffer, <span class="keyword">uint16_t</span> value )</span></span>;</span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">WriteChar</span><span class="params">( Buffer &amp; buffer, <span class="keyword">uint8_t</span> value )</span></span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">uint32_t</span> ReadInteger( Buffer &amp; buffer );</span><br><span class="line"><span class="keyword">uint16_t</span> ReadShort( Buffer &amp; buffer );</span><br><span class="line"><span class="keyword">uint8_t</span> ReadByte( Buffer &amp; buffer );</span><br></pre></td></tr></table></figure>
+<p>这几个函数是对一个缓冲区结构进行操作，有点类似这样：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Buffer</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">uint8_t</span>  data;     <span class="comment">// pointer to buffer data</span></span><br><span class="line">    <span class="keyword">int</span> size;           <span class="comment">// size of buffer data (bytes)</span></span><br><span class="line">    <span class="keyword">int</span> index;          <span class="comment">// index of next byte to be read/written</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>举个简单的例子来说，写入整数的函数会像是如下这样：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">WriteInteger</span><span class="params">( Buffer &amp; buffer, <span class="keyword">uint32_t</span> value )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    assert( buffer.index + <span class="number">4</span> &lt;= size );</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> BIG_ENDIAN</span></span><br><span class="line">    ((<span class="keyword">uint32_t</span>)(buffer.data+buffer.index)) = bswap( value ); </span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span> <span class="comment">// #ifdef BIG_ENDIAN</span></span></span><br><span class="line">    ((<span class="keyword">uint32_t</span>)(buffer.data+buffer.index)) = value; </span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// #ifdef BIG_ENDIAN</span></span></span><br><span class="line">    buffer.index += <span class="number">4</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而读取整数的函数会像是如下这样：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">uint32_t</span> ReadInteger( Buffer &amp; buffer )</span><br><span class="line">&#123;</span><br><span class="line">    assert( buffer.index + <span class="number">4</span> &lt;= size );</span><br><span class="line">    <span class="keyword">uint32_t</span> value;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifdef</span> BIG_ENDIAN</span></span><br><span class="line">    value = bswap( ((<span class="keyword">uint32_t</span>)(buffer.data+buffer.index)) );</span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span> <span class="comment">// #ifdef BIG_ENDIAN</span></span></span><br><span class="line">    value = ((<span class="keyword">uint32_t</span>)(buffer.data+buffer.index));</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span> <span class="comment">// #ifdef BIG_ENDIAN</span></span></span><br><span class="line">    buffer.index += <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在就不仅仅是直接使用memcpy函数把内存中的数据结构直接拷贝到数据包里面，而是为每个数据包类型使用了单独的读取和写入函数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PacketA</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> x,y,z;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Write</span><span class="params">( Buffer &amp; buffer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        WriteInteger( buffer, x );</span><br><span class="line">        WriteInteger( buffer, y );</span><br><span class="line">        WriteInteger( buffer, z );</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Read</span><span class="params">( Buffer &amp; buffer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ReadInteger( buffer, x );</span><br><span class="line">        ReadInteger( buffer, y );</span><br><span class="line">        ReadInteger( buffer, z ); </span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PacketB</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> numElements;</span><br><span class="line">    <span class="keyword">int</span> elements[MaxElements];</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Write</span><span class="params">( Buffer &amp; buffer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        WriteInteger( buffer, numElements );</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">            WriteInteger( buffer, elements[i] );</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Read</span><span class="params">( Buffer &amp; buffer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ReadInteger( buffer, numElements );</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">            ReadInteger( buffer, elements[i] );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PacketC</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">bool</span> x;</span><br><span class="line">    <span class="keyword">short</span> y;</span><br><span class="line">    <span class="keyword">int</span> z;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Write</span><span class="params">( Buffer &amp; buffer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        WriteByte( buffer, x );</span><br><span class="line">        WriteShort( buffer, y );</span><br><span class="line">        WriteInt( buffer, z );</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Read</span><span class="params">( Buffer &amp; buffer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ReadByte( buffer, x );</span><br><span class="line">        ReadShort( buffer, y );</span><br><span class="line">        ReadInt( buffer, z );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>当对数据包进行读取和写入的时候，通过ReadByte / WriteByte函数来在数据包的数据之前加上一个字节，用来表明数据包的类型，然后根据数据包的类型，调用联合体里面对应数据包结构里面读取或者写入函数。<br>所以，现在我们有了一个简单的系统，允许使用不同的字节顺序的机器可以进行通信，并支持可变长度的编码。举个简单的例子来说，现在可以对数组的长度进行序列化并且只对存在的数据进行遍历和序列化，而不用像以前那样，总是要按照最坏情况来发送整个队列。</p>
+<h2 id="读取和写入函数存在的问题"><a href="#读取和写入函数存在的问题" class="headerlink" title="读取和写入函数存在的问题"></a>读取和写入函数存在的问题</h2><p>有了读取和写入函数，是相比较之前的memcpy方法进行数据包的打包和解包前进了一大步，但是这种方法也存在一些问题。让我们一起看下具体都有些什么问题。</p>
+<p>第一个存在的问题：如果有一个值，它的取值范围是【0，100】，那么它只需要10个比特就能表示所有可能的值，但是因为我们只能序列化一个字节的值【0，255】，一个short类型的整数【0,655325】或者是一个32比特的整数【0，2^32-1】，所以我们必须凑够16位。这样的话就浪费了6位！</p>
+<p>同样的，如果是一个布尔值（只有真和假两种情况）只需要一位就能表示，但是它们必须取整为一个字节，这就浪费了7位！现在你可以通过用C++结构来实现你的数据包以及对C++的位域进行序列化并使用一些联合方面的技巧来对这个值进行取整，但是你真的能保证两个完全不同的C ++编译器用完全相同的方式来在内存对位域进行打包？据我所知，应该是不可能的。</p>
+<p>第二个存在的问题：怀有恶意的人仍然可以构造一个恶意的数据包。举个简单的例子来说，让我们假设MaxElements是32，所以数据包PacketB的元素的数目肯定是在范围【0，32】之间。由于我们是在字节级别对数据包进行读取和吸入，所以元素的数目是存在一个字节里面，可能的取值范围是【0，255】。这导致字节里面【33,255】这个范围的值是完全没有定义的。</p>
+<p>如果有人构造了一个elementCount = 255的恶意的数据包，会发生什么？会发生内存崩溃！当然你可以手动设置一个阈值，对读入的数据的大小进行限制，或者手动对它们进行检查，如果出现问题就中止读取，但是你真正想要的一个知道每个要读取的域的最小/最大值到底是多少的系统，并且在任何数据包中对应的值如果超出预期的范围就会自动中止读取，这样在你的代码看到这些不合法的值之前，这些值就已经被丢弃了。<br>在我看来，最后一个存在的问题是，维护这些单独的读取和写入函数真的很让人讨厌。随着这些函数变得越来越复杂，它很容易对其中一个函数进行改变而忘记相应的改变另外一个函数（读取和写入函数是成对出现的，如果要改变一个的话，需要同时改变另外一个，要么就会出现问题，发送方和写入方根本就没法正确的得到数据包里面的信息）。导致之间的读写不同步。而这些不同步可能非常难以追查。</p>
+<p>我们要解决所有这些问题，但是首先我们要通过实现一个位打包器来朝这个方向努力，这样我们才不会继续浪费位来存储一些没必要的数据。</p>
+<h2 id="实现一个位打包器"><a href="#实现一个位打包器" class="headerlink" title="实现一个位打包器"></a>实现一个位打包器</h2><p>如果我们要在数据包写入一个布尔值的话，它应该只需要在数据包里面占据一个位的大小。如果我们要在数据包写入一个取值范围在【0，31】的值，它应该在数据包里面占据五个位的大小，而不是八个位的大小。如果我们要在数据包写入一个取值范围在【0，100000】的值，它应该在数据包里面占据十七位的大小，而不是二十四位的大小或者三十二位的大小。要做到这一点，我们需要写一个位打包器。</p>
+<p>很多人所写的位打包器是工作在字节这个级别上的，举个例子来说明的话就是他们会把生成的字节刷新到流里面，但是我不喜欢这种方法，因为如果它们是工作在word这个级别的话会快的多。我的目标是每次是写下很多word的时候（32位或者64位），然后每次读取32位或者64位，因为现代机器对这个长度进行了专门的优化而不应该像1985年那样在字节的级别对缓冲区进行处理。</p>
+<p>我的位打包技术的原理是类似这样的：如果你想在一次在数据包写入32位的话，你需要一个两倍大小的临时word，比如说uint64_t。如果你想在一次在数据包写入64位的话，你需要128位。这样做的原因是你需要整个区域的上半部分进行溢出，因为你可以只写一个30位大小的值到临时缓冲区，然后需要写入一个10位大小的值到临时缓冲区中。如果这个临时字的上半部分没有额外的空间的话，你需要额外的分支和逻辑来处理溢出情况。既然你想在位打包里面的循环里面产生尽可能少的分支，那么这种方法将有很大的意义。</p>
+<h2 id="以位来写入数据包"><a href="#以位来写入数据包" class="headerlink" title="以位来写入数据包"></a>以位来写入数据包</h2><p>对于位打包器的数据吸入，你需要一些缓冲区以及一个变量来记录目前在缓冲区里面的位的数目。在这个例子之中，让我们把字长选为32位，这样，位打包器的变量看上去就会像是这样：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint64_t</span> scratch;</span><br><span class="line"><span class="keyword">int</span> scratch_bits;</span><br><span class="line"><span class="keyword">int</span> word_index;</span><br><span class="line"><span class="keyword">uint32_t</span>  buffer;</span><br></pre></td></tr></table></figure>
+<p>当你开始启动你的位打包器进行写入的时候，所有这些变量都将被清零，缓冲区的指针会指向缓冲区的起始位置，这个指针用于数据包实际开始写入的位置指示。这个缓冲区的长度是以字节为单位的，必须要是4的整数倍，因为我们工作的字长是32位。</p>
+<p>比方说，我们要写入3位数据，然后是10位数据，再然后是24位数据。你的目标是在临时缓冲区对这块数据使用一个比较紧密的打包方式并把整理好的数据刷新到内存中去，一次是32位（一个字长）。需要注意的是3 + 10 + 24 = 37，这是故意设计的。你必须处理这种情况。</p>
+<p>在第一步中，向临时缓冲区写入3位数据就像下面这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxx</span><br></pre></td></tr></table></figure>
+<p>临时缓冲区的长度现在就是3位。</p>
+<p>接下来，向临时缓冲区写入10位数据就像下面这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yyyyyyyyyyxxx</span><br></pre></td></tr></table></figure>
+<p>临时缓冲区的长度现在就是13位（10+3）。<br>为什么要以这种方式进行打包而不是使用xxxyyyyyyyyyy这种方式？我用这种字节顺序写入的原因是因为我用小端字节顺序来存储网络数据。如果我没有按照这个方向对位数据进行存储的话，那么在发送数据包的时候我将不得不将数据包的大小对齐到下一个双字的长度那里，或者我只能对我的数据包的尾端进行截断。如果你想以大端字节顺序来发送刷新的数据的话，你应该按照另外一个方向对数据包的数据进行打包。</p>
+<p>接下来，向临时缓冲区写入24位数据就像下面这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zzzzzzzzzzzzzzzzzzzzzzzzyyyyyyyyyyxxx</span><br></pre></td></tr></table></figure>
+<p>临时缓冲区的长度现在就是37位（10+3+24）。我们正在跨越32位字的边界，并有5位会写入到uint64_t结构的上半32位中（所以这实际是一个溢出）。现在bit_index &gt;= 32，刷新低32位的数据到内存中去，并对word_index加1，然后从临时缓冲区的长度减去32并向对临时缓冲区向右偏移32位。</p>
+<p>临时缓冲区现在看上去就像是下面这样：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zzzzz</span><br></pre></td></tr></table></figure>
+<p>我们可以继续下去，但是我们决定在停下来对这一点进行解释。我们必须在整个数据包的最后放置的是一个32位的字。对字这个级别进行处理的位打包器的一个微妙的一点是你需要在整体写入的最后进行一个刷新处理，这样才能保证最后的这些位会写入到内存中去。当我们把一个字刷新到内存中去的时候，我们要确保这个字会被正确的转换成小端字节顺序。举个简单的例子来说：ＡＢＣＤ当被写入内存中的时候需要被有效的转换成ＤＣＢＡ这个顺序。如果要想明白为什么这种做法非常重要，需要考虑下如果我们用大端字节顺序来把字刷新到内存中去会发生什么事情？最后一个字会截断，因为这个字会以在整数相同的字节顺序写入到内存中去。因为我们会把开始的那些位写到字的低的那个字节中去，我们的内存中的顺序看上去是这样的：对于刚才那串比特值，写入内存的时候会是ＡＢＣＤＥ这个顺序。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">DCBA000E</span><br></pre></td></tr></table></figure>
+<p>现在，如果我们尝试以５个字节的大小来用一个数据包来发送缓冲区（我们要发送的数据的实际大小）它捕获的最后一个字节会是０而不是Ｅ。（作者在这里打了一个笑脸）。</p>
+<p>但是，当我们以小端这种字节顺序把上面的内容写入内存的时候，字节在内存中的布局是这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ABCDE000</span><br></pre></td></tr></table></figure>
+<p>我们可以只在网络上写5个字节，这样就节省了3个字节，并且仍然是以Ｅ来作为数据包的结尾。</p>
+<p>实际上，我们所做的是开关字周围的字节，因为我们通过这种方法进行构造来避免小端字节顺序的重新排序，所以我们希望是以它们在内存中的顺序直接写入到网络的数据包中，字节顺序是很难处理的。</p>
+<p>其代码类似于 ：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BitWriter</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">    BitWriter( <span class="keyword">void</span>* data, <span class="keyword">int</span> bytes ) </span><br><span class="line">        : m_data( (<span class="keyword">uint32_t</span>*)data ), m_numWords( bytes / <span class="number">4</span> )</span><br><span class="line">    &#123;</span><br><span class="line">        assert( data );</span><br><span class="line">        assert( ( bytes % <span class="number">4</span> ) == <span class="number">0</span> );           <span class="comment">// buffer size must be a multiple of four</span></span><br><span class="line">        m_numBits = m_numWords * <span class="number">32</span>;</span><br><span class="line">        m_bitsWritten = <span class="number">0</span>;</span><br><span class="line">        m_wordIndex = <span class="number">0</span>;</span><br><span class="line">        m_scratch = <span class="number">0</span>;</span><br><span class="line">        m_scratchBits = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">WriteBits</span><span class="params">( <span class="keyword">uint32_t</span> value, <span class="keyword">int</span> bits )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        assert( bits &gt; <span class="number">0</span> );</span><br><span class="line">        assert( bits &lt;= <span class="number">32</span> );</span><br><span class="line">        assert( m_bitsWritten + bits &lt;= m_numBits );</span><br><span class="line"></span><br><span class="line">        value &amp;= ( <span class="keyword">uint64_t</span>(<span class="number">1</span>) &lt;&lt; bits ) - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">        m_scratch |= <span class="keyword">uint64_t</span>( value ) &lt;&lt; m_scratchBits;</span><br><span class="line"></span><br><span class="line">        m_scratchBits += bits;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ( m_scratchBits &gt;= <span class="number">32</span> )</span><br><span class="line">        &#123;</span><br><span class="line">            assert( m_wordIndex &lt; m_numWords );</span><br><span class="line">            m_data[m_wordIndex] = host_to_network( <span class="keyword">uint32_t</span>( m_scratch &amp; <span class="number">0xFFFFFFFF</span> ) );</span><br><span class="line">            m_scratch &gt;&gt;= <span class="number">32</span>;</span><br><span class="line">            m_scratchBits -= <span class="number">32</span>;</span><br><span class="line">            m_wordIndex++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        m_bitsWritten += bits;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">WriteAlign</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">int</span> remainderBits = m_bitsWritten % <span class="number">8</span>;</span><br><span class="line">        <span class="keyword">if</span> ( remainderBits != <span class="number">0</span> )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">uint32_t</span> zero = <span class="number">0</span>;</span><br><span class="line">            WriteBits( zero, <span class="number">8</span> - remainderBits );</span><br><span class="line">            assert( ( m_bitsWritten % <span class="number">8</span> ) == <span class="number">0</span> );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">WriteBytes</span><span class="params">( <span class="keyword">const</span> <span class="keyword">uint8_t</span>* data, <span class="keyword">int</span> bytes )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        assert( GetAlignBits() == <span class="number">0</span> );</span><br><span class="line">        assert( m_bitsWritten + bytes * <span class="number">8</span> &lt;= m_numBits );</span><br><span class="line">        assert( ( m_bitsWritten % <span class="number">32</span> ) == <span class="number">0</span> || ( m_bitsWritten % <span class="number">32</span> ) == <span class="number">8</span> || ( m_bitsWritten % <span class="number">32</span> ) == <span class="number">16</span> || ( m_bitsWritten % <span class="number">32</span> ) == <span class="number">24</span> );</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> headBytes = ( <span class="number">4</span> - ( m_bitsWritten % <span class="number">32</span> ) / <span class="number">8</span> ) % <span class="number">4</span>;</span><br><span class="line">        <span class="keyword">if</span> ( headBytes &gt; bytes )</span><br><span class="line">            headBytes = bytes;</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; headBytes; ++i )</span><br><span class="line">            WriteBits( data[i], <span class="number">8</span> );</span><br><span class="line">        <span class="keyword">if</span> ( headBytes == bytes )</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">        FlushBits();</span><br><span class="line"></span><br><span class="line">        assert( GetAlignBits() == <span class="number">0</span> );</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> numWords = ( bytes - headBytes ) / <span class="number">4</span>;</span><br><span class="line">        <span class="keyword">if</span> ( numWords &gt; <span class="number">0</span> )</span><br><span class="line">        &#123;</span><br><span class="line">            assert( ( m_bitsWritten % <span class="number">32</span> ) == <span class="number">0</span> );</span><br><span class="line">            <span class="built_in">memcpy</span>( &amp;m_data[m_wordIndex], data + headBytes, numWords * <span class="number">4</span> );</span><br><span class="line">            m_bitsWritten += numWords * <span class="number">32</span>;</span><br><span class="line">            m_wordIndex += numWords;</span><br><span class="line">            m_scratch = <span class="number">0</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        assert( GetAlignBits() == <span class="number">0</span> );</span><br><span class="line"></span><br><span class="line">        <span class="keyword">int</span> tailStart = headBytes + numWords * <span class="number">4</span>;</span><br><span class="line">        <span class="keyword">int</span> tailBytes = bytes - tailStart;</span><br><span class="line">        assert( tailBytes &gt;= <span class="number">0</span> &amp;&amp; tailBytes &lt; <span class="number">4</span> );</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; tailBytes; ++i )</span><br><span class="line">            WriteBits( data[tailStart+i], <span class="number">8</span> );</span><br><span class="line"></span><br><span class="line">        assert( GetAlignBits() == <span class="number">0</span> );</span><br><span class="line"></span><br><span class="line">        assert( headBytes + numWords * <span class="number">4</span> + tailBytes == bytes );</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">FlushBits</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> ( m_scratchBits != <span class="number">0</span> )</span><br><span class="line">        &#123;</span><br><span class="line">            assert( m_wordIndex &lt; m_numWords );</span><br><span class="line">            m_data[m_wordIndex] = host_to_network( <span class="keyword">uint32_t</span>( m_scratch &amp; <span class="number">0xFFFFFFFF</span> ) );</span><br><span class="line">            m_scratch &gt;&gt;= <span class="number">32</span>;</span><br><span class="line">            m_scratchBits -= <span class="number">32</span>;</span><br><span class="line">            m_wordIndex++;                </span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">GetAlignBits</span><span class="params">()</span> <span class="keyword">const</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ( <span class="number">8</span> - ( m_bitsWritten % <span class="number">8</span> ) ) % <span class="number">8</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">GetBitsWritten</span><span class="params">()</span> <span class="keyword">const</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> m_bitsWritten;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">GetBitsAvailable</span><span class="params">()</span> <span class="keyword">const</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> m_numBits - m_bitsWritten;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">const</span> uint8_t* <span class="title">GetData</span><span class="params">()</span> <span class="keyword">const</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> (<span class="keyword">uint8_t</span>*) m_data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">GetBytesWritten</span><span class="params">()</span> <span class="keyword">const</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> ( m_bitsWritten + <span class="number">7</span> ) / <span class="number">8</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">GetTotalBytes</span><span class="params">()</span> <span class="keyword">const</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> m_numWords * <span class="number">4</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line"></span><br><span class="line">    <span class="keyword">uint32_t</span>* m_data;</span><br><span class="line">    <span class="keyword">uint64_t</span> m_scratch;</span><br><span class="line">    <span class="keyword">int</span> m_numBits;</span><br><span class="line">    <span class="keyword">int</span> m_numWords;</span><br><span class="line">    <span class="keyword">int</span> m_bitsWritten;</span><br><span class="line">    <span class="keyword">int</span> m_wordIndex;</span><br><span class="line">    <span class="keyword">int</span> m_scratchBits;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="以位来读取数据包"><a href="#以位来读取数据包" class="headerlink" title="以位来读取数据包"></a>以位来读取数据包</h2><p>我们该如何在网络的另外一侧读取已经通过位打包器打包好的数据？</p>
+<p>要我们从要在网络上进行发送的缓冲区开始，假设我们刚刚从recvfrom.函数返回。它里面的内容有５位这么长。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ABCDE</span><br></pre></td></tr></table></figure>
+<p>因为我们是按照字这个等级进行读取，我们必须要把数据的长度截断到双字这个长度，比如说８个字节：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ABCDE000</span><br></pre></td></tr></table></figure>
+<p>现在，这里有一点很微妙的地方。当我在网络上发送一个数据包的时候，我真的不知道它到底包含了多少位的数据（否则的话我将不得不将这个数据包的大小直接记录在数据包的包头里面），而且这是一个带宽的浪费。但是通过在网络的另外一侧使用recvfrom函数我确实知道到底这个数据包的内容的长度是多少，因此当５个字节大小的数据包从网络上到达的时候，我可以直接认为缓冲区中的位的大小是数据包字节大小乘以８。因此，实际上，位读取器认为这个分组中要被读取的比特数为5 <em>8 = 40</em>，而不是37。</p>
+<p>你真的想在这里做的事情是确保如果位读取器读取的位置已经超过缓冲区实际位数的结尾，在这个例子中，就是发送的３７位数据，那么它将读取的是零而不是未定义数据。这会自动发生在数据包最后一个字节的最后3位上，因为它们是由位写入器写入的零，但是对于在缓冲区中的最后3个比特你必须确保它们被读为零，以及未来的任何可能位的读取也是返回零。这是一个非常重要的安全步骤以防止你读取的时候超过缓冲区或者数据流的结尾。</p>
+<p>现在让我们开始吧。你将在位读取器里面有如下这些变量：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">uint64_t</span> scratch;</span><br><span class="line"><span class="keyword">int</span> scratch_bits;</span><br><span class="line"><span class="keyword">int</span> total_bits;</span><br><span class="line"><span class="keyword">int</span> num_bits_read;</span><br><span class="line"><span class="keyword">int</span> word_index;</span><br><span class="line"><span class="keyword">uint32_t</span>  buffer;</span><br></pre></td></tr></table></figure>
+<p>这比位写入器要复杂一些，因为你需要做更多的检测。但是请记住，永远不要相信来自客户端的数据。</p>
+<p>要开始进行读取的时候，字的序号是０，临时缓冲区的内容和临时缓冲区的位数都是０。</p>
+<p>然后用户请求３位的空间。因为临时缓冲区的位数现在是０，现在是时候来读取第一个字了。读取第一个字然后把它放到临时缓冲区，并对临时缓冲区的位数（目前是0）向右进行偏移。把临时缓冲区的位数添加32。</p>
+<p>现在通过把临时缓冲区的内容拷贝到另外一个变量里面来读取前面的3位并通过&amp; ( (1&lt;&lt;3 ) – 1 )进行遮罩处理，来给出最后输出的结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">xxx</span><br></pre></td></tr></table></figure>
+<p>现在将临时缓冲区的内容向右偏移3位，并从临时缓冲区的位数中减去3：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zzzzzzzzzzzzzzzzzzzyyyyyyyyyy</span><br></pre></td></tr></table></figure>
+<p>现在用完全相同的办法读取后面的10位。临时缓冲区看上去就是下面这样的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zzzzzzzzzzzzzzzzzzz</span><br></pre></td></tr></table></figure>
+<p>恩。接下来的读取调用请求24位数据的内容，但是临时缓冲区的位数只有19了（19 = 32-10-3 ）。。。现在是时候来读取下一个字了。这个字多半是零因为我们已经对它们进行了清除，但是它还有多余的5位我们需要在接下来进行读取。现在我们准备读取临时缓冲区里面有关z的比特位了：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">zzzzzzzzzzzzzzzzzzzzzzzz</span><br></pre></td></tr></table></figure>
+<p>接下来读取24位并向右位移24位。临时缓冲区现在全部都是0了。</p>
+<p>理论上位读取器认为还有27位数据留在缓冲区没有进行读取，如果我们继续进行读取的话，这些位会被作为零弹出来，因为最后一个字节的前3位是零，并且我们把临时缓冲区的最后3个字节全部清位0，因为我们为了按照字进行对齐。（为了对齐，所以填充了3个全部是0的字节。所以位读取器这时候看的话还有3个完整的字节没有读。）</p>
+<p>但是让我们假设，由于某种原因，越过了这个点以后用户还是一直尝试进行读取。为了处理这种情况，检查缓冲区中你需要读取的字的数目，以及每次你需要从缓冲区实际读取的字的情况。如果你已经读完了要读的字以后，不要继续增加word_index并继续读取数据这会让你的内存崩溃的，给你的缓冲区填充0来对齐并在缓冲区的位数添加32在每次给缓冲区的末尾添加一个新的字的情况下。通过这种方法，在读取位数的每次内部循环调用的时候能确保分支最后总是返回零，并把它放在你每次需要读取一个新字的地方，但是你读取的位置已经超过了缓冲区结尾的地方你仍然是安全的并且返回0个比特。</p>
+<p>这似乎有点过于谨慎了，但是在对网络数据进行读取的时候这种谨慎是特别重要的。这是通过网络传输过来的数据。不要相信它们！如果你的读取和写入是不同步的，或者有人给你发送了一个恶意的缓冲区数据，你可能会被困在一个循环里面并不断尝试读取数据。确保内部循环里面所有的遍历里面的读取都会检测缓冲区是否溢出或者有损坏，如果用户读取的位置已经超出了缓冲区的结尾这种策略总是返回定义的值（0），通过这种行为你可以确保大多数情况都是符合预期的。</p>
+<p>其代码类似于：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BitReader</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">    <span class="comment">// ...</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">uint32_t</span> ReadBits( <span class="keyword">int</span> bits )</span><br><span class="line">    &#123;</span><br><span class="line">        assert( bits &gt; <span class="number">0</span> );</span><br><span class="line">        assert( bits &lt;= <span class="number">32</span> );</span><br><span class="line">        assert( m_bitsRead + bits &lt;= m_numBits );</span><br><span class="line"></span><br><span class="line">        m_bitsRead += bits;</span><br><span class="line"></span><br><span class="line">        assert( m_scratchBits &gt;= <span class="number">0</span> &amp;&amp; m_scratchBits &lt;= <span class="number">64</span> );</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> ( m_scratchBits &lt; bits )</span><br><span class="line">        &#123;</span><br><span class="line">            assert( m_wordIndex &lt; m_numWords );</span><br><span class="line">            m_scratch |= <span class="keyword">uint64_t</span>( network_to_host( m_data[m_wordIndex] ) ) &lt;&lt; m_scratchBits;</span><br><span class="line">            m_scratchBits += <span class="number">32</span>;</span><br><span class="line">            m_wordIndex++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        assert( m_scratchBits &gt;= bits );</span><br><span class="line"></span><br><span class="line">        <span class="keyword">const</span> <span class="keyword">uint32_t</span> output = m_scratch &amp; ( (<span class="keyword">uint64_t</span>(<span class="number">1</span>)&lt;&lt;bits) - <span class="number">1</span> );</span><br><span class="line"></span><br><span class="line">        m_scratch &gt;&gt;= bits;</span><br><span class="line">        m_scratchBits -= bits;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> output;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="如何使位打包器更棒"><a href="#如何使位打包器更棒" class="headerlink" title="如何使位打包器更棒"></a>如何使位打包器更棒</h2><p>位打包器这种方法非常的棒，但是直接用于读取和写入数据包时，这并不是最有用的方法。我见过有团队直接使用位打包器进行读取和写入数据包，但是这并不是最佳的方法。你会拥有很多复杂的代码，并且非常容易出错。</p>
+<p>让我们一起看下这个例子：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxElements = <span class="number">32</span>;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PacketB</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> numElements;</span><br><span class="line">    <span class="keyword">int</span> elements[MaxElements];</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Write</span><span class="params">( BitWriter &amp; writer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        WriteBits( writer, numElements, <span class="number">6</span> );</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">            WriteBits( writer, elements[i] );</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Read</span><span class="params">( BitReader &amp; reader )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ReadBits( reader, numElements, <span class="number">6</span> );</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">            ReadBits( reader, elements[i] );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>第一种方法很容易出错，让我们假设在一段时间以后，你把MaxElements的值从32提高到100，但是你没有修改需要序列化的比特的数目，也就是需要序列化的比特的数目还是6（注意看WriteBits( writer, numElements, 6 )的6， 现在需要7了）。哎呦。因为你忘记了在读取和写入函数里面更新比特的数目，那么现在当你在发送数据的时候你会把高位进行截断。事后追查这样的事情是相当困难的。让我们通过增加一些编译时候的检测来计算出所需要的比特的位数：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">uint32_t</span> x&gt; <span class="class"><span class="keyword">struct</span> <span class="title">PopCount</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">enum</span> &#123; a = x - ( ( x &gt;&gt; <span class="number">1</span> ) &amp; <span class="number">0x55555555</span> ),</span><br><span class="line">           b = ( ( ( a &gt;&gt; <span class="number">2</span> ) &amp; <span class="number">0x33333333</span> ) + ( a &amp; <span class="number">0x33333333</span> ) ),</span><br><span class="line">           c = ( ( ( b &gt;&gt; <span class="number">4</span> ) + b ) &amp; <span class="number">0x0f0f0f0f</span> ),</span><br><span class="line">           d = c + ( c &gt;&gt; <span class="number">8</span> ),</span><br><span class="line">           e = d + ( d &gt;&gt; <span class="number">16</span> ),</span><br><span class="line">    result = e &amp; <span class="number">0x0000003f</span> &#125;; </span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">uint32_t</span> x&gt; <span class="class"><span class="keyword">struct</span> <span class="title">Log2</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">enum</span> &#123; a = x | ( x &gt;&gt; <span class="number">1</span> ),</span><br><span class="line">           b = a | ( a &gt;&gt; <span class="number">2</span> ),</span><br><span class="line">           c = b | ( b &gt;&gt; <span class="number">4</span> ),</span><br><span class="line">           d = c | ( c &gt;&gt; <span class="number">8</span> ),</span><br><span class="line">           e = d | ( d &gt;&gt; <span class="number">16</span> ),</span><br><span class="line">           f = e &gt;&gt; <span class="number">1</span>,</span><br><span class="line">    result = PopCount&lt;f&gt;::result &#125;;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">int64_t</span> min, <span class="keyword">int64_t</span> max&gt; <span class="class"><span class="keyword">struct</span> <span class="title">BitsRequired</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">const</span> <span class="keyword">uint32_t</span> result = </span><br><span class="line">        ( min == max ) ? <span class="number">0</span> : ( Log2&lt;<span class="keyword">uint32_t</span>(max-min)&gt;::result + <span class="number">1</span> );</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> BITS_REQUIRED( min, max ) BitsRequired<span class="meta-string">&lt;min,max&gt;::result</span></span></span><br></pre></td></tr></table></figure>
+<p>哦，太好了。模板元编程和宏。感谢格伦！</p>
+<p>但是这么做真的真棒，相信我！因为你现在没有办法弄乱需要的比特的数目了：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxElements = <span class="number">32</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxElementBits = BITS_REQUIRED( <span class="number">0</span>, MaxElements ); </span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PacketB</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">int</span> numElements;</span><br><span class="line">    <span class="keyword">int</span> elements[MaxElements]; </span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Write</span><span class="params">( BitWriter &amp; writer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line"> </span><br><span class="line">        WriteBits( writer, numElements, MaxElementBits );</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">            WriteBits( writer, elements[i], <span class="number">32</span> );</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Read</span><span class="params">( BitReader &amp; reader )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line"> </span><br><span class="line">        ReadBits( reader, numElements, MaxElementBits );</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">            ReadBits( buffer, elements[i], <span class="number">32</span> );</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>当然现在也有机会犯错。MaxElements的值是32所以BITS_REQUIRED(0,32) 返回的是6，因为5比特所能得到的取值范围只有【0，31】。这没什么问题，但是现在我们有概率把未定义的值进行插入，如果有一个恶意发送者发送了一个取值范围在【33,63】之间的值的话。当你在长度为32的数组里面读入63个整数的时候会发生什么？当然，你可以对取值范围进行限制来修正这个问题，但是仔细想想。。。如果你从位读取器得到了一个值但是它超出了取值范围，你要么就是让读取和写入操作完全不同步（这显然是你自己的错误）或者有人试图坑你。所以，不要对取值范围进行限制。如果遇到这种情况，直接停止对数据包的读取并且丢弃这个数据包。我还想在这里提到一个陷阱，因为这个陷阱看上去很方便，但是其实它会让代码运行的很慢。我有一次使用异常实现了数据包的读取中断。它看上去很棒，因为在一个递归的位打包器读取函数里面你可能会有28层调用堆栈，而你想要做的不过是展开堆栈然后回到数据包读取函数调用的地方，但是异常真的太慢太慢了。为了取代异常，有两种方法可以运行的快得多：1)在位读取器那里设置一个值表明这个数据包应该被丢弃，2）升级数据包的读取函数让它在读取失败的时候返回false。但是现在，你可以使用这里面的任意一种方法，为了实现读取时候的安全性，你需要检测上面说的标记或者在每一次读取的时候返回一个值，否则如果遇到读取失败的情况，你还是会一直继续读取直到把内存全部耗光。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxElements = <span class="number">32</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxElementBits = BITS_REQUIRED( <span class="number">0</span>, MaxElements );</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PacketB</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> numElements;</span><br><span class="line">    <span class="keyword">int</span> elements[MaxElements];</span><br><span class="line">  </span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Write</span><span class="params">( BitWriter &amp; writer )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        WriteBits( writer, numElements, MaxElementBits );</span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">            WriteBits( writer, elements[i], <span class="number">32</span> );</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">Read</span><span class="params">( BitReader &amp; reader )</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        ReadBits( reader, numElements, MaxElementBits );</span><br><span class="line">        <span class="keyword">if</span> ( numElements &gt; MaxElements )</span><br><span class="line">        &#123;</span><br><span class="line">            reader.Abort();</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numElements; ++i )</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> ( reader.IsOverflow() )</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line"> </span><br><span class="line">            ReadBits( buffer, elements[i], <span class="number">32</span> );</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>但是这么做了以后，整个读取函数就开始变得非常的复杂，而且如果有什么地方你漏过了这些检查的话，你就把自己置于缓冲区溢出和无线循环这种危险的境地。你不会希望在写数据包读取函数的时候全部变成一个手动的过程，你肯定是希望这个过程是自动化的。因为这给了程序员太多犯错误的机会。</p>
+<p>请继续关注下一篇文，在那篇文章里面我将向你展现如何使用C++来用非常简洁的方式实现。</p>
+<p><strong>这个系列的下一篇文章是《序列化策略》。</strong></p>
+<p>在这个系列的下一篇文章，我将向你展示如何将读取和写入函数统一到一个单独的序列化函数里面，它可以在不增加任何运行时损耗的情况同时处理读取和写入。</p>
+<p>如果你觉得这篇文章有价值的话，请在patreon上支持我的写作，这样我会写的更快。你可以在BSD 3.0许可下访问到这篇文章里面的代码。非常感谢你的支持！</p>
+<p>【版权声明】</p>
+<p>原文作者未做权利声明，视为共享知识产权进入公共领域，自动获得授权。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/GafferOnGames/" rel="tag"><i class="fa fa-tag"></i> GafferOnGames</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/05/20/网络物理模拟六之状态同步/" rel="next" title="网络物理模拟六之状态同步">
+                <i class="fa fa-chevron-left"></i> 网络物理模拟六之状态同步
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/20/构建游戏网络协议二之序列化策略/" rel="prev" title="构建游戏网络协议二之序列化策略">
+                构建游戏网络协议二之序列化策略 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lumieru</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#自我总结"><span class="nav-number">1.</span> <span class="nav-text">自我总结</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#原文"><span class="nav-number">2.</span> <span class="nav-text">原文</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">2.1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Background"><span class="nav-number">2.2.</span> <span class="nav-text">Background</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-Inefficiencies-of-Text"><span class="nav-number">2.3.</span> <span class="nav-text">The Inefficiencies of Text</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Switching-to-a-Binary-Format"><span class="nav-number">2.4.</span> <span class="nav-text">Switching to a Binary Format</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Getting-Started-with-a-Binary-Format"><span class="nav-number">2.5.</span> <span class="nav-text">Getting Started with a Binary Format</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Read-and-Write-Functions"><span class="nav-number">2.6.</span> <span class="nav-text">Read and Write Functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Bitpacking"><span class="nav-number">2.7.</span> <span class="nav-text">Bitpacking</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Writing-Bits"><span class="nav-number">2.8.</span> <span class="nav-text">Writing Bits</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Reading-Bits"><span class="nav-number">2.9.</span> <span class="nav-text">Reading Bits</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Beyond-Bitpacking"><span class="nav-number">2.10.</span> <span class="nav-text">Beyond Bitpacking</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#译文"><span class="nav-number">3.</span> <span class="nav-text">译文</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#导论"><span class="nav-number">3.1.</span> <span class="nav-text">导论</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#对数据包的读取和写入"><span class="nav-number">3.2.</span> <span class="nav-text">对数据包的读取和写入</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#文本格式存在的问题"><span class="nav-number">3.3.</span> <span class="nav-text">文本格式存在的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#切换成二进制格式"><span class="nav-number">3.4.</span> <span class="nav-text">切换成二进制格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何开始使用二进制格式"><span class="nav-number">3.5.</span> <span class="nav-text">如何开始使用二进制格式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读取和写入函数"><span class="nav-number">3.6.</span> <span class="nav-text">读取和写入函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#读取和写入函数存在的问题"><span class="nav-number">3.7.</span> <span class="nav-text">读取和写入函数存在的问题</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现一个位打包器"><span class="nav-number">3.8.</span> <span class="nav-text">实现一个位打包器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#以位来写入数据包"><span class="nav-number">3.9.</span> <span class="nav-text">以位来写入数据包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#以位来读取数据包"><span class="nav-number">3.10.</span> <span class="nav-text">以位来读取数据包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何使位打包器更棒"><span class="nav-number">3.11.</span> <span class="nav-text">如何使位打包器更棒</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lumieru</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.1"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('复制成功');
+        else $(this).text('复制失败');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,3467 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta property="og:type" content="website">
+<meta property="og:title" content="Lumieru的知识库">
+<meta property="og:url" content="https://lumieru.github.io/index.html">
+<meta property="og:site_name" content="Lumieru的知识库">
+<meta property="og:locale" content="zh-CN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Lumieru的知识库">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://lumieru.github.io/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Lumieru的知识库</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left 
+  page-home">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lumieru的知识库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home menu-item-active">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+  <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/22/KBEngine源码解读二组件互联/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/22/KBEngine源码解读二组件互联/" class="post-title-link" itemprop="url">KBEngine源码解读二组件互联</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-22 17:12:04 / 修改时间：17:21:29" itemprop="dateCreated datePublished" datetime="2019-06-22T17:12:04+08:00">2019-06-22</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="server-Components"><a href="#server-Components" class="headerlink" title="server/Components"></a>server/Components</h2><p>组件在互相发现的时候用的是UDP广播，找到对应组件知道其IP和Port后，用TCP来建立并保持连接。</p>
+<p>machine组件会监听20086端口，然后其他组件都会往这个端口广播自己的信息（RPC调用<code>MachineInterface::onBroadcastInterface</code>函数）。<br>然后machine收到信息后会判断有效性（有没有和其他组件用了相同的设置），如果无效会发回一个无效的通知给该组件，然后该组件就会退出。<br>如果有效的则，machine会记录和自己同一台物理机上的组件到自己的组件列表中（不同物理机的组件会被忽略掉）。</p>
+<p>然后组件会有一个需要找的组件的类型的列表，对于每种类型，它都会广播<code>MachineInterface::onFindInterfaceAddr</code>这个消息到machine。<br>machine收到这个消息后，会把已经注册过的本地同类型组件发回给该组件。如果没有找到对应的类型，会定时到下一个循环继续找，直到找到自己<br>感兴趣的所有类型的组件为止。</p>
+<p>external port和telnet的port都是通过配置文件指定好的，internal port传的零，就是让系统决定一个可用的随机端口，bind成功后在用<code>getsockname()</code>得到具体的端口。</p>
+<p>下面是每个组件感兴趣的列表:</p>
+<table>
+<thead>
+<tr>
+<th>组件类型</th>
+<th>感兴趣的类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cell app</td>
+<td>logger, dbmgr, cellAppMgr, baseAppMgr</td>
+</tr>
+<tr>
+<td>Base app</td>
+<td>logger, dbmgr, baseAppMgr, cellAppMgr</td>
+</tr>
+<tr>
+<td>Base app mgr</td>
+<td>logger, dbmgr, cellAppMgr</td>
+</tr>
+<tr>
+<td>Cell app mgr</td>
+<td>logger, dbmgr, baseAppMgr</td>
+</tr>
+<tr>
+<td>db mgr</td>
+<td>logger</td>
+</tr>
+</tbody>
+</table>
+<p>在连接其他组件时，会调用被连接组件的<code>XXX::onRegisterNewApp</code>函数。当baseApp或者cellApp连接<code>Dbmgr</code>时，同样会调用<code>Dbmgr::onRegisterNewApp</code>。<br>在这个函数中，如果连接者是baseApp或者cellApp，那么就会将自己注册到所有其他baseapp和cellapp中。主要是通过遍历已经注册在Dbmgr中的其他baseapp和cellapp，<br>然后RPC调用相应的<code>onGetEntityAppFromDbmgr</code>。在被调用的<code>onGetEntityAppFromDbmgr</code>中，被调用者会去连接当前组件。这样就能让所有的baseApp和cellApp互相连接了。</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/06/22/KBEngine源码解读二组件互联/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/14/KBEngine源码解读一/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/14/KBEngine源码解读一/" class="post-title-link" itemprop="url">KBEngine源码解读一</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-14 16:31:27" itemprop="dateCreated datePublished" datetime="2019-06-14T16:31:27+08:00">2019-06-14</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="一-libs-common部分"><a href="#一-libs-common部分" class="headerlink" title="一. libs/common部分"></a>一. libs/common部分</h2><p><strong>MemoryStream：</strong></p>
+<p>将常用数据类型二进制序列化与反序列化，内部封装了一个<code>std::vector&lt;uint8&gt;</code>。使用方法:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">MemoryStream stream; </span><br><span class="line">stream &lt;&lt; (int64)<span class="number">100000000</span>;</span><br><span class="line">stream &lt;&lt; (uint8)<span class="number">1</span>;</span><br><span class="line">stream &lt;&lt; (uint8)<span class="number">32</span>;</span><br><span class="line">stream &lt;&lt; <span class="string">"kbe"</span>;</span><br><span class="line">stream.print_storage();</span><br><span class="line">uint8 n, n1;</span><br><span class="line">int64 x;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> a;</span><br><span class="line">stream &gt;&gt; x;</span><br><span class="line">stream &gt;&gt; n;</span><br><span class="line">stream &gt;&gt; n1;</span><br><span class="line">stream &gt;&gt; a;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"还原: %lld, %d, %d, %s"</span>, x, n, n1, a.c_str());</span><br></pre></td></tr></table></figure></p>
+<p><strong>Tasks:</strong></p>
+<p>任务<code>Task</code>的管理类，内部封装了<code>std::vector&lt;Task *&gt;</code>，通过调用<code>process()</code>来遍历所有<code>Tash</code>的<code>process()</code>虚函数。</p>
+<p><strong>TimersT&lt;T&gt;:</strong></p>
+<p>定时器管理类，内部用小顶堆管理所有的定时器。通过<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">TimerHandle <span class="title">add</span><span class="params">(TimeStamp startTime, TimeStamp interval,</span></span></span><br><span class="line"><span class="function"><span class="params">                TimerHandler* pHandler, <span class="keyword">void</span> * pUser)</span></span>;</span><br></pre></td></tr></table></figure></p>
+<p>来新增一个定时器，返回的<code>TimerHandle</code>是新增定时器的句柄，可以控制相应的定时器。用户需要继承<code>TimerHandler</code>类，并重载<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">handleTimeout</span><span class="params">(TimerHandle handle, <span class="keyword">void</span> * pUser)</span></span></span><br></pre></td></tr></table></figure></p>
+<p>虚函数来实现定时器的回调。</p>
+<p>内部预定义了两个<code>TimersT&lt;T&gt;</code>类<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> TimersT&lt;uint32&gt; Timers;</span><br><span class="line"><span class="keyword">typedef</span> TimersT&lt;uint64&gt; Timers64;</span><br></pre></td></tr></table></figure></p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/06/14/KBEngine源码解读一/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架三/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/04/教你从头写游戏服务器框架三/" class="post-title-link" itemprop="url">教你从头写游戏服务器框架三</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-04 13:09:31" itemprop="dateCreated datePublished" datetime="2019-06-04T13:09:31+08:00">2019-06-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><a href="https://mp.weixin.qq.com/s/zjgAOGxDqA2BMj71xfW63Q" target="_blank" rel="noopener">原文出处</a></p>
+<h2 id="协程"><a href="#协程" class="headerlink" title="协程"></a>协程</h2><p>使用异步非阻塞编程，确实能获得很好的性能。但是在代码上，确非常不直观。因为任何一个可能阻塞的操作，都必须要要通过“回调”函数来链接。比如一个玩家登录，你需要先读数据库，然后读一个远程缓冲服务器（如 redis），然后返回登录结果：用户名、等级……在这个过程里，有两个可能阻塞的操作，你就必须把这个登录的程序，分成三个函数来编写：一个是收到客户端数据包的回调，第二个是读取数据库后的回调，第三个是读取缓冲服务器后的回调。</p>
+<p>这种情况下，代码被放在三个函数里，对于阅读代码的人来说，是一种负担。因为我们阅读代码，比如通过日志、coredump 去查问题，往往会直接切入到某一个函数里。这个被切入阅读的函数，很可能就是一个回调函数，对于这个函数为什么会被调用，属于什么流程，单从这个函数的代码是很难理解的。</p>
+<p>另外一个负担，是关于开发过程的。我们知道回调函数的代码，是需要“上下文”的，也就是发起回调时的数据状态的。为了让回调函数能获得发起函数的一个变量内容，我们就必须把这个变量内容放到某个“上下文”的变量中，然后传给回调函数。由于业务逻辑的变化，这种需要传递的上下文变量会不停的变化，反复的编写“放入”“取出”上下文的代码，也是一种重复的编码劳动。而且上下文本身的设置可能也不够安全，因为你无法预计，哪个回调函数会怎么样的修改这个上下文对象，这也是很多难以调试的 BUG 的来源。</p>
+<p>为了解决这个问题，出现了所谓的协程技术。我们可以认为，协程技术提供给我们一种特殊的 return 语句：yield。这个语句会类似 return 一样从函数中返回，但你可以用另外一个特殊的语句 resume(id) 来从新从 yield 语句下方开始运行代码。更重要的是，在 resume 之后，之前整个函数中的所有临时变量，都是可以继续访问的。</p>
+<p>当然，做 resume(id) 的时候，肯定是在进程的所谓“主循环”中，而这个 id 参数，则代表了被中断了的函数。这种可以被中断的函数调用过程，就叫协程。而这个 id ，则是代表了协程的一个数字。异步调用的上下文变量，就被自动的以这个协程函数的“栈”所取代，也就是说，协程函数中的所有局部变量，都自动的成为了上下文的内容。这样就再也不用反复的编写“放入”“取出”上下文内容的代码了。</p>
+<p><img src="http://blog.sensedevil.com/image/GameServer3_1.webp" alt></p>
+<p>我使用了 <a href="https://github.com/Tencent/Pebble/tree/master/src/common" target="_blank" rel="noopener">https://github.com/Tencent/Pebble/tree/master/src/common</a> 项目下的 coroutine.cpp/.h 作为协程的实现者。</p>
+<p>游戏开发中，协程确实能大大的提高开发效率。因此我认为协程也应该是 Game Server 所应该具备的能力。特别是在处理业务逻辑的 Handler 的 Process() 函数，本身就应该是一个协程函数。所以我设计了一个 CoroutineProcessor 的类，为普通的 Processor 添加上协程的能力。——基于装饰器模式。这样任何的 Processor::Process() 函数，就自然的在一个协程之中。</p>
+<p>因为有了协程的支持，那些可能产生阻塞而要求编写回调的功能，就可以统一的变成以协程使用的 API 了：</p>
+<ol>
+<li><p>DataStore -&gt; CoroutineDataStore</p>
+</li>
+<li><p>Cache -&gt; CoroutineCache</p>
+</li>
+<li><p>Client -&gt; CoroutineClient</p>
+</li>
+</ol>
+<p><img src="http://blog.sensedevil.com/image/GameServer3_2.webp" alt></p>
+<p>使用协程的 API，就完全不需要各种 Callback 类型的参数了，完全提供一个返回结果用的输出参数即可。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* @brief DataStore 的具备协程能力的装饰器类型。</span></span><br><span class="line"><span class="comment">* @attention 除了定义变量语句和 Update() 以外，其他的操作都需要在协程中调用。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CoroutineDataStore</span> :</span> <span class="keyword">public</span> Updateable&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    CoroutineDataStore(DataStore* data_store, CoroutineSchedule* schedule);</span><br><span class="line">    <span class="keyword">virtual</span> ~CoroutineDataStore();</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Init</span><span class="params">(Config* cfg, <span class="built_in">std</span>::<span class="built_in">string</span>* err_msg)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 读取一个数据对象，通过 key ，把数据放入到输出参数 value。</span></span><br><span class="line"><span class="comment">    * 此函数会在调用过程中使用协程的 yield 出去。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Get</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp;key, Serializable* value)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 写入一个数据对象，写入 key ，value</span></span><br><span class="line"><span class="comment">    * 写入结果从返回值获得，返回 0 表示成功，其他值表示失败。</span></span><br><span class="line"><span class="comment">    * 此函数会在调用过程中使用协程的 yield 出去。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Put</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp;key, <span class="keyword">const</span> Serializable&amp; value)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 删除一个数据对象，通过 key</span></span><br><span class="line"><span class="comment">    * 写入结果从返回值获得，返回 0 表示成功，其他值表示失败。</span></span><br><span class="line"><span class="comment">    * 此函数会在调用过程中使用协程的 yield 出去</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Remove</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">Update</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    DataStore* data_store_;</span><br><span class="line">    CoroutineSchedule* schedule_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/06/04/教你从头写游戏服务器框架三/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架二/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/04/教你从头写游戏服务器框架二/" class="post-title-link" itemprop="url">教你从头写游戏服务器框架二</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-04 13:09:27" itemprop="dateCreated datePublished" datetime="2019-06-04T13:09:27+08:00">2019-06-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><a href="https://mp.weixin.qq.com/s?__biz=MzA5ODExMTkwMA==&amp;mid=2650255971&amp;idx=1&amp;sn=bef0819b24df85978db1fb875abe3102&amp;chksm=88958a90bfe2038679464d8bbddcbafd95a9f2e113b452e241746e9e2c0cb194b3f09782399f&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">原文出处</a></p>
+<h2 id="对象序列化"><a href="#对象序列化" class="headerlink" title="对象序列化"></a>对象序列化</h2><p><img src="http://blog.sensedevil.com/image/GameServer2_1.webp" alt></p>
+<p>现代编程技术中，面向对象是一个最常见的思想。因此不管是 C++ Java C#，还是 Python JS，都有对象的概念。虽然说面向对象并不是软件开发的“银弹”，但也不失为一种解决复杂逻辑的优秀工具。回到游戏服务器端程序来说，自然我会希望能有一定面向对象方面的支持。所以，从游戏服务器端的整个处理过程来看，我认为，有以下几个地方，是可以用对象来抽象业务数据的：</p>
+<ol>
+<li><p>数据传输：我们可以把通过网络传输的数据，看成是一个对象。这样我们可以简单的构造一个对象，然后直接通过网络收、发它。</p>
+</li>
+<li><p>数据缓存：一批在内存中的，可以用对象进行“抽象”。而 key-value 的模型也是最常见的数据容器，因此我们可以起码把 key-value 中的 value 作为对象处理。</p>
+</li>
+<li><p>数据持久化：长久以来，我们使用 SQL 的二维表结构来持久化数据。但是 ORM （对象关系映射）的库一直非常流行，就是想在二维表和对象之间搭起桥梁。现在 NoSQL 的使用越来越常见，其实也是一种 key-value 模型。所以也是可以视为一个存放“对象”的工具。</p>
+</li>
+</ol>
+<p>对象序列化的标准模式也很常见，因此我定义成：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Serializable</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 序列化到一个数组中</span></span><br><span class="line"><span class="comment">    * @param buffer 目地缓冲区数组</span></span><br><span class="line"><span class="comment">    * @param buffer_length 缓冲区长度</span></span><br><span class="line"><span class="comment">    * @return 返回写入了 buffer 的数据长度。如果返回 -1 表示出错，比如 buffer_length 不够。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> ssize_t <span class="title">SerializeTo</span><span class="params">(<span class="keyword">char</span>* buffer, <span class="keyword">int</span> buffer_length)</span> <span class="keyword">const</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 从一个 buffer 中读取 length 个字节，反序列化到本对象。</span></span><br><span class="line"><span class="comment">    *@return  返回 0 表示成功，其他值表示出错。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">SerializeFrom</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* buffer, <span class="keyword">int</span> length)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">virtual</span> ~Serializable()&#123;&#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/06/04/教你从头写游戏服务器框架二/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架一/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/04/教你从头写游戏服务器框架一/" class="post-title-link" itemprop="url">教你从头写游戏服务器框架一</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-04 13:09:20" itemprop="dateCreated datePublished" datetime="2019-06-04T13:09:20+08:00">2019-06-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><a href="https://mp.weixin.qq.com/s?__biz=MzA5ODExMTkwMA==&amp;mid=2650255962&amp;idx=1&amp;sn=c2878b66c8813bcd5151b384bfb4218a&amp;chksm=88958aa9bfe203bf4537c4d1c459333490fe186384e4a718ef697c512aba9918223cbf975bfb&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">原文出处</a></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>大概已经有差不多一年没写技术文章了，原因是今年投入了一些具体游戏项目的开发。这些新的游戏项目，比较接近独立游戏的开发方式。我觉得公司的“祖传”服务器框架技术不太适合，所以从头写了一个游戏服务器端的框架，以便获得更好的开发效率和灵活性。现在项目将近上线，有时间就想总结一下，这样一个游戏服务器框架的设计和实现过程。</p>
+<p>这个框架的基本运行环境是 Linux ，采用 C++ 编写。为了能在各种环境上运行和使用，所以采用了 gcc 4.8 这个“古老”的编译器，以 C99 规范开发。</p>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>由于“越通用的代码，就是越没用的代码”，所以在设计之初，我就认为应该使用分层的模式来构建整个系统。按照游戏服务器的一般需求划分，最基本的可以分为两层：</p>
+<ol>
+<li><p>底层基础功能：包括通信、持久化等非常通用的部分，关注的是性能、易用性、扩展性等指标。</p>
+</li>
+<li><p>高层逻辑功能：包括具体的游戏逻辑，针对不同的游戏会有不同的设计。</p>
+</li>
+</ol>
+<p><img src="http://blog.sensedevil.com/image/GameServer1_1.webp" alt></p>
+<p>我希望能有一个基本完整的“底层基础功能”的框架，可以被复用于多个不同的游戏。由于目标是开发一个 适合独立游戏开发 的游戏服务器框架。所以最基本的需求分析为：</p>
+<p><strong>功能性需求</strong></p>
+<ol>
+<li><p>并发：所有的服务器程序，都会碰到这个基本的问题：如何处理并发任务。一般来说，会有多线程、异步两种技术。多线程编程在编码上比较符合人类的思维习惯，但带来了“锁”这个问题。而异步非阻塞的模型，其程序执行的情况是比较简单的，而且也能比较充分的利用硬件性能，但是问题是很多代码需要以“回调”的形式编写，对于复杂的业务逻辑来说，显得非常繁琐，可读性非常差。虽然这两种方案各有利弊，也有人结合这两种技术希望能各取所长，但是我更倾向于基础是使用异步、单线程、非阻塞的调度方式，因为这个方案是最清晰简单的。为了解决“回调”的问题，我们可以在其上再添加其他的抽象层，比如协程或者添加线程池之类的技术予以改善。</p>
+</li>
+<li><p>通信：支持 请求响应 模式以及 通知 模式的通信（广播视为一种多目标的通知）。游戏有很多登录、买卖、打开背包之类的功能，都是明确的有请求和响应的。而大量的联机游戏中，多个客户端的位置、HP 等东西都需要经过网络同步，其实就是一种“主动通知”的通信方式。</p>
+</li>
+<li><p>持久化：可以存取 对象 。游戏存档的格式非常复杂，但其索引的需求往往都是根据玩家 ID 来读写就可以。在很多游戏主机如 PlayStation 上，以前的存档都是可以以类似“文件”的方式存放在记忆卡里的。所以游戏持久化最基本的需求，就是一个 key-value 存取模型。当然，游戏中还会有更复杂的持久化需求，比如排行榜、拍卖行等，这些需求应该额外对待，不适合包含在一个最基本的通用底层中。</p>
+</li>
+<li><p>缓存：支持远程、分布式的对象缓存。游戏服务基本上都是“带状态”的服务，因为游戏要求响应延迟非常苛刻，基本上都需要利用服务器进程的内存来存放过程数据。但是游戏的数据，往往是变化越快的，价值越低，比如经验值、金币、HP，而等级、装备等变化比较慢的，价值则越高，这种特征，非常适合用一个缓存模型来处理。</p>
+</li>
+<li><p>协程：可以用 C++ 来编写协程代码，避免大量回调函数分割代码。这个是对于异步代码非常有用的特性，能大大提高代码的可读性和开发效率。特别是把很多底层涉及IO的功能，都提供了协程化 API，使用起来就会像同步的 API 一样轻松惬意。</p>
+</li>
+<li><p>脚本：初步设想是支持可以用 Lua 来编写业务逻辑。游戏需求变化是出了名快的，用脚本语言编写业务逻辑正好能提供这方面的支持。实际上脚本在游戏行业里的使用非常广泛。所以支持脚本，也是一个游戏服务器框架很重要的能力。</p>
+</li>
+<li><p>其他功能：包括定时器、服务器端的对象管理等等。这些功能很常用，所以也需要包含在框架中，但已经有很多成熟方案，所以只要选取常见易懂的模型即可。比如对象管理，我会采用类似 Unity 的组件模型来实现。</p>
+</li>
+</ol>
+<p><strong>非功能性需求</strong></p>
+<ol>
+<li><p>灵活性：支持可替换的通信协议；可替换的持久化设备（如数据库）；可替换的缓存设备（如 memcached/redis）；以静态库和头文件的方式发布，不对使用者代码做过多的要求。游戏的运营环境比较复杂，特别是在不同的项目之间，可能会使用不同的数据库、不同的通信协议。但是游戏本身业务逻辑很多都是基于对象模型去设计的，所以应该有一层能够基于“对象”来抽象所有这些底层功能的模型。这样才能让多个不同的游戏，都基于一套底层进行开发。</p>
+</li>
+<li><p>部署便利性：支持灵活的配置文件、命令行参数、环境变量的引用；支持单独进程启动，而无须依赖数据库、消息队列中间件等设施。一般游戏都会有至少三套运行环境，包括一个开发环境、一个内测环境、一个外测或运营环境。一个游戏的版本更新，往往需要更新多个环境。所以如何能尽量简化部署就成为一个很重要的问题。我认为一个好的服务器端框架，应该能让这个服务器端程序，在无配置、无依赖的情况下独立启动，以符合在开发、测试、演示环境下快速部署。并且能很简单的通过配置文件、或者命令行参数的不同，在集群化下的外部测试或者运营环境下启动。</p>
+</li>
+<li><p>性能：很多游戏服务器，都会使用异步非阻塞的方式来编程。因为异步非阻塞可以很好的提高服务器的吞吐量，而且可以很明确的控制多个用户任务并发下的代码执行顺序，从而避免多线程锁之类的复杂问题。所以这个框架我也希望是以异步非阻塞作为基本的并发模型。这样做还有另外一个好处，就是可以手工的控制具体的进程，充分利用多核 CPU 服务器的性能。当然异步代码可读性因为大量的回调函数，会变得很难阅读，幸好我们还可以用“协程”来改善这个问题。</p>
+</li>
+<li><p>扩展性：支持服务器之间的通信，进程状态管理，类似 SOA 的集群管理。自动容灾和自动扩容，其实关键点是服务进程的状态同步和管理。我希望一个通用的底层，可以把所有的服务器间调用，都通过一个统一的集权管理模型管理起来，这样就可以不再每个项目去关心集群间通信、寻址等问题。</p>
+</li>
+</ol>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/06/04/教你从头写游戏服务器框架一/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/24/Unity的AnimationCurve的实现方法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/24/Unity的AnimationCurve的实现方法/" class="post-title-link" itemprop="url">Unity的AnimationCurve的实现方法</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-24 21:02:15" itemprop="dateCreated datePublished" datetime="2019-05-24T21:02:15+08:00">2019-05-24</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameEngine/" itemprop="url" rel="index"><span itemprop="name">GameEngine</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><a href="https://answers.unity.com/questions/464782/t-is-the-math-behind-animationcurveevaluate.html" target="_blank" rel="noopener">原文出处</a></p>
+<h1 id="方法一："><a href="#方法一：" class="headerlink" title="方法一："></a>方法一：</h1><p>没有把参数t从系数中分离开来，直接混在一起计算系数a，b，c，d。这样看算法比较直观，但是不是最优化的。</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">float</span> <span class="title">Evaluate</span>(<span class="params"><span class="keyword">float</span> t, Keyframe keyframe0, Keyframe keyframe1</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">float</span> dt = keyframe1.time - keyframe0.time;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span> m0 = keyframe0.outTangent * dt;</span><br><span class="line">    <span class="keyword">float</span> m1 = keyframe1.inTangent * dt;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span> t2 = t * t;</span><br><span class="line">    <span class="keyword">float</span> t3 = t2 * t;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span> a = <span class="number">2</span> * t3 - <span class="number">3</span> * t2 + <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">float</span> b = t3 - <span class="number">2</span> * t2 + t;</span><br><span class="line">    <span class="keyword">float</span> c = t3 - t2;</span><br><span class="line">    <span class="keyword">float</span> d = <span class="number">-2</span> * t3 + <span class="number">3</span> * t2;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> a * keyframe0.<span class="keyword">value</span> + b * m0 + c * m1 + d * keyframe1.<span class="keyword">value</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/05/24/Unity的AnimationCurve的实现方法/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/22/Paragon-Feature-Examples-Animation-Techniques-Feature-Highlight-Unreal-Engine/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/22/Paragon-Feature-Examples-Animation-Techniques-Feature-Highlight-Unreal-Engine/" class="post-title-link" itemprop="url">Paragon Feature Examples: Animation Techniques | Feature Highlight | Unreal Engine</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-22 09:36:36" itemprop="dateCreated datePublished" datetime="2019-05-22T09:36:36+08:00">2019-05-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameEngine/" itemprop="url" rel="index"><span itemprop="name">GameEngine</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/1UOY-FMm-xo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<p>主要内容：该视频由Paragon游戏制作者Laurent Delayen(Senior Programmer, Gameplay)和RayArnett(Senior Artist, Animation)讲述制作过程中使用到的动画技术。</p>
+<p>包括：Transitions（动画过渡），Synchronize marker（同步标记），Turn（转向动作），Speed Warping（使用IK根据速度调整步幅），Slope Warping（使用IK根据斜坡斜率调整脚步位置），Jump动作的制作，以及AnimGraph。</p>
+<p>声明：以下英文部分为个人听力记录，视频无字幕，不保证准确性，其中带问号的为听不清的单词。中文翻译部分更不保证准确性，建议结合视频看英文部分。</p>
+<p>24’50’’ <strong>Transitions</strong>.Our idea is to do motion prediction. Predict where the character is going to stop. Gives a few frame to do the anticipation for the stop. When we do the starts, we drop the marker and look backwards. Drop the marker location in the world, and we are using them to synchronizing our animations. We translate the physical movement to a curve, a distance curve.</p>
+<p>In the case of start transition, look backing time and where the marker was, that curve describes the distance of the actor to that marker.</p>
+<p>我们的想法是做动作预测。预测角色将要停止的位置。用一些动作帧来做停止动作。当做起步动作时，在起点放标记然后往回看。在世界中放下标记位置，用他们来同步我们的动作。我们把物理移动转换成一个距离曲线。</p>
+<p>在起步的过渡时，往回看标记所在的位置，曲线描述actor到标记的距离。</p>
+<p>26’46’’ 使用DistanceCurve保存Actor to Marker的位置。</p>
+<p>28’21’’ Backward动作的Transition.</p>
+<p>28’50’’ <strong>Pivoting</strong>。两个动作的结合。Reach the pivot and leave that pivot.</p>
+<p>29’39’’ when we call the actor in the studio, remap the recorded motion to the map. Using the distance, we get really precise foot placement, no foot sliding at all.</p>
+<p>30’15’’ For people who are familiar with root motion, like the animation tells the capsule whereto go. If I cross the room in the animation, the capsule will follow the animation along. With this kind of foot slide ahead(?) basically the capsule is gonna cross the room, and looks that curve it say, it walks? across the room,am I in this animation, and plays that for aim. so uses the motion of the capsule to pick which frame to play in the animation. the animation stay is locked. to the capsule is doing movement. If the capsule is sitting still and starts moving forwards , the animation says OK, 2 units from where I started,I’ll find that on this curve and play that for aim. </p>
+<p>对熟悉RootMotion的人来说，动画告诉胶囊该移动到哪里。如果人物在动画中穿过房间，胶囊会跟随动画。所以用胶囊的运动来选取哪一帧来在动画中播放。在胶囊运动的过程中，动画所在位置是锁定的。如果胶囊还在原地准备向前移动，动画说距离出发的位置有2个单位距离，会在曲线上找到那帧来播放。</p>
+<p>33’ synchronize marker? 从start到loop动作。当toe和root交叉时，有标记。</p>
+<p>33’47’’ The reason for doing that way is, they sort of tells us, spash? you where the foot is and we can synchronize animation that way. We thought about this, other people seem to describe the movement when the foot touch the ground and leave the ground,sort of like the anpitute? of the step. and we decided to go instead with the spash? where it was around the player to minimize foot sliding. So when you transition between animations, we sort of try to get the closest position. to where the capsule is basically to minimize sliding. So we sacrifice bits the where the foot is, we try to keep the position.  </p>
+<p>35’10’’ 以脚的动作为标准，可以保证不会滑步。</p>
+<p>37’50’’ <strong>转向</strong>。</p>
+<p>38’50’’ 角度Curve。</p>
+<p>41’02’’ 动画蓝图。</p>
+<p>42’40’’Backward-Forward转换。DistanceCurve标记Turn角度。</p>
+<p>43’40’’ .速度低会导致动作慢，用Speed Warping可以小步移动。</p>
+<p>45’55’’ 显示Speed Warping和无Speed Warping的区别。</p>
+<p>51’ 原理：根据SpeedScale移动IKBone。</p>
+<p>53’24’’ 比如2X速率移动，IKBone在2X距离位置</p>
+<p>54’50’’ 后退动作的有无SpeedWarping比较</p>
+<p>58’ BlendSpace。JogForwardSlopeLean。slope斜率。左右倾斜角度。速度</p>
+<p>60’ Jogging状态机节点。Blend-&gt;AimOffset-&gt;RotateRoot</p>
+<p>60’50’’ 移动效果。</p>
+<p>62’40’’ Slope移动效果。</p>
+<p>64’43’’ <strong>SlopeWarping</strong>开关的区别。</p>
+<p>66’41’’ 斜坡上开启网格模式的效果。能看到地板位置，Normal，IKBone的位置</p>
+<p>68’14’’ TwoBoneIK for legs蓝图节点</p>
+<p>68’47’’ 改变角度观察BlendSpace</p>
+<p>70’50’’ 脚悬空不可避免。</p>
+<p>73’30’’ <strong>Jump动作</strong>。Jumping分解为3个部分。InAir，Apex，Landing。用DistanceCurve标记到地面的距离。We use it here to get a few extra frames of compression. Because animation runs after physics. So when we note that you are jumping, it’s already too late you are already in jumping.  So this allows it to compensate and have a few extra frames that feet on the ground.</p>
+<p>Because the capsule is moving.</p>
+<p>74’53’’ Jump动作演示。</p>
+<p>75’43’’DistanceCurveForLanding. Put a marker on where you are gonna lands. Use that to synchronize the feet getting close to the ground. The arc is synchronizing with the apex?</p>
+<p>76’06’’ Apex。DistanceCurve. How far before it and go past it.</p>
+<p>76’30’’ <strong>Recovery Additive</strong>.Play on top of anything in the game. 为了nice landing compression.如果不用additive。会Blending Jogforward, backward。Maybe the result is not what would be blended exactly, you still get a nice feel without making a time to time content.</p>
+<p>77’38’’ when we do blend between animations, it have difference. Blend feet quickly, Upperbody lowly. </p>
+<p>78’50’’ AnimDynamics. Not show. 可以在另一个视频中看到专门讲这个节点。AnimDynamic features used in Paragon.<a href="https://www.youtube.com/watch?v=5h5CvZEBBWo" target="_blank" rel="noopener">https://www.youtube.com/watch?v=5h5CvZEBBWo</a></p>
+<p>79’36’’ <strong>AnimGraph</strong>. </p>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><h3 id="一、曲线的使用。"><a href="#一、曲线的使用。" class="headerlink" title="一、曲线的使用。"></a>一、曲线的使用。</h3><p>根据曲线同步动作。如起步过渡动作中，进入过渡状态时在起点放置标记marker，actor移动时根据当前actor和marker的距离distance，在DistanceCurve上查找该Distance应该对应的帧进行播放。</p>
+<p>如原地转身动作（Rotate）中，根据当前actor的旋转角度angle，在Curve上查找该Angle对应的帧进行播放。</p>
+<h3 id="二、Synchronize-Marker-左右脚同步标记"><a href="#二、Synchronize-Marker-左右脚同步标记" class="headerlink" title="二、Synchronize Marker 左右脚同步标记"></a>二、Synchronize Marker 左右脚同步标记</h3><p>在动画中，当toe和root重合时，添加Notify记录当前是左脚还是右脚。动画过渡时，以脚为基础，避免了滑步的出现。</p>
+<h3 id="三、IK的使用"><a href="#三、IK的使用" class="headerlink" title="三、IK的使用"></a>三、IK的使用</h3><p>SpeedWarping和SlopeWarping，使用IK使脚在动画中处于正确的位置。</p>
+<h3 id="四、Jump动作"><a href="#四、Jump动作" class="headerlink" title="四、Jump动作"></a>四、Jump动作</h3><p>由于胶囊运动，动画制作原地起跳时需要考虑胶囊的移动。Curve标记当前和地面的距离。通过Curve同步动画。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/21/多人快节奏游戏五之演示Demo/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/21/多人快节奏游戏五之演示Demo/" class="post-title-link" itemprop="url">多人快节奏游戏五之演示Demo</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-21 10:19:35" itemprop="dateCreated datePublished" datetime="2019-05-21T10:19:35+08:00">2019-05-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="在浏览器中玩"><a href="#在浏览器中玩" class="headerlink" title="在浏览器中玩"></a>在浏览器中玩</h1><ul>
+<li><strong>移动蓝球</strong> ：受 Player1 控制, 用左右箭头键</li>
+<li><strong>移动红球</strong> ：受 Player2 控制, 用A和D键</li>
+</ul>
+<p><body></body></p>
+<div class="main"><br><br><style><br>canvas {<br>    border: dotted 1px;<br>    padding: 0;<br>    background: lightgray;<br>}</style><br><br><p>This is a sample implementation of a client-server architecture demonstrating the main concepts explained in my <a href="http://www.gabrielgambetta.com/client-side-prediction-live-demo.html" target="_blank" rel="noopener">Fast-Paced Multiplayer(原文出处)</a> series of articles. It won’t make much sense unless you’ve read the articles first.</p><br><p>The code is pure JavaScript and it’s fully contained in this page. It’s less than 500 lines of code, including a lot of comments, showing that once you really understand the concepts, implementing them is relatively straightforward.</p><br><p>Although it’s not production-quality code, you may use this code in your own applications. Credit is appreciated although not required.</p><br><div style="border: 5px solid blue; padding: 15px;"><br><p><b>Player 1 view</b> - move with LEFT and RIGHT arrow keys<br> Lag = <input type="text" id="player1_lag" size="5" value="250" onchange="updateParameters();">ms · <input type="checkbox" id="player1_prediction" onchange="updateParameters();">Prediction · <input type="checkbox" id="player1_reconciliation" onchange="updateParameters();">Reconciliation · <input type="checkbox" id="player1_interpolation" onchange="updateParameters();">Interpolation</p><br><canvas id="player1_canvas" width="920" height="75"><br></canvas><br><div id="player1_status" style="font-family:courier;"><br>Waiting for connection…<br></div><br></div><br><div style="height: 1em;"><br><br></div><br><div style="border: 2px solid grey; padding: 15px;"><br><p><b>Server view</b> · Update <input type="text" id="server_fps" size="5" value="3" onchange="updateParameters();"> times per second</p><br><canvas id="server_canvas" width="920" height="75"><br></canvas><br><div id="server_status" style="font-family:courier;"><br><br></div><br></div><br><div style="height: 1em;"><br><br></div><br><div style="border: 5px solid red; padding: 15px;"><br><p><b>Player 2 view</b> - move with A and D keys<br> Lag = <input type="text" id="player2_lag" size="5" value="150" onchange="updateParameters();">ms · <input type="checkbox" id="player2_prediction" onchange="updateParameters();">Prediction · <input type="checkbox" id="player2_reconciliation" onchange="updateParameters();">Reconciliation · <input type="checkbox" id="player2_interpolation" onchange="updateParameters();">Interpolation</p><br><canvas id="player2_canvas" width="920" height="75"><br></canvas><br><div id="player2_status" style="font-family:courier;"><br>Waiting for connection…<br></div><br></div>
+
+<p></p><h1 id="guided-tour">Guided Tour</h1><p></p>
+<p>Move the blue ball. There’s considerable delay between pressing the arrow keys and the blue ball actually moving. Without client-side prediction, the client only renders the new position of the ball only after a round-trip to the server. Because of the 250ms lag, this takes a while.</p><br><p>Set the <strong>player 1 Lag to 0ms</strong>, and try again. Now the client and the server move in sync because there’s no delay between them, but the movement isn’t smooth, because the server only updates its internal state 3 times per second. If you increase the <strong>update rate of the server to 60</strong>, we get smooth movement.</p><br><p>But this is not a very realistic scenario. Set the <strong>player 1 lag back to 250ms</strong>, and the <strong>server update rate back to 3</strong>. This is closer to the awful conditions where a real game still needs to work.</p><br><p>Client-side prediction and server reconciliation to the rescue! Enable both of them for Player 1 and move the blue ball. Now the movement is very smooth, and there’s no perceptible delay between pressing the arrow keys and moving the ball.</p><br><p>This still works if you make the conditions even worse - try setting the <strong>player 1 lag to 500ms</strong> and the <strong>server update rate to 1</strong>.</p><br><p>Now things look fantastic for player 1’s own entity, the blue ball. However, player 2’s view of this same entity looks terrible. Because the low update rate of the server, player 2 only gets a new position for player 1’s entity once per second, so the movement is very jumpy.</p><br><p>Enabling client-side prediction and server reconciliation for player 2 do nothing to smooth the movement of the blue ball, because these techniques only affect how a player renders its own entity. It does make a difference if you move the red ball, but now we have the same jumpiness in player 1’s view.</p><br><p>To solve this, we use entity interpolation. Enable <strong>entity interpolation for player 2</strong> and move the blue ball. Now it moves smoothly, but is always rendered “in the past” compared to player 1 and to the server.</p><br><p>You may notice the speed of the interpolated entities may vary. This is an artifact of the interpolation, caused by setting the server update rate too low in relationship with the speeds. This effect should disappear almost entirely if you set the <strong>server update rate to 10</strong>, which is still pretty low.</p><br><h1 id="summary">Summary</h1><br><p>Client-Side Prediction and Server Reconciliation are very powerful techniques to make multiplayer games feel responsive even under extremely bad network conditions. Therefore, they are a fundamental part of almost any client/server multiplayer network architecture.</p>
+
+
+<script>
+
+// =============================================================================
+//  An Entity in the world.
+// =============================================================================
+var Entity = function() {
+  this.x = 0;
+  this.speed = 2; // units/s
+  this.position_buffer = [];
+}
+
+// Apply user's input to this entity.
+Entity.prototype.applyInput = function(input) {
+  this.x += input.press_time*this.speed;
+}
+
+
+// =============================================================================
+//  A message queue with simulated network lag.
+// =============================================================================
+var LagNetwork = function() {
+  this.messages = [];
+}
+
+// "Send" a message. Store each message with the timestamp when it should be
+// received, to simulate lag.
+LagNetwork.prototype.send = function(lag_ms, message) {
+  this.messages.push({recv_ts: +new Date() + lag_ms,
+                      payload: message});
+}
+
+// Returns a "received" message, or undefined if there are no messages available
+// yet.
+LagNetwork.prototype.receive = function() {
+  var now = +new Date();
+  for (var i = 0; i < this.messages.length; i++) {
+    var message = this.messages[i];
+    if (message.recv_ts <= now) {
+      this.messages.splice(i, 1);
+      return message.payload;
+    }
+  }
+}
+
+
+// =============================================================================
+//  The Client.
+// =============================================================================
+var Client = function(canvas, status) {
+  // Local representation of the entities.
+  this.entities = {};
+
+  // Input state.
+  this.key_left = false;
+  this.key_right = false;
+
+  // Simulated network connection.
+  this.network = new LagNetwork();
+  this.server = null;
+  this.lag = 0;
+
+  // Unique ID of our entity. Assigned by Server on connection.
+  this.entity_id = null;
+
+  // Data needed for reconciliation.
+  this.client_side_prediction = false;
+  this.server_reconciliation = false;
+  this.input_sequence_number = 0;
+  this.pending_inputs = [];
+
+  // Entity interpolation toggle.
+  this.entity_interpolation = true;
+
+  // UI.
+  this.canvas = canvas;
+  this.status = status;
+
+  // Update rate.
+  this.setUpdateRate(50);
+}
+
+
+Client.prototype.setUpdateRate = function(hz) {
+  this.update_rate = hz;
+
+  clearInterval(this.update_interval);
+  this.update_interval = setInterval(
+    (function(self) { return function() { self.update(); }; })(this),
+    1000 / this.update_rate);
+}
+
+
+// Update Client state.
+Client.prototype.update = function() {
+  // Listen to the server.
+  this.processServerMessages();
+
+  if (this.entity_id == null) {
+    return;  // Not connected yet.
+  }
+
+  // Process inputs.
+  this.processInputs();
+
+  // Interpolate other entities.
+  if (this.entity_interpolation) {
+    this.interpolateEntities();
+  }
+
+  // Render the World.
+  renderWorld(this.canvas, this.entities);
+
+  // Show some info.
+  var info = "Non-acknowledged inputs: " + this.pending_inputs.length;
+  this.status.textContent = info;
+}
+
+
+// Get inputs and send them to the server.
+// If enabled, do client-side prediction.
+Client.prototype.processInputs = function() {
+  // Compute delta time since last update.
+  var now_ts = +new Date();
+  var last_ts = this.last_ts || now_ts;
+  var dt_sec = (now_ts - last_ts) / 1000.0;
+  this.last_ts = now_ts;
+
+  // Package player's input.
+  var input;
+  if (this.key_right) {
+    input = { press_time: dt_sec };
+  } else if (this.key_left) {
+    input = { press_time: -dt_sec };
+  } else {
+    // Nothing interesting happened.
+    return;
+  }
+
+  // Send the input to the server.
+  input.input_sequence_number = this.input_sequence_number++;
+  input.entity_id = this.entity_id;
+  this.server.network.send(this.lag, input);
+
+  // Do client-side prediction.
+  if (this.client_side_prediction) {
+    this.entities[this.entity_id].applyInput(input);
+  }
+
+  // Save this input for later reconciliation.
+  this.pending_inputs.push(input);
+}
+
+
+// Process all messages from the server, i.e. world updates.
+// If enabled, do server reconciliation.
+Client.prototype.processServerMessages = function() {
+  while (true) {
+    var message = this.network.receive();
+    if (!message) {
+      break;
+    }
+
+    // World state is a list of entity states.
+    for (var i = 0; i < message.length; i++) {
+      var state = message[i];
+
+      // If this is the first time we see this entity, create a local representation.
+      if (!this.entities[state.entity_id]) {
+        var entity = new Entity();
+        entity.entity_id = state.entity_id;
+        this.entities[state.entity_id] = entity;
+      }
+
+      var entity = this.entities[state.entity_id];
+
+      if (state.entity_id == this.entity_id) {
+        // Received the authoritative position of this client's entity.
+        entity.x = state.position;
+
+        if (this.server_reconciliation) {
+          // Server Reconciliation. Re-apply all the inputs not yet processed by
+          // the server.
+          var j = 0;
+          while (j < this.pending_inputs.length) {
+            var input = this.pending_inputs[j];
+            if (input.input_sequence_number <= state.last_processed_input) {
+              // Already processed. Its effect is already taken into account into the world update
+              // we just got, so we can drop it.
+              this.pending_inputs.splice(j, 1);
+            } else {
+              // Not processed by the server yet. Re-apply it.
+              entity.applyInput(input);
+              j++;
+            }
+          }
+        } else {
+          // Reconciliation is disabled, so drop all the saved inputs.
+          this.pending_inputs = [];
+        }
+      } else {
+        // Received the position of an entity other than this client's.
+
+        if (!this.entity_interpolation) {
+          // Entity interpolation is disabled - just accept the server's position.
+          entity.x = state.position;
+        } else {
+          // Add it to the position buffer.
+          var timestamp = +new Date();
+          entity.position_buffer.push([timestamp, state.position]);
+        }
+      }
+    }
+  }
+}
+
+
+Client.prototype.interpolateEntities = function() {
+  // Compute render timestamp.
+  var now = +new Date(); 
+  var render_timestamp = now - (1000.0 / server.update_rate);
+
+  for (var i in this.entities) { 
+    var entity = this.entities[i];
+
+    // No point in interpolating this client's entity.
+    if (entity.entity_id == this.entity_id) {
+      continue;
+    }
+
+    // Find the two authoritative positions surrounding the rendering timestamp.
+    var buffer = entity.position_buffer;
+
+    // Drop older positions.
+    while (buffer.length >= 2 && buffer[1][0] <= render_timestamp) {
+      buffer.shift();
+    }
+
+    // Interpolate between the two surrounding authoritative positions.
+    if (buffer.length >= 2 && buffer[0][0] <= render_timestamp && render_timestamp <= buffer[1][0]) {
+      var x0 = buffer[0][1];
+      var x1 = buffer[1][1];
+      var t0 = buffer[0][0];
+      var t1 = buffer[1][0];
+
+      entity.x = x0 + (x1 - x0) * (render_timestamp - t0) / (t1 - t0);
+    }
+  }
+}
+
+
+// =============================================================================
+//  The Server.
+// =============================================================================
+var Server = function(canvas, status) {
+  // Connected clients and their entities.
+  this.clients = [];
+  this.entities = [];
+
+  // Last processed input for each client.
+  this.last_processed_input = [];
+
+  // Simulated network connection.
+  this.network = new LagNetwork();
+
+  // UI.
+  this.canvas = canvas;
+  this.status = status;
+
+  // Default update rate.
+  this.setUpdateRate(10);
+}
+
+Server.prototype.connect = function(client) {
+  // Give the Client enough data to identify itself.
+  client.server = this;
+  client.entity_id = this.clients.length;
+  this.clients.push(client);
+
+  // Create a new Entity for this Client.
+  var entity = new Entity();
+  this.entities.push(entity);
+  entity.entity_id = client.entity_id;
+
+  // Set the initial state of the Entity (e.g. spawn point)
+  var spawn_points = [4, 6];
+  entity.x = spawn_points[client.entity_id];
+}
+
+Server.prototype.setUpdateRate = function(hz) {
+  this.update_rate = hz;
+
+  clearInterval(this.update_interval);
+  this.update_interval = setInterval(
+    (function(self) { return function() { self.update(); }; })(this),
+    1000 / this.update_rate);
+}
+
+Server.prototype.update = function() {
+  this.processInputs();
+  this.sendWorldState();
+  renderWorld(this.canvas, this.entities);
+}
+
+
+// Check whether this input seems to be valid (e.g. "make sense" according
+// to the physical rules of the World)
+Server.prototype.validateInput = function(input) {
+  if (Math.abs(input.press_time) > 1/40) {
+    return false;
+  }
+  return true;
+}
+
+
+Server.prototype.processInputs = function() {
+  // Process all pending messages from clients.
+  while (true) {
+    var message = this.network.receive();
+    if (!message) {
+      break;
+    }
+
+    // Update the state of the entity, based on its input.
+    // We just ignore inputs that don't look valid; this is what prevents clients from cheating.
+    if (this.validateInput(message)) {
+      var id = message.entity_id;
+      this.entities[id].applyInput(message);
+      this.last_processed_input[id] = message.input_sequence_number;
+    }
+
+  }
+
+  // Show some info.
+  var info = "Last acknowledged input: ";
+  for (var i = 0; i < this.clients.length; ++i) {
+    info += "Player " + i + ": #" + (this.last_processed_input[i] || 0) + "   ";
+  }
+  this.status.textContent = info;
+}
+
+
+// Send the world state to all the connected clients.
+Server.prototype.sendWorldState = function() {
+  // Gather the state of the world. In a real app, state could be filtered to avoid leaking data
+  // (e.g. position of invisible enemies).
+  var world_state = [];
+  var num_clients = this.clients.length;
+  for (var i = 0; i < num_clients; i++) {
+    var entity = this.entities[i];
+    world_state.push({entity_id: entity.entity_id,
+                      position: entity.x,
+                      last_processed_input: this.last_processed_input[i]});
+  }
+
+  // Broadcast the state to all the clients.
+  for (var i = 0; i < num_clients; i++) {
+    var client = this.clients[i];
+    client.network.send(client.lag, world_state);
+  }
+}
+
+
+// =============================================================================
+//  Helpers.
+// =============================================================================
+
+// Render all the entities in the given canvas.
+var renderWorld = function(canvas, entities) {
+  // Clear the canvas.
+  canvas.width = canvas.width;
+
+  var colours = ["blue", "red"];
+
+  for (var i in entities) { 
+    var entity = entities[i];
+
+    // Compute size and position.
+    var radius = canvas.height*0.9/2;
+    var x = (entity.x / 10.0)*canvas.width;
+
+    // Draw the entity.
+    var ctx = canvas.getContext("2d");
+    ctx.beginPath();
+    ctx.arc(x, canvas.height / 2, radius, 0, 2*Math.PI, false);
+    ctx.fillStyle = colours[entity.entity_id];
+    ctx.fill();
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "dark" + colours[entity.entity_id];
+    ctx.stroke();
+  }
+}
+
+
+var element = function(id) {
+  return document.getElementById(id);
+}
+
+// =============================================================================
+//  Get everything up and running.
+// =============================================================================
+
+// World update rate of the Server.
+var server_fps = 4;
+
+
+// Update simulation parameters from UI.
+var updateParameters = function() {
+  updatePlayerParameters(player1, "player1");
+  updatePlayerParameters(player2, "player2");
+  server.setUpdateRate(updateNumberFromUI(server.update_rate, "server_fps"));
+  return true;
+}
+
+
+var updatePlayerParameters = function(client, prefix) {
+  client.lag = updateNumberFromUI(player1.lag, prefix + "_lag");
+
+  var cb_prediction = element(prefix + "_prediction");
+  var cb_reconciliation = element(prefix + "_reconciliation");
+
+  // Client Side Prediction disabled => disable Server Reconciliation.
+  if (client.client_side_prediction && !cb_prediction.checked) {
+    cb_reconciliation.checked = false;
+  }
+
+  // Server Reconciliation enabled => enable Client Side Prediction.
+  if (!client.server_reconciliation && cb_reconciliation.checked) {
+    cb_prediction.checked = true;
+  }
+
+  client.client_side_prediction = cb_prediction.checked;
+  client.server_reconciliation = cb_reconciliation.checked;
+
+  client.entity_interpolation = element(prefix + "_interpolation").checked;
+}
+
+
+var updateNumberFromUI = function(old_value, element_id) {
+  var input = element(element_id);
+  var new_value = parseInt(input.value);
+  if (isNaN(new_value)) {
+    new_value = old_value;
+  }
+  input.value = new_value;
+  return new_value;
+}
+
+
+// When the player presses the arrow keys, set the corresponding flag in the client.
+var keyHandler = function(e) {
+  e = e || window.event;
+  if (e.keyCode == 39) {
+    player1.key_right = (e.type == "keydown");
+  } else if (e.keyCode == 37) {
+    player1.key_left = (e.type == "keydown");
+  } else if (e.key == 'd') { 
+    player2.key_right = (e.type == "keydown");
+  } else if (e.key == 'a') {
+    player2.key_left = (e.type == "keydown");
+  } else {
+    console.log(e)
+  }
+}
+document.body.onkeydown = keyHandler;
+document.body.onkeyup = keyHandler;
+
+
+// Setup a server, the player's client, and another player.
+var server = new Server(element("server_canvas"), element("server_status"));
+var player1 = new Client(element("player1_canvas"), element("player1_status"));
+var player2 = new Client(element("player2_canvas"), element("player2_status"));
+
+
+// Connect the clients to the server.
+server.connect(player1);
+server.connect(player2);
+
+
+// Read initial parameters from the UI.
+updateParameters();
+
+</script></div>
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/21/多人快节奏游戏四之延迟补偿实现爆头/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/21/多人快节奏游戏四之延迟补偿实现爆头/" class="post-title-link" itemprop="url">多人快节奏游戏四之延迟补偿实现爆头</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-21 10:19:22" itemprop="dateCreated datePublished" datetime="2019-05-21T10:19:22+08:00">2019-05-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><a href="http://www.gabrielgambetta.com/lag-compensation.html" target="_blank" rel="noopener">原文出处</a></p>
+<h1 id="Fast-Paced-Multiplayer-Part-IV-Lag-Compensation"><a href="#Fast-Paced-Multiplayer-Part-IV-Lag-Compensation" class="headerlink" title="Fast-Paced Multiplayer (Part IV): Lag Compensation"></a>Fast-Paced Multiplayer (Part IV): Lag Compensation</h1><hr>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>The previous three articles explained a client-server game architecture which can be summarized as follows:</p>
+<ul>
+<li>Server gets inputs from all the clients, with timestamps</li>
+</ul>
+<ul>
+<li>Server processes inputs and updates world status</li>
+</ul>
+<ul>
+<li>Server sends regular world snapshots to all clients</li>
+</ul>
+<ul>
+<li>Client sends input and simulates their effects locally</li>
+</ul>
+<ul>
+<li>Client get world updates and<ul>
+<li>Syncs predicted state to authoritative state</li>
+<li>Interpolates known past states for other entities</li>
+</ul>
+</li>
+</ul>
+<p>From a player’s point of view, this has two important consequences:</p>
+<ul>
+<li>Player sees <strong>himself</strong> in the <strong>present</strong></li>
+</ul>
+<ul>
+<li>Player sees <strong>other entities</strong> in the <strong>past</strong></li>
+</ul>
+<p>This situation is generally fine, but it’s quite problematic for very time- and space-sensitive events; for example, shooting your enemy in the head!</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/05/21/多人快节奏游戏四之延迟补偿实现爆头/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/21/多人快节奏游戏三之实体插值/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/21/多人快节奏游戏三之实体插值/" class="post-title-link" itemprop="url">多人快节奏游戏三之实体插值</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-21 10:19:11" itemprop="dateCreated datePublished" datetime="2019-05-21T10:19:11+08:00">2019-05-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><a href="http://www.gabrielgambetta.com/entity-interpolation.html" target="_blank" rel="noopener">原文出处</a></p>
+<h1 id="Fast-Paced-Multiplayer-Part-III-Entity-Interpolation"><a href="#Fast-Paced-Multiplayer-Part-III-Entity-Interpolation" class="headerlink" title="Fast-Paced Multiplayer (Part III): Entity Interpolation"></a>Fast-Paced Multiplayer (Part III): Entity Interpolation</h1><hr>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>In the <a href="/2019/05/21/多人快节奏游戏一之C-S游戏架构/" title="first article">first article</a> of the series, we introduced the concept of an <em>authoritative server</em> and its usefulness to prevent client cheats. However, using this technique naively can lead to potentially showstopper issues regarding playability and responsiveness. In the <a href="/2019/05/21/多人快节奏游戏二之客户端预测与服务器修正/" title="second article">second article</a>, we proposed <em>client-side prediction</em> as a way to overcome these limitations.</p>
+<p>The net result of these two articles is a set of concepts and techniques that allow a player to control an in-game character in a way that feels exactly like a single-player game, even when connected to an authoritative server through an internet connection with transmission delays.</p>
+<p>In this article, we’ll explore the consequences of having other player-controled characters connected to the same server.</p>
+<h2 id="Server-time-step"><a href="#Server-time-step" class="headerlink" title="Server time step"></a>Server time step</h2><p>In the previous article, the behavior of the server we described was pretty simple – it read client inputs, updated the game state, and sent it back to the client. When more than one client is connected, though, the main server loop is somewhat different.</p>
+<p>In this scenario, several clients may be sending inputs simultaneously, and at a fast pace (as fast as the player can issue commands, be it pressing arrow keys, moving the mouse or clicking the screen). Updating the game world every time inputs are received from each client and then broadcasting the game state would consume too much CPU and bandwidth.</p>
+<p>A better approach is to queue the client inputs as they are received, without any processing. Instead, the game world is updated periodically at low frequency, for example 10 times per second. The delay between every update, 100ms in this case, is called the <em>time step</em>. In every update loop iteration, all the unprocessed client input is applied (possibly in smaller time increments than the time step, to make physics more predictable), and the new game state is broadcast to the clients.</p>
+<p>In summary, the game world updates independent of the presence and amount of client input, at a predictable rate.</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/05/21/多人快节奏游戏三之实体插值/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+  </section>
+
+  
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lumieru</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lumieru</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.1"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.1"></script>
+
+
+
+  
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('复制成功');
+        else $(this).text('复制失败');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

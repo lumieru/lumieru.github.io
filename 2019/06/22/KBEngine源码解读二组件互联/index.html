@@ -1,0 +1,2674 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="server/Components组件在互相发现的时候用的是UDP广播，找到对应组件知道其IP和Port后，用TCP来建立并保持连接。 machine组件会监听20086端口，然后其他组件都会往这个端口广播自己的信息（RPC调用MachineInterface::onBroadcastInterface函数）。然后machine收到信息后会判断有效性（有没有和其他组件用了相同的设置），如果无效会发">
+<meta name="keywords" content="ServerFramework,KBEngine">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KBEngine源码解读二组件互联">
+<meta property="og:url" content="https://lumieru.github.io/2019/06/22/KBEngine源码解读二组件互联/index.html">
+<meta property="og:site_name" content="Lumieru的知识库">
+<meta property="og:description" content="server/Components组件在互相发现的时候用的是UDP广播，找到对应组件知道其IP和Port后，用TCP来建立并保持连接。 machine组件会监听20086端口，然后其他组件都会往这个端口广播自己的信息（RPC调用MachineInterface::onBroadcastInterface函数）。然后machine收到信息后会判断有效性（有没有和其他组件用了相同的设置），如果无效会发">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-06-22T09:21:29.894Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="KBEngine源码解读二组件互联">
+<meta name="twitter:description" content="server/Components组件在互相发现的时候用的是UDP广播，找到对应组件知道其IP和Port后，用TCP来建立并保持连接。 machine组件会监听20086端口，然后其他组件都会往这个端口广播自己的信息（RPC调用MachineInterface::onBroadcastInterface函数）。然后machine收到信息后会判断有效性（有没有和其他组件用了相同的设置），如果无效会发">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://lumieru.github.io/2019/06/22/KBEngine源码解读二组件互联/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>KBEngine源码解读二组件互联 | Lumieru的知识库</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lumieru的知识库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/22/KBEngine源码解读二组件互联/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">KBEngine源码解读二组件互联
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-22 17:12:04 / 修改时间：17:21:29" itemprop="dateCreated datePublished" datetime="2019-06-22T17:12:04+08:00">2019-06-22</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="server-Components"><a href="#server-Components" class="headerlink" title="server/Components"></a>server/Components</h2><p>组件在互相发现的时候用的是UDP广播，找到对应组件知道其IP和Port后，用TCP来建立并保持连接。</p>
+<p>machine组件会监听20086端口，然后其他组件都会往这个端口广播自己的信息（RPC调用<code>MachineInterface::onBroadcastInterface</code>函数）。<br>然后machine收到信息后会判断有效性（有没有和其他组件用了相同的设置），如果无效会发回一个无效的通知给该组件，然后该组件就会退出。<br>如果有效的则，machine会记录和自己同一台物理机上的组件到自己的组件列表中（不同物理机的组件会被忽略掉）。</p>
+<p>然后组件会有一个需要找的组件的类型的列表，对于每种类型，它都会广播<code>MachineInterface::onFindInterfaceAddr</code>这个消息到machine。<br>machine收到这个消息后，会把已经注册过的本地同类型组件发回给该组件。如果没有找到对应的类型，会定时到下一个循环继续找，直到找到自己<br>感兴趣的所有类型的组件为止。</p>
+<p>external port和telnet的port都是通过配置文件指定好的，internal port传的零，就是让系统决定一个可用的随机端口，bind成功后在用<code>getsockname()</code>得到具体的端口。</p>
+<p>下面是每个组件感兴趣的列表:</p>
+<table>
+<thead>
+<tr>
+<th>组件类型</th>
+<th>感兴趣的类型</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cell app</td>
+<td>logger, dbmgr, cellAppMgr, baseAppMgr</td>
+</tr>
+<tr>
+<td>Base app</td>
+<td>logger, dbmgr, baseAppMgr, cellAppMgr</td>
+</tr>
+<tr>
+<td>Base app mgr</td>
+<td>logger, dbmgr, cellAppMgr</td>
+</tr>
+<tr>
+<td>Cell app mgr</td>
+<td>logger, dbmgr, baseAppMgr</td>
+</tr>
+<tr>
+<td>db mgr</td>
+<td>logger</td>
+</tr>
+</tbody>
+</table>
+<p>在连接其他组件时，会调用被连接组件的<code>XXX::onRegisterNewApp</code>函数。当baseApp或者cellApp连接<code>Dbmgr</code>时，同样会调用<code>Dbmgr::onRegisterNewApp</code>。<br>在这个函数中，如果连接者是baseApp或者cellApp，那么就会将自己注册到所有其他baseapp和cellapp中。主要是通过遍历已经注册在Dbmgr中的其他baseapp和cellapp，<br>然后RPC调用相应的<code>onGetEntityAppFromDbmgr</code>。在被调用的<code>onGetEntityAppFromDbmgr</code>中，被调用者会去连接当前组件。这样就能让所有的baseApp和cellApp互相连接了。</p>
+<a id="more"></a>
+<h2 id="运行时每个组件的互联情况："><a href="#运行时每个组件的互联情况：" class="headerlink" title="运行时每个组件的互联情况："></a>运行时每个组件的互联情况：</h2><p>db mgr：</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:32000</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>684</td>
+<td>telnet</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50277</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>684</td>
+<td>internal TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>127.0.0.1:50279</td>
+<td>127.0.0.1:30099</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>interfaces</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50277</td>
+<td>169.254.43.79:50297</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>cell app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50277</td>
+<td>169.254.43.79:50299</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>base app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50277</td>
+<td>169.254.43.79:50301</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>login app</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50277</td>
+<td>169.254.43.79:50303</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>cell app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50277</td>
+<td>169.254.43.79:50305</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>base app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50277</td>
+<td>169.254.43.79:50310</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>base app 3</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50277</td>
+<td>169.254.43.79:50315</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>base app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50277</td>
+<td>169.254.43.79:50321</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>cell app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50277</td>
+<td>169.254.43.79:50328</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>cell app 3</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50295</td>
+<td>169.254.43.79:50267</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>logger</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>[::1]:50281</td>
+<td>[::1]:3306</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>mysqld</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>[::1]:50282</td>
+<td>[::1]:3306</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>mysqld</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>[::1]:50283</td>
+<td>[::1]:3306</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>mysqld</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>[::1]:50284</td>
+<td>[::1]:3306</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>mysqld</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>[::1]:50285</td>
+<td>[::1]:3306</td>
+<td>ESTABLISHED</td>
+<td>684</td>
+<td>mysqld</td>
+</tr>
+</tbody>
+</table>
+<p>base app 1</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:20015</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>7624</td>
+<td>external TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:40001</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>7624</td>
+<td>telnet</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50269</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>7624</td>
+<td>internal TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50269</td>
+<td>169.254.43.79:50316</td>
+<td>ESTABLISHED</td>
+<td>7624</td>
+<td>base app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50269</td>
+<td>169.254.43.79:50317</td>
+<td>ESTABLISHED</td>
+<td>7624</td>
+<td>base app 3</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50269</td>
+<td>169.254.43.79:50318</td>
+<td>ESTABLISHED</td>
+<td>7624</td>
+<td>cell app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50293</td>
+<td>169.254.43.79:50267</td>
+<td>ESTABLISHED</td>
+<td>7624</td>
+<td>logger</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50315</td>
+<td>169.254.43.79:50277</td>
+<td>ESTABLISHED</td>
+<td>7624</td>
+<td>db mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50319</td>
+<td>169.254.43.79:50275</td>
+<td>ESTABLISHED</td>
+<td>7624</td>
+<td>base app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50320</td>
+<td>169.254.43.79:50272</td>
+<td>ESTABLISHED</td>
+<td>7624</td>
+<td>cell app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50324</td>
+<td>169.254.43.79:50274</td>
+<td>ESTABLISHED</td>
+<td>7624</td>
+<td>cell app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50331</td>
+<td>169.254.43.79:50276</td>
+<td>ESTABLISHED</td>
+<td>7624</td>
+<td>cell app 3</td>
+</tr>
+<tr>
+<td>UDP</td>
+<td>0.0.0.0:20005</td>
+<td>*:*</td>
+<td></td>
+<td>7624</td>
+<td>external UDP</td>
+</tr>
+</tbody>
+</table>
+<p>base app 2</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:20016</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>13068</td>
+<td>external TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:40000</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>13068</td>
+<td>telnet</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50270</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>13068</td>
+<td>internal TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50270</td>
+<td>169.254.43.79:50306</td>
+<td>ESTABLISHED</td>
+<td>13068</td>
+<td>cell app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50291</td>
+<td>169.254.43.79:50267</td>
+<td>ESTABLISHED</td>
+<td>13068</td>
+<td>logger</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50305</td>
+<td>169.254.43.79:50277</td>
+<td>ESTABLISHED</td>
+<td>13068</td>
+<td>db mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50307</td>
+<td>169.254.43.79:50275</td>
+<td>ESTABLISHED</td>
+<td>13068</td>
+<td>base app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50309</td>
+<td>169.254.43.79:50272</td>
+<td>ESTABLISHED</td>
+<td>13068</td>
+<td>cell app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50311</td>
+<td>169.254.43.79:50271</td>
+<td>ESTABLISHED</td>
+<td>13068</td>
+<td>base app 3</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50316</td>
+<td>169.254.43.79:50269</td>
+<td>ESTABLISHED</td>
+<td>13068</td>
+<td>base app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50322</td>
+<td>169.254.43.79:50274</td>
+<td>ESTABLISHED</td>
+<td>13068</td>
+<td>cell app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50329</td>
+<td>169.254.43.79:50276</td>
+<td>ESTABLISHED</td>
+<td>13068</td>
+<td>cell app 3</td>
+</tr>
+<tr>
+<td>UDP</td>
+<td>0.0.0.0:20006</td>
+<td>*:*</td>
+<td></td>
+<td>13068</td>
+<td>external UDP</td>
+</tr>
+</tbody>
+</table>
+<p>base app 3</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:20017</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>3412</td>
+<td>external TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:40002</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>3412</td>
+<td>telnet</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50271</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>3412</td>
+<td>internal TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50271</td>
+<td>169.254.43.79:50311</td>
+<td>ESTABLISHED</td>
+<td>3412</td>
+<td>base app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50271</td>
+<td>169.254.43.79:50312</td>
+<td>ESTABLISHED</td>
+<td>3412</td>
+<td>cell app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50294</td>
+<td>169.254.43.79:50267</td>
+<td>ESTABLISHED</td>
+<td>3412</td>
+<td>logger</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50310</td>
+<td>169.254.43.79:50277</td>
+<td>ESTABLISHED</td>
+<td>3412</td>
+<td>db mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50313</td>
+<td>169.254.43.79:50275</td>
+<td>ESTABLISHED</td>
+<td>3412</td>
+<td>base app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50314</td>
+<td>169.254.43.79:50272</td>
+<td>ESTABLISHED</td>
+<td>3412</td>
+<td>cell app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50317</td>
+<td>169.254.43.79:50269</td>
+<td>ESTABLISHED</td>
+<td>3412</td>
+<td>base app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50323</td>
+<td>169.254.43.79:50274</td>
+<td>ESTABLISHED</td>
+<td>3412</td>
+<td>cell app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50330</td>
+<td>169.254.43.79:50276</td>
+<td>ESTABLISHED</td>
+<td>3412</td>
+<td>cell app 3</td>
+</tr>
+<tr>
+<td>UDP</td>
+<td>0.0.0.0:20007</td>
+<td>*:*</td>
+<td></td>
+<td>3412</td>
+<td>external UDP</td>
+</tr>
+</tbody>
+</table>
+<p>cell app 1</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50001</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>2816</td>
+<td>telnet</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50273</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>2816</td>
+<td>internal TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50289</td>
+<td>169.254.43.79:50267</td>
+<td>ESTABLISHED</td>
+<td>2816</td>
+<td>logger</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50303</td>
+<td>169.254.43.79:50277</td>
+<td>ESTABLISHED</td>
+<td>2816</td>
+<td>db mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50304</td>
+<td>169.254.43.79:50272</td>
+<td>ESTABLISHED</td>
+<td>2816</td>
+<td>cell app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50306</td>
+<td>169.254.43.79:50270</td>
+<td>ESTABLISHED</td>
+<td>2816</td>
+<td>base app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50308</td>
+<td>169.254.43.79:50275</td>
+<td>ESTABLISHED</td>
+<td>2816</td>
+<td>base app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50312</td>
+<td>169.254.43.79:50271</td>
+<td>ESTABLISHED</td>
+<td>2816</td>
+<td>base app 3</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50318</td>
+<td>169.254.43.79:50269</td>
+<td>ESTABLISHED</td>
+<td>2816</td>
+<td>base app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50325</td>
+<td>169.254.43.79:50274</td>
+<td>ESTABLISHED</td>
+<td>2816</td>
+<td>cell app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50332</td>
+<td>169.254.43.79:50276</td>
+<td>ESTABLISHED</td>
+<td>2816</td>
+<td>cell app 3</td>
+</tr>
+</tbody>
+</table>
+<p>cell app 2</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50000</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>8280</td>
+<td>telnet</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50274</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>8280</td>
+<td>internal TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50274</td>
+<td>169.254.43.79:50322</td>
+<td>ESTABLISHED</td>
+<td>8280</td>
+<td>base app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50274</td>
+<td>169.254.43.79:50323</td>
+<td>ESTABLISHED</td>
+<td>8280</td>
+<td>base app 3</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50274</td>
+<td>169.254.43.79:50324</td>
+<td>ESTABLISHED</td>
+<td>8280</td>
+<td>base app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50274</td>
+<td>169.254.43.79:50325</td>
+<td>ESTABLISHED</td>
+<td>8280</td>
+<td>cell app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50288</td>
+<td>169.254.43.79:50267</td>
+<td>ESTABLISHED</td>
+<td>8280</td>
+<td>logger</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50321</td>
+<td>169.254.43.79:50277</td>
+<td>ESTABLISHED</td>
+<td>8280</td>
+<td>db mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50326</td>
+<td>169.254.43.79:50272</td>
+<td>ESTABLISHED</td>
+<td>8280</td>
+<td>cell app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50327</td>
+<td>169.254.43.79:50275</td>
+<td>ESTABLISHED</td>
+<td>8280</td>
+<td>base app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50333</td>
+<td>169.254.43.79:50276</td>
+<td>ESTABLISHED</td>
+<td>8280</td>
+<td>cell app 3</td>
+</tr>
+</tbody>
+</table>
+<p>cell app 3</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50002</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>8600</td>
+<td>telnet</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50276</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>8600</td>
+<td>internal TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50276</td>
+<td>169.254.43.79:50329</td>
+<td>ESTABLISHED</td>
+<td>8600</td>
+<td>base app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50276</td>
+<td>169.254.43.79:50330</td>
+<td>ESTABLISHED</td>
+<td>8600</td>
+<td>base app 3</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50276</td>
+<td>169.254.43.79:50331</td>
+<td>ESTABLISHED</td>
+<td>8600</td>
+<td>base app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50276</td>
+<td>169.254.43.79:50332</td>
+<td>ESTABLISHED</td>
+<td>8600</td>
+<td>cell app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50276</td>
+<td>169.254.43.79:50333</td>
+<td>ESTABLISHED</td>
+<td>8600</td>
+<td>cell app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50290</td>
+<td>169.254.43.79:50267</td>
+<td>ESTABLISHED</td>
+<td>8600</td>
+<td>logger</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50328</td>
+<td>169.254.43.79:50277</td>
+<td>ESTABLISHED</td>
+<td>8600</td>
+<td>db mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50334</td>
+<td>169.254.43.79:50272</td>
+<td>ESTABLISHED</td>
+<td>8600</td>
+<td>cell app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50335</td>
+<td>169.254.43.79:50275</td>
+<td>ESTABLISHED</td>
+<td>8600</td>
+<td>base app mgr</td>
+</tr>
+</tbody>
+</table>
+<p>login app</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:20013</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>10896</td>
+<td>external TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:31000</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>10896</td>
+<td>telnet</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50278</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>10896</td>
+<td>internal TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:21103</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>10896</td>
+<td>http call back</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50296</td>
+<td>169.254.43.79:50267</td>
+<td>ESTABLISHED</td>
+<td>10896</td>
+<td>logger</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50301</td>
+<td>169.254.43.79:50277</td>
+<td>ESTABLISHED</td>
+<td>10896</td>
+<td>db mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50302</td>
+<td>169.254.43.79:50275</td>
+<td>ESTABLISHED</td>
+<td>10896</td>
+<td>base app mgr</td>
+</tr>
+</tbody>
+</table>
+<p>cell app mgr</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50272</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>10860</td>
+<td>internal TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50272</td>
+<td>169.254.43.79:50300</td>
+<td>ESTABLISHED</td>
+<td>10860</td>
+<td>base app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50272</td>
+<td>169.254.43.79:50304</td>
+<td>ESTABLISHED</td>
+<td>10860</td>
+<td>cell app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50272</td>
+<td>169.254.43.79:50309</td>
+<td>ESTABLISHED</td>
+<td>10860</td>
+<td>base app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50272</td>
+<td>169.254.43.79:50314</td>
+<td>ESTABLISHED</td>
+<td>10860</td>
+<td>base app 3</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50272</td>
+<td>169.254.43.79:50320</td>
+<td>ESTABLISHED</td>
+<td>10860</td>
+<td>base app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50272</td>
+<td>169.254.43.79:50326</td>
+<td>ESTABLISHED</td>
+<td>10860</td>
+<td>cell app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50272</td>
+<td>169.254.43.79:50334</td>
+<td>ESTABLISHED</td>
+<td>10860</td>
+<td>cell app 3</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50287</td>
+<td>169.254.43.79:50267</td>
+<td>ESTABLISHED</td>
+<td>10860</td>
+<td>logger</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50297</td>
+<td>169.254.43.79:50277</td>
+<td>ESTABLISHED</td>
+<td>10860</td>
+<td>db mgr</td>
+</tr>
+</tbody>
+</table>
+<p>base app mgr</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50275</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>11652</td>
+<td>internal TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50275</td>
+<td>169.254.43.79:50302</td>
+<td>ESTABLISHED</td>
+<td>11652</td>
+<td>login app</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50275</td>
+<td>169.254.43.79:50307</td>
+<td>ESTABLISHED</td>
+<td>11652</td>
+<td>base app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50275</td>
+<td>169.254.43.79:50308</td>
+<td>ESTABLISHED</td>
+<td>11652</td>
+<td>cell app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50275</td>
+<td>169.254.43.79:50313</td>
+<td>ESTABLISHED</td>
+<td>11652</td>
+<td>base app 3</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50275</td>
+<td>169.254.43.79:50319</td>
+<td>ESTABLISHED</td>
+<td>11652</td>
+<td>base app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50275</td>
+<td>169.254.43.79:50327</td>
+<td>ESTABLISHED</td>
+<td>11652</td>
+<td>cell app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50275</td>
+<td>169.254.43.79:50335</td>
+<td>ESTABLISHED</td>
+<td>11652</td>
+<td>cell app 3</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50292</td>
+<td>169.254.43.79:50267</td>
+<td>ESTABLISHED</td>
+<td>11652</td>
+<td>logger</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50299</td>
+<td>169.254.43.79:50277</td>
+<td>ESTABLISHED</td>
+<td>11652</td>
+<td>db mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50300</td>
+<td>169.254.43.79:50272</td>
+<td>ESTABLISHED</td>
+<td>11652</td>
+<td>cell app mgr</td>
+</tr>
+</tbody>
+</table>
+<p>machine</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:20099</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>12256</td>
+<td>external TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50268</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>12256</td>
+<td>internal TCP</td>
+</tr>
+<tr>
+<td>UDP</td>
+<td>0.0.0.0:20086</td>
+<td>*:*</td>
+<td></td>
+<td>12256</td>
+<td>UDP广播接收</td>
+</tr>
+<tr>
+<td>UDP</td>
+<td>127.0.0.1:20086</td>
+<td>*:*</td>
+<td></td>
+<td>12256</td>
+<td>UDP广播接收</td>
+</tr>
+<tr>
+<td>UDP</td>
+<td>169.254.43.79:20086</td>
+<td>*:*</td>
+<td></td>
+<td>12256</td>
+<td>UDP广播接收</td>
+</tr>
+</tbody>
+</table>
+<p>logger</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:34000</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>11204</td>
+<td>telnet</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50266</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>11204</td>
+<td>external TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:50267</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>11204</td>
+<td>internal TCP</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50267</td>
+<td>169.254.43.79:50287</td>
+<td>ESTABLISHED</td>
+<td>11204</td>
+<td>cell app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50267</td>
+<td>169.254.43.79:50288</td>
+<td>ESTABLISHED</td>
+<td>11204</td>
+<td>cell app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50267</td>
+<td>169.254.43.79:50289</td>
+<td>ESTABLISHED</td>
+<td>11204</td>
+<td>cell app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50267</td>
+<td>169.254.43.79:50290</td>
+<td>ESTABLISHED</td>
+<td>11204</td>
+<td>cell app 3</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50267</td>
+<td>169.254.43.79:50291</td>
+<td>ESTABLISHED</td>
+<td>11204</td>
+<td>base app 2</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50267</td>
+<td>169.254.43.79:50292</td>
+<td>ESTABLISHED</td>
+<td>11204</td>
+<td>base app mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50267</td>
+<td>169.254.43.79:50293</td>
+<td>ESTABLISHED</td>
+<td>11204</td>
+<td>base app 1</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50267</td>
+<td>169.254.43.79:50294</td>
+<td>ESTABLISHED</td>
+<td>11204</td>
+<td>base app 3</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50267</td>
+<td>169.254.43.79:50295</td>
+<td>ESTABLISHED</td>
+<td>11204</td>
+<td>db mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>169.254.43.79:50267</td>
+<td>169.254.43.79:50296</td>
+<td>ESTABLISHED</td>
+<td>11204</td>
+<td>login app</td>
+</tr>
+</tbody>
+</table>
+<p>interfaces</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:30099</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>5324</td>
+<td></td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:33000</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>5324</td>
+<td>telnet</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>127.0.0.1:30040</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>5324</td>
+<td></td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>127.0.0.1:30099</td>
+<td>127.0.0.1:50279</td>
+<td>ESTABLISHED</td>
+<td>5324</td>
+<td>db mgr</td>
+</tr>
+</tbody>
+</table>
+<p>mysqld</p>
+<table>
+<thead>
+<tr>
+<th>Socket</th>
+<th>源地址</th>
+<th>目标地址</th>
+<th>状态</th>
+<th>PID</th>
+<th>目标组件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:3306</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>4808</td>
+<td></td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>0.0.0.0:33060</td>
+<td>0.0.0.0:0</td>
+<td>LISTENING</td>
+<td>4808</td>
+<td></td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>127.0.0.1:49670</td>
+<td>127.0.0.1:49671</td>
+<td>ESTABLISHED</td>
+<td>4808</td>
+<td></td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>127.0.0.1:49671</td>
+<td>127.0.0.1:49670</td>
+<td>ESTABLISHED</td>
+<td>4808</td>
+<td></td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>[::]:3306</td>
+<td>[::]:0</td>
+<td>LISTENING</td>
+<td>4808</td>
+<td></td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>[::]:33060</td>
+<td>[::]:0</td>
+<td>LISTENING</td>
+<td>4808</td>
+<td></td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>[::1]:3306</td>
+<td>[::1]:50281</td>
+<td>ESTABLISHED</td>
+<td>4808</td>
+<td>db mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>[::1]:3306</td>
+<td>[::1]:50282</td>
+<td>ESTABLISHED</td>
+<td>4808</td>
+<td>db mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>[::1]:3306</td>
+<td>[::1]:50283</td>
+<td>ESTABLISHED</td>
+<td>4808</td>
+<td>db mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>[::1]:3306</td>
+<td>[::1]:50284</td>
+<td>ESTABLISHED</td>
+<td>4808</td>
+<td>db mgr</td>
+</tr>
+<tr>
+<td>TCP</td>
+<td>[::1]:3306</td>
+<td>[::1]:50285</td>
+<td>ESTABLISHED</td>
+<td>4808</td>
+<td>db mgr</td>
+</tr>
+</tbody>
+</table>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ServerFramework/" rel="tag"><i class="fa fa-tag"></i> ServerFramework</a>
+          
+            <a href="/tags/KBEngine/" rel="tag"><i class="fa fa-tag"></i> KBEngine</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/14/KBEngine源码解读一/" rel="next" title="KBEngine源码解读一">
+                <i class="fa fa-chevron-left"></i> KBEngine源码解读一
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lumieru</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#server-Components"><span class="nav-number">1.</span> <span class="nav-text">server/Components</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#运行时每个组件的互联情况："><span class="nav-number">2.</span> <span class="nav-text">运行时每个组件的互联情况：</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lumieru</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.1"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('复制成功');
+        else $(this).text('复制失败');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

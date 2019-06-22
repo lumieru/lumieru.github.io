@@ -1,0 +1,1336 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="原文出处 对象序列化 现代编程技术中，面向对象是一个最常见的思想。因此不管是 C++ Java C#，还是 Python JS，都有对象的概念。虽然说面向对象并不是软件开发的“银弹”，但也不失为一种解决复杂逻辑的优秀工具。回到游戏服务器端程序来说，自然我会希望能有一定面向对象方面的支持。所以，从游戏服务器端的整个处理过程来看，我认为，有以下几个地方，是可以用对象来抽象业务数据的：  数据传输：我们">
+<meta name="keywords" content="ServerFramework">
+<meta property="og:type" content="article">
+<meta property="og:title" content="教你从头写游戏服务器框架二">
+<meta property="og:url" content="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架二/index.html">
+<meta property="og:site_name" content="Lumieru的知识库">
+<meta property="og:description" content="原文出处 对象序列化 现代编程技术中，面向对象是一个最常见的思想。因此不管是 C++ Java C#，还是 Python JS，都有对象的概念。虽然说面向对象并不是软件开发的“银弹”，但也不失为一种解决复杂逻辑的优秀工具。回到游戏服务器端程序来说，自然我会希望能有一定面向对象方面的支持。所以，从游戏服务器端的整个处理过程来看，我认为，有以下几个地方，是可以用对象来抽象业务数据的：  数据传输：我们">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://blog.sensedevil.com/image/GameServer2_1.webp">
+<meta property="og:image" content="http://blog.sensedevil.com/image/GameServer2_2.webp">
+<meta property="og:image" content="http://blog.sensedevil.com/image/GameServer2_3.webp">
+<meta property="og:updated_time" content="2019-06-22T09:02:57.361Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="教你从头写游戏服务器框架二">
+<meta name="twitter:description" content="原文出处 对象序列化 现代编程技术中，面向对象是一个最常见的思想。因此不管是 C++ Java C#，还是 Python JS，都有对象的概念。虽然说面向对象并不是软件开发的“银弹”，但也不失为一种解决复杂逻辑的优秀工具。回到游戏服务器端程序来说，自然我会希望能有一定面向对象方面的支持。所以，从游戏服务器端的整个处理过程来看，我认为，有以下几个地方，是可以用对象来抽象业务数据的：  数据传输：我们">
+<meta name="twitter:image" content="http://blog.sensedevil.com/image/GameServer2_1.webp">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架二/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>教你从头写游戏服务器框架二 | Lumieru的知识库</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lumieru的知识库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架二/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">教你从头写游戏服务器框架二
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-04 13:09:27" itemprop="dateCreated datePublished" datetime="2019-06-04T13:09:27+08:00">2019-06-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><a href="https://mp.weixin.qq.com/s?__biz=MzA5ODExMTkwMA==&amp;mid=2650255971&amp;idx=1&amp;sn=bef0819b24df85978db1fb875abe3102&amp;chksm=88958a90bfe2038679464d8bbddcbafd95a9f2e113b452e241746e9e2c0cb194b3f09782399f&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">原文出处</a></p>
+<h2 id="对象序列化"><a href="#对象序列化" class="headerlink" title="对象序列化"></a>对象序列化</h2><p><img src="http://blog.sensedevil.com/image/GameServer2_1.webp" alt></p>
+<p>现代编程技术中，面向对象是一个最常见的思想。因此不管是 C++ Java C#，还是 Python JS，都有对象的概念。虽然说面向对象并不是软件开发的“银弹”，但也不失为一种解决复杂逻辑的优秀工具。回到游戏服务器端程序来说，自然我会希望能有一定面向对象方面的支持。所以，从游戏服务器端的整个处理过程来看，我认为，有以下几个地方，是可以用对象来抽象业务数据的：</p>
+<ol>
+<li><p>数据传输：我们可以把通过网络传输的数据，看成是一个对象。这样我们可以简单的构造一个对象，然后直接通过网络收、发它。</p>
+</li>
+<li><p>数据缓存：一批在内存中的，可以用对象进行“抽象”。而 key-value 的模型也是最常见的数据容器，因此我们可以起码把 key-value 中的 value 作为对象处理。</p>
+</li>
+<li><p>数据持久化：长久以来，我们使用 SQL 的二维表结构来持久化数据。但是 ORM （对象关系映射）的库一直非常流行，就是想在二维表和对象之间搭起桥梁。现在 NoSQL 的使用越来越常见，其实也是一种 key-value 模型。所以也是可以视为一个存放“对象”的工具。</p>
+</li>
+</ol>
+<p>对象序列化的标准模式也很常见，因此我定义成：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Serializable</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 序列化到一个数组中</span></span><br><span class="line"><span class="comment">    * @param buffer 目地缓冲区数组</span></span><br><span class="line"><span class="comment">    * @param buffer_length 缓冲区长度</span></span><br><span class="line"><span class="comment">    * @return 返回写入了 buffer 的数据长度。如果返回 -1 表示出错，比如 buffer_length 不够。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> ssize_t <span class="title">SerializeTo</span><span class="params">(<span class="keyword">char</span>* buffer, <span class="keyword">int</span> buffer_length)</span> <span class="keyword">const</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 从一个 buffer 中读取 length 个字节，反序列化到本对象。</span></span><br><span class="line"><span class="comment">    *@return  返回 0 表示成功，其他值表示出错。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">SerializeFrom</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* buffer, <span class="keyword">int</span> length)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">virtual</span> ~Serializable()&#123;&#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<a id="more"></a> 
+<h3 id="网络传输"><a href="#网络传输" class="headerlink" title="网络传输"></a>网络传输</h3><p>有了对象序列化的定义，就可以从网络传输处使用了。因此专门在 Processor 层设计一个收发对象的处理器 ObjectProcessor，它可以接纳一种 ObjectHandler 的对象注册。这个对象根据注册的 Service 名字，负责把收发的接口从 Request, Response 里面的字节数组转换成对象，然后处理。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ObjectProcessor 定义</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ObjectProcessor</span> :</span> <span class="keyword">public</span> ProcessorHelper &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   ObjectProcessor();</span><br><span class="line">   <span class="keyword">virtual</span> ~ObjectProcessor();</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 继承自 Processor 处理器函数</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Init</span><span class="params">(Server* server, Config* config = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">// 继承自 Processor 的处理函数</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Process</span><span class="params">(<span class="keyword">const</span> Request&amp; request, <span class="keyword">const</span> Peer&amp; peer)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Process</span><span class="params">(<span class="keyword">const</span> Request&amp; request, <span class="keyword">const</span> Peer&amp; peer, Server* server)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">///@brief 设置默认处理器，所有没有注册具体服务名字的消息都会用这个消息处理</span></span><br><span class="line">   <span class="function"><span class="keyword">inline</span> <span class="keyword">void</span> <span class="title">set_default_handler</span><span class="params">(ObjectHandler* default_handler)</span> </span>&#123;</span><br><span class="line">       default_handler_ = default_handler;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 针对 service_name，注册对应处理的 handler ，注意 handler 本身是带对象类型信息的。</span></span><br><span class="line"><span class="comment">    * @param service_name 服务名字，通过 Request.service 传输</span></span><br><span class="line"><span class="comment">    * @param handler 请求的处理对象</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">Register</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; service_name, ObjectHandler* handler)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 使用 handler 自己的 GetName() 返回值，注册服务。</span></span><br><span class="line"><span class="comment">    * 如果 handler-&gt;GetName() 返回 "" 字符串，则会替换默认处理器对象</span></span><br><span class="line"><span class="comment">    * @param handler 服务处理对象。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">void</span> <span class="title">Register</span><span class="params">(ObjectHandler* handler)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">///@brief 关闭此服务</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Close</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">   <span class="built_in">std</span>::<span class="built_in">map</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>, ObjectHandler*&gt; handler_table_;</span><br><span class="line">   Config* config_;</span><br><span class="line">   ObjectHandler* default_handler_;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">ProcessBy</span><span class="params">(<span class="keyword">const</span> Request&amp; request, <span class="keyword">const</span> Peer&amp; peer,</span></span></span><br><span class="line"><span class="function"><span class="params">                 ObjectHandler* handler, Server* server = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">DefaultProcess</span><span class="params">(<span class="keyword">const</span> Request&amp; request, <span class="keyword">const</span> Peer&amp; peer, Server* server = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">bool</span> <span class="title">InitHandler</span><span class="params">(ObjectHandler* handler)</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// ObjectHandler 定义</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ObjectHandler</span> :</span> <span class="keyword">public</span> Serializable, <span class="keyword">public</span> Updateable &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   ObjectHandler();</span><br><span class="line">   <span class="keyword">virtual</span> ~ObjectHandler() ;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">ProcessRequest</span><span class="params">(<span class="keyword">const</span> Peer&amp; peer)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">ProcessRequest</span><span class="params">(<span class="keyword">const</span> Peer&amp; peer, Server* server)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * DenOS 用此方法确定进行服务注册，你应该覆盖此方法。</span></span><br><span class="line"><span class="comment">    * 默认名字为空，会注册为“默认服务”，就是所有找不到对应名字服务的请求，都会转发给此对象处理。</span></span><br><span class="line"><span class="comment">    * @return 注册此服务的名字。在 Request.service 字段中传输。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="keyword">virtual</span> <span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">GetName</span><span class="params">()</span> </span>;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">Reply</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* buffer, <span class="keyword">int</span> length, <span class="keyword">const</span> Peer&amp; peer,</span></span></span><br><span class="line"><span class="function"><span class="params">             <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; service_name = <span class="string">""</span>, Server* server = <span class="literal">NULL</span>)</span> </span>;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">Inform</span><span class="params">(<span class="keyword">char</span>* buffer, <span class="keyword">int</span> length, <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; session_id,</span></span></span><br><span class="line"><span class="function"><span class="params">              <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; service_name, Server* server = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">Inform</span><span class="params">(<span class="keyword">char</span>* buffer, <span class="keyword">int</span> length, <span class="keyword">const</span> Peer&amp; peer,</span></span></span><br><span class="line"><span class="function"><span class="params">              <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; service_name = <span class="string">""</span>, Server* server = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Init</span><span class="params">(Server* server, Config* config)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 如果需要在主循环中进行操作，可以实现此方法。</span></span><br><span class="line"><span class="comment">    * 返回值小于 0 的话，此任务会被移除循环</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Update</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">   Server* server_;</span><br><span class="line">   <span class="built_in">std</span>::<span class="built_in">map</span>&lt;<span class="keyword">int</span>, MessageHeader&gt; header_map_;</span><br><span class="line">   Response response_;</span><br><span class="line">   Notice notice_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>由于我们对于可序列化的对象，要求一定要实现 Serializable 这个接口，所以所有需要收发的数据，都要定义一个类来实现这个接口。但是，这种强迫用户一定要实现某个接口的方式，可能会不够友好，因为针对业务逻辑设计的类，加上一个这种接口，会比较繁琐。为了解决这种问题，我利用 C++ 的模板功能，对于那些不想去实现 Serializable 的类型，使用一个额外的 Pack()/Upack() 模板方法，来插入具体的序列化和反序列化方法（定义 ObjectHandlerCast 模板）。这样除了可以减少实现类型的代码，还可以让接受消息处理的接口方法 ProcessObject() 直接获得对应的类型指针，而不是通过 Serializable 来强行转换。在这里，其实也有另外一个思路，就是把 Serializable 设计成一个模板类，也是可以减少强制类型转换。但是我考虑到，序列化和反序列化，以及处理业务对象，都是使用同样一个（或两个，一个输入一个输出）模板类型参数，不如直接统一到一个类型里面好了。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// ObjectHandlerCast 模板定义</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 用户继承这个模板的实例化类型，可以节省关于对象序列化的编写代码。</span></span><br><span class="line"><span class="comment">* 直接编写开发业务逻辑的函数。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">template</span>&lt;<span class="keyword">typename</span> REQ, <span class="keyword">typename</span> RES = REQ&gt;</span><br><span class="line">class ObjectHandlerCast : <span class="keyword">public</span> ObjectHandler &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   ObjectHandlerCast()</span><br><span class="line">           : req_obj_(<span class="literal">NULL</span>),</span><br><span class="line">             res_obj_(<span class="literal">NULL</span>),</span><br><span class="line">             buffer_(<span class="literal">NULL</span>) &#123;</span><br><span class="line">       buffer_ = <span class="keyword">new</span> <span class="keyword">char</span>[Message::MAX_MAESSAGE_LENGTH];</span><br><span class="line">       bzero(buffer_, Message::MAX_MAESSAGE_LENGTH);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">virtual</span> ~ObjectHandlerCast() &#123;</span><br><span class="line">       <span class="keyword">delete</span>[] buffer_;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 对于不想使用 obj_ 成员来实现 Serializable 接口的，可以实现此接口</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Pack</span><span class="params">(<span class="keyword">char</span>* buffer, <span class="keyword">int</span> length, <span class="keyword">const</span> RES&amp; object)</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Unpack</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* buffer, <span class="keyword">int</span> length, REQ* object)</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">ReplyObject</span><span class="params">(<span class="keyword">const</span> RES&amp; object, <span class="keyword">const</span> Peer&amp; peer,</span></span></span><br><span class="line"><span class="function"><span class="params">                   <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; service_name = <span class="string">""</span>)</span> </span>&#123;</span><br><span class="line">       res_obj_ = &amp;object;</span><br><span class="line">       <span class="keyword">int</span> len = SerializeTo(buffer_, Message::MAX_MAESSAGE_LENGTH);</span><br><span class="line">       <span class="keyword">if</span> (len &lt; <span class="number">0</span>)</span><br><span class="line">           <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> Reply(buffer_, len, peer, service_name);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">int</span> <span class="title">InformObject</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; session_id, <span class="keyword">const</span> RES&amp; object,</span></span></span><br><span class="line"><span class="function"><span class="params">                    <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; service_name)</span> </span>&#123;</span><br><span class="line">       res_obj_ = &amp;object;</span><br><span class="line">       <span class="keyword">int</span> len = SerializeTo(buffer_, Message::MAX_MAESSAGE_LENGTH);</span><br><span class="line">       <span class="keyword">if</span> (len &lt; <span class="number">0</span>)</span><br><span class="line">           <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> Inform(buffer_, len, session_id, service_name);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">ProcessRequest</span><span class="params">(<span class="keyword">const</span> Peer&amp; peer, Server* server)</span> </span>&#123;</span><br><span class="line">       REQ* obj = req_obj_;</span><br><span class="line">       ProcessObject(*obj, peer, server);</span><br><span class="line">       <span class="keyword">delete</span> obj;</span><br><span class="line">       req_obj_ = <span class="literal">NULL</span>;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">ProcessObject</span><span class="params">(<span class="keyword">const</span> REQ&amp; object, <span class="keyword">const</span> Peer&amp; peer)</span> </span>&#123;</span><br><span class="line">       ERROR_LOG(<span class="string">"This object have no process handler."</span>);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">ProcessObject</span><span class="params">(<span class="keyword">const</span> REQ&amp; object, <span class="keyword">const</span> Peer&amp; peer,</span></span></span><br><span class="line"><span class="function"><span class="params">                              Server* server)</span> </span>&#123;</span><br><span class="line">       ProcessObject(object, peer);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">   REQ* req_obj_;</span><br><span class="line">   <span class="keyword">const</span> RES* res_obj_;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">   <span class="keyword">char</span>* buffer_;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> ssize_t <span class="title">SerializeTo</span><span class="params">(<span class="keyword">char</span>* buffer, <span class="keyword">int</span> buffer_length)</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">       <span class="keyword">ssize_t</span> ret = <span class="number">0</span>;</span><br><span class="line">       ret = Pack(buffer, buffer_length, *res_obj_);</span><br><span class="line">       <span class="keyword">return</span> ret;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">SerializeFrom</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* buffer, <span class="keyword">int</span> length)</span> </span>&#123;</span><br><span class="line">       req_obj_ = <span class="keyword">new</span> REQ();  <span class="comment">// 新建一个对象，为了协程中不被别的协程篡改</span></span><br><span class="line">       <span class="keyword">int</span> ret = Unpack(buffer, length, req_obj_);</span><br><span class="line">       <span class="keyword">if</span> (ret) &#123;</span><br><span class="line">           <span class="keyword">delete</span> req_obj_;</span><br><span class="line">           req_obj_ = <span class="literal">NULL</span>;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> ret;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>任何类型的对象，如果想要在这个框架中以网络收发，只要为他写一个模板，完成 Pack() 和 UnPack() 这两个方法，就完成了。看起来确实方便。 （如果想节省注册的时候编写其“类名”，还需要完成一个简单的 GetName() 方法）</p>
+<p>当我完成上面的设计，不禁赞叹 C++ 对于模板支持的好处。由于模板可以在编译时绑定，只要是具备“预设”的方法的任何类型，都可以自动生成一个符合既有继承结构的类。这对于框架设计来说，是一个巨大的便利。而且编译时绑定也把可能出现的类型错误，暴露在编译期。————对比那些可以通过反射实现同样功能的技术，其实是更容易修正的问题。</p>
+<h3 id="缓冲和持久化"><a href="#缓冲和持久化" class="headerlink" title="缓冲和持久化"></a>缓冲和持久化</h3><p>数据传输的对象序列化问题解决后，下来就是缓存和持久化。由于缓存和持久化，我的设计都是基于 Map 接口的，也就是一种 Key-Value 的方式，所以就没有设计模板，而是希望用户自己去实现 <code>Serializable</code> 接口。但是我也实现了最常用的几种可序列化对象的实现代码：</p>
+<ul>
+<li><p>固定长度的类型，比如 int 。序列化其实就是一个 memcpy() 而已。</p>
+</li>
+<li><p>std::string 字符串。这个需要使用 c_str() 变成一个字节数组。</p>
+</li>
+<li><p>JSON 格式串。使用了某个开源的 json 解析器。推荐 GITHUB 上的 Tencent/RapidJson。</p>
+</li>
+</ul>
+<h2 id="数据缓冲"><a href="#数据缓冲" class="headerlink" title="数据缓冲"></a>数据缓冲</h2><p><img src="http://blog.sensedevil.com/image/GameServer2_2.webp" alt></p>
+<p>数据缓冲这个需求，虽然在互联网领域非常常见，但是游戏的缓冲和其他一些领域的缓冲，实际需求是有非常大的差别。这里的差别主要有：</p>
+<ol>
+<li><p>游戏的缓冲要求延迟极低，而且需要对服务器性能占用极少，因为游戏运行过程中，会有非常非常频繁的缓冲读写操作。举个例子来说，一个“群体伤害”的技能，可能会涉及对几十上百个数据对象的修改。而且这个操作可能会以每秒几百上千次的频率请求服务器。如果我们以传统的 memcache 方式来建立缓冲，这么高频率的网络 IO 往往不能满足延迟的要求，而且非常容易导致服务器过载。</p>
+</li>
+<li><p>游戏的缓冲数据之间的关联性非常强。和一张张互不关联的订单，或者一条条浏览结果不一样。游戏缓冲中往往存放着一个完整的虚拟世界的描述。比如一个地区中有几个房间，每个房间里面有不通的角色，角色身上又有各种状态和道具。而角色会在不同的房间里切换，道具也经常在不同角色身上转移。这种复杂的关系会导致一个游戏操作，带来的是多个数据的同时修改。如果我们把数据分割放在多个不同的进程上，这种关联性的修改可能会让进程间通信发生严重的过载。</p>
+</li>
+<li><p>游戏的缓冲数据的安全性具有一个明显的特点：更新时间越短，变换频率越大的数据，安全性要求越低。这对于简化数据缓冲安全性涉及，非常具有价值。我们不需要过于追求缓冲的“一致性”和“时效”，对于一些异常情况下的“脏”数据丢失，游戏领域的忍耐程度往往比较高。只要我们能保证最终一致性，甚至丢失一定程度以内的数据，都是可以接受的。这给了我们不挑战 <strong>CAP</strong> 定律的情况下，设计分布式缓冲系统的机会。</p>
+</li>
+</ol>
+<h3 id="基本模型"><a href="#基本模型" class="headerlink" title="基本模型"></a>基本模型</h3><p>基于上面的分析，我首先希望是建立一个足够简单的缓冲使用模型，那就是 Map 模型。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataMap</span> :</span> <span class="keyword">public</span> Updateable &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   DataMap();</span><br><span class="line">   <span class="keyword">virtual</span> ~DataMap();</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 对于可能阻塞的异步操作，需要调用这个接口来驱动回调。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Update</span><span class="params">()</span></span>&#123; <span class="keyword">return</span> <span class="number">0</span>; &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 获取 key 对应的数据。</span></span><br><span class="line"><span class="comment">    * @param key 数据的 Key</span></span><br><span class="line"><span class="comment">    * @param value_buf 是输出缓冲区指针</span></span><br><span class="line"><span class="comment">    * @param value_buf_len 是缓冲区最大长度</span></span><br><span class="line"><span class="comment">    * @return 返回 -1 表示找不到这个 key，返回 -2 表示 value_buf_len 太小，不足以读出数据。其他负数表示错误，返回 &gt;= 0 的值表示 value 的长度</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Get</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key, <span class="keyword">char</span>* value_buf, <span class="keyword">int</span> value_buf_len)</span> </span>= <span class="number">0</span>;</span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Get</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key, Serializable* value)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 异步 Get 的接口</span></span><br><span class="line"><span class="comment">    * @param key 获取数据的 Key</span></span><br><span class="line"><span class="comment">    * @param callback 获取数据的回调对象，如果 key 不存在， FetchData() 参数 value_buf 会为 NULL</span></span><br><span class="line"><span class="comment">    * @return 返回 0 表示发起查询成功，其他值表示错误。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Get</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key, DataMapCallback* callback)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 覆盖、写入key对应的缓冲数据。</span></span><br><span class="line"><span class="comment">    * @return 成功返回0。 返回 -1 表示value数据太大，其他负数表示其他错误</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Put</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key, <span class="keyword">const</span> <span class="keyword">char</span>* value_buf, <span class="keyword">int</span> value_buf_len)</span> </span>= <span class="number">0</span>;</span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Put</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key, <span class="keyword">const</span> Serializable&amp; value)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 写入数据的异步接口，使用 callback 来通知写入结果</span></span><br><span class="line"><span class="comment">    * @param key 数据 key</span></span><br><span class="line"><span class="comment">    * @param value 数据 Value</span></span><br><span class="line"><span class="comment">    * @param callback 写入结果会调用此对象的 PutResult() 方法</span></span><br><span class="line"><span class="comment">    * @return 返回 0 表示准备操作成功</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Put</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key, <span class="keyword">const</span> Serializable&amp; value, DataMapCallback* callback)</span></span>;</span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Put</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key, <span class="keyword">const</span> <span class="keyword">char</span>* value_buf, <span class="keyword">int</span> value_buf_len, DataMapCallback* callback)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 删除 key 对应的数据</span></span><br><span class="line"><span class="comment">    * @return 返回 0 表示成功删除，返回 -1 表示这个 key 本身就不存在，其他负数返回值表示其他错误。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Remove</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key)</span> </span>= <span class="number">0</span>;</span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Remove</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp;key, DataMapCallback* callback)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 是否有 Key 对应的数据</span></span><br><span class="line"><span class="comment">    *@return  返回 key 值表示找到，0 表示找不到</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">ContainsKey</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 异步 ContainsKey 接口，如果 key 不存在， FetchData() 参数 value_buf 会为 NULL。</span></span><br><span class="line"><span class="comment">    * 如果 key 存在，value_buf 则不为NULL，但也不保证指向任何可用数据。可能是目标数值，</span></span><br><span class="line"><span class="comment">    * 也可能内部的某个空缓冲区。如果是在本地的数据，就会是目标数据，如果是远程的数据，</span></span><br><span class="line"><span class="comment">    * 为了减少性能就不会传入具体的 value 数值。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">ContainsKey</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key, DataMapCallback* callback)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 遍历整个缓存。</span></span><br><span class="line"><span class="comment">    * @param callback 每条记录都会调用 callback 对象的 FetchData() 方法</span></span><br><span class="line"><span class="comment">    * @return 返回 0 表示成功，其他表示错误。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">GetAll</span><span class="params">(DataMapCallback* callback)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 获取整个缓存的数据</span></span><br><span class="line"><span class="comment">    * @param result 结果会放在这个 map 里面，记得每条记录中的 Bytes 的 buffer_ptr 需要 delete[]</span></span><br><span class="line"><span class="comment">    * @return 返回 0 表示成功，其他表示错误</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">GetAll</span><span class="params">(<span class="built_in">std</span>::<span class="built_in">map</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>, Bytes&gt;* result)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">   <span class="keyword">char</span>* tmp_buffer_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这个接口其实只是一个 std::map 的简单模仿，把 key 固定成 string ，而把 value 固定成一个 buffer 或者是一个可序列化对象。另外为了实现分布式的缓冲，所有的接口都增加了回调接口。</p>
+<p>可以用来充当数据缓存的业界方案其实非常多，他们包括：</p>
+<ul>
+<li><p>堆内存，这个是最简单的缓存容器</p>
+</li>
+<li><p>Redis</p>
+</li>
+<li><p>Memcached</p>
+</li>
+<li><p>ZooKeeper 这个自带了和进程关联的数据管理</p>
+</li>
+</ul>
+<p>由于我希望这个框架，可以让程序自由的选用不同的缓冲存储“设备”，比如在测试的时候，可以不按照任何其他软件，直接用自己的内存做缓冲，而在运营或者其他情况下，可以使用 Redis 或其他的设备。所以我们可以编写代码来实现上面的 <strong>DataMap</strong> 接口，以实现不同的缓冲存储方案。当然必须要把最简单的，使用堆内存的实现完成： <code>RamMap</code></p>
+<h3 id="分布式设计"><a href="#分布式设计" class="headerlink" title="分布式设计"></a>分布式设计</h3><p>如果作为一个仅仅在“本地”服务器使用的缓冲，上面的 DataMap 已经足够了，但是我希望缓存是可以分布式的。不过，并不是任何的数据，都需要分布式存储，因为这会带来更多延迟和服务器负载。因此我希望设计一个接口，可以在使用时指定是否使用分布式存储，并且指定分布式存储的模式。</p>
+<p>根据经验，在游戏领域中，分布式存储一般有以下几种模式：</p>
+<ol>
+<li><p><strong>本地模式</strong> 如果是分区分服的游戏，数据缓存全部放在一个地方即可。或者我们可以用一个 Redis 作为缓存存储点，然后多个游戏服务进程共同访问它。总之对于数据全部都缓存在一个地方的，都可以叫做本地模式。这也是最简单的缓冲模式。</p>
+</li>
+<li><p><strong>按数据类型分布</strong> 这种模式和“本地模式”的差别，仅仅在于数据内容不同，就放在不同的地方。比如我们可以所有的场景数据放在一个 Redis 里面，然后把角色数据放在另外一个 Redis 里面。这种分布节点的选择是固定，仅仅根据数据类型来决定。这是为了减缓某一个缓冲节点的压力而设计。或者你对不同数据有缓冲隔离的需求：比如我不希望对用户的缓冲请求负载，影响对支付服务的缓冲请求负载。</p>
+</li>
+<li><p><strong>按数据的 Key 分布</strong> 这是最复杂也最有价值的一种分布式缓存。因为缓冲模式是按照 Key-Vaule 的方式来存放的，所以我们可以把不同的 Key 的数据分布到不同节点上。<strong>如果刚好对应的 Key 数据，是分布在“本地”的，那么我们将获得本地操作的性能！</strong> 这种缓冲</p>
+</li>
+<li><p><strong>按复制分布</strong> 就是多个节点间的数据一摸一样，在修改数据的时候，会广播到所有节点，这种是典型的读多写少性能好的模型。</p>
+</li>
+</ol>
+<p>在游戏开发中，我们往往习惯于把进程，按游戏所需要的数据来分布。比如我们会按照用户 ID ，把用户的状态数据，分布到不同的机器上，在登录的时候，就按照用户 ID 去引导客户端，直接连接到对应的服务器进程处。或者我们会把每个战斗副本或者游戏房间，放在不同的服务器上，所有的战斗操作请求，都会转发到对应的存放其副本、房间数据的服务器上。在这种开发中，我们会需要把大量的数据包路由、转发代码耦合到业务代码中。</p>
+<p>如果我们按照上面的第 3 种模型，就可以把按“用户ID”或者“房间ID”分布的事情，交给底层缓冲模块去处理。当然如果仅仅这样做，也许会有大量的跨进程通信，导致性能下降。但是我们还可以增加一个“本地二级缓存”的设计，来提高性能。具体的流程大概为：</p>
+<ol>
+<li><p>取 key 在本地二级缓存（一般是 RamMap）中读写数据。如果没有则从远端读取数据建立缓存，并在远端增加一条“二级缓存记录”。此记录包含了二级所在的服务器地址。</p>
+</li>
+<li><p>按 key 计算写入远端数据。根据“二级缓存记录”广播“清理二级缓存”的消息。此广播会忽略掉刚写入远端数据的那个服务节点。（此行为是异步的）</p>
+</li>
+</ol>
+<p>只要不是频繁的在不同的节点上写入同一个 Key 的记录，那么二级缓存的生存周期会足够长，从而提供足够好的性能。当然这种模式在同时多个写入记录时，有可能出现脏数据丢失或者覆盖，但可以再添加上乐观锁设计来防止。不过对于一般游戏业务，我们在 Key 的设计上，就应该尽量避免这种情况：如果涉及非常重要的，多个用户都可能修改的数据，应该避免使用“二级缓存”功能的模型 3 缓存，而是尽量利用服务器间通信，把请求集中转发到数据所在节点，以模式 1 （本地模式）使用缓冲。</p>
+<p>以下为分布式设计的缓冲接口。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 定义几种网络缓冲模型</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="keyword">enum</span> CacheType &#123;</span><br><span class="line">   TypeLocal, <span class="comment">///&lt; 本地</span></span><br><span class="line">   TypeName,  <span class="comment">///&lt; 按 Cache 名字分布</span></span><br><span class="line">   TypeKey,   <span class="comment">///&lt; 先按 Cache 名字分布，再按数据的 key 分布</span></span><br><span class="line">   TypeCopy   <span class="comment">///&lt; 复制型分布</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* @brief 定义了分布式缓存对象的基本结构</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Cache</span> :</span> <span class="keyword">public</span> DataMap &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 连接集群。</span></span><br><span class="line"><span class="comment">    * @return 返回是否连接成功。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">EnsureCluster</span><span class="params">(Config* config = <span class="literal">NULL</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 获得一个 Cache 对象。</span></span><br><span class="line"><span class="comment">    * @attention 如果第一次调用此函数时，输入的 type, local_data_map 会成为这个 Cache 的固定属性，以后只要是 name 对的上，都会是同一个 Cache 对象。</span></span><br><span class="line"><span class="comment">    * @param name 为名字</span></span><br><span class="line"><span class="comment">    * @param type 此缓存希望是哪种类型</span></span><br><span class="line"><span class="comment">    * @param local_data_map 为本地存放的数据容器。</span></span><br><span class="line"><span class="comment">    * @return 如果是 NULL 表示已经达到 Cache 数量的上限。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">static</span> Cache* <span class="title">GetCache</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; name, CacheType type,</span></span></span><br><span class="line"><span class="function"><span class="params">                          DataMap* local_data_map)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 获得一个 Cache 对象。</span></span><br><span class="line"><span class="comment">    * @param  name 为名字</span></span><br><span class="line"><span class="comment">    * @param local_data_map 为本地存放的数据容器。</span></span><br><span class="line"><span class="comment">    * @note 如果第一次调用此函数时，输入的 type, class M 会成为这个 Cache 的固定属性，以后只要是 name 对的上，都会是同一个 Cache 对象。</span></span><br><span class="line"><span class="comment">    * @return 如果是 NULL 表示已经达到 Cache 数量的上限。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="keyword">template</span>&lt;<span class="class"><span class="keyword">class</span> <span class="title">M</span>&gt;</span></span><br><span class="line"><span class="class">   <span class="title">static</span> <span class="title">Cache</span>* <span class="title">GetCache</span>(<span class="title">const</span> <span class="title">std</span>:</span>:<span class="built_in">string</span>&amp; name, CacheType type,</span><br><span class="line">                          <span class="keyword">int</span>* data_map_arg1 = <span class="literal">NULL</span>) &#123;</span><br><span class="line">       DataMap* local_data_map = <span class="literal">NULL</span>;</span><br><span class="line">       <span class="built_in">std</span>::<span class="built_in">map</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>, DataMap*&gt;::iterator it = cache_store_.find(name);</span><br><span class="line">       <span class="keyword">if</span> (it != cache_store_.end()) &#123;</span><br><span class="line">           local_data_map = it-&gt;second;</span><br><span class="line">       &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">           <span class="keyword">if</span> (data_map_arg1 != <span class="literal">NULL</span>) &#123;</span><br><span class="line">               local_data_map = <span class="keyword">new</span> M(*data_map_arg1);</span><br><span class="line">           &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">               local_data_map = <span class="keyword">new</span> M();</span><br><span class="line">           &#125;</span><br><span class="line"></span><br><span class="line">           cache_store_[name] = local_data_map;</span><br><span class="line">       &#125;</span><br><span class="line"></span><br><span class="line">       <span class="keyword">return</span> GetCache(name, type, local_data_map);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 删除掉本进程内存放的 Cache</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">RemoveCache</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; name)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">explicit</span> <span class="title">Cache</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; name)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">virtual</span> ~Cache();</span><br><span class="line"></span><br><span class="line">   <span class="keyword">virtual</span> <span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">GetName</span><span class="params">()</span> <span class="keyword">const</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">   <span class="keyword">static</span> <span class="built_in">std</span>::<span class="built_in">map</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>, Cache*&gt; cache_map_;</span><br><span class="line">   <span class="built_in">std</span>::<span class="built_in">string</span> name_;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">   <span class="keyword">static</span> <span class="keyword">int</span> MAX_CACHE_NUM;</span><br><span class="line">   <span class="keyword">static</span> <span class="built_in">std</span>::<span class="built_in">map</span>&lt;<span class="built_in">std</span>::<span class="built_in">string</span>, DataMap*&gt; cache_store_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="持久化"><a href="#持久化" class="headerlink" title="持久化"></a>持久化</h2><p><img src="http://blog.sensedevil.com/image/GameServer2_3.webp" alt></p>
+<p>长久以来，互联网的应用会使用类似 MySQL 这一类 SQL 数据库来存储数据。当然也有很多游戏是使用 SQL 数据库的，后来业界也出现“数据连接层”（DAL）的设计，其目的就是当需要更换不同的数据库时，可以不需要修改大量的代码。但是这种设计，依然是基于 SQL 这种抽象。然而不久之后，互联网业务都转向 NoSQL 的存储模型。实际上，游戏中对于玩家存档的数据，是完全可以不需要 SQL 这种关系型数据库的了。早期的游戏都是把玩家存档存放到文件里，就连游戏机如 PlayStation ，都是用存储卡就可以了。</p>
+<p>一般来说，游戏中需要存储的数据会有两类：</p>
+<ol>
+<li><p>玩家的存档数据</p>
+</li>
+<li><p>游戏中的各种设定数据</p>
+</li>
+</ol>
+<p>对于第一种数据，用 Key-Value 的方式基本上能满足。而第二种数据的模型可能会有很多种类，所以不需要特别的去规定什么模型。因此我设计了一个 key-value 模型的持久化结构。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* @brief 由于持久化操作一般都是耗时等待的操作，所以需要回调接口来通知各种操作的结果。</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataStoreCallback</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   <span class="keyword">static</span> <span class="keyword">int</span> MAX_HANG_UP_CALLBACK_NUM;  <span class="comment">// 最大回调挂起数</span></span><br><span class="line">   <span class="built_in">std</span>::<span class="built_in">string</span> key;</span><br><span class="line">   Serializable* value;</span><br><span class="line"></span><br><span class="line">   DataStoreCallback();</span><br><span class="line">   <span class="keyword">virtual</span> ~DataStoreCallback();</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 当 Init() 初始化结束时会被调用。</span></span><br><span class="line"><span class="comment">    * @param  result 是初始化的结果。0 表示初始化成功。</span></span><br><span class="line"><span class="comment">    * @param  msg 是初始化可能存在的错误信息。可能是空字符串 ""。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">OnInit</span><span class="params">(<span class="keyword">int</span> result, <span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; msg)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 当调用 Get() 获得结果会被调用</span></span><br><span class="line"><span class="comment">    * @param key</span></span><br><span class="line"><span class="comment">    * @param value</span></span><br><span class="line"><span class="comment">    * @param result 是 0 表示能获得对象，否则 value 中的数据可能是没有被修改的。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">OnGot</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key, Serializable* value, <span class="keyword">int</span> result)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 当调用 Put() 获得结果会被调用。</span></span><br><span class="line"><span class="comment">    * @param key</span></span><br><span class="line"><span class="comment">    * @param result 如果 result 是 0 表示写入成功，其他值表示失败。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">OnPut</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp;key, <span class="keyword">int</span> result)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 当调用 Remove() 获得结果会被调用</span></span><br><span class="line"><span class="comment">    * @param key</span></span><br><span class="line"><span class="comment">    * @param result 返回 0 表示删除成功，其他值表示失败，如这个 key 代表的对象并不存在。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">OnRemove</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp;key, <span class="keyword">int</span> result)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 准备在发起用户设置的回调，如果使用者没有单独为一个回调事务设置单独的回调对象。</span></span><br><span class="line"><span class="comment">    * 在 PrepareRegisterCallback() 中会生成一个临时对象，在此处会被串点参数并清理。</span></span><br><span class="line"><span class="comment">    * @param privdata 由底层回调机制所携带的回调标识参数，如果为 NULL 则返回 NULL。</span></span><br><span class="line"><span class="comment">    * @param init_cb 初始化时传入的共用回调对象</span></span><br><span class="line"><span class="comment">    * @return 可以发起回调的对象，如果为 NULL 表示参数 privdata 是 NULL</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">static</span> DataStoreCallback* <span class="title">PrepareUseCallback</span><span class="params">(<span class="keyword">void</span>* privdata,</span></span></span><br><span class="line"><span class="function"><span class="params">                                                DataStoreCallback* init_cb)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 检查和登记回调对象，以防内存泄漏。</span></span><br><span class="line"><span class="comment">    * @param callback 可以是NULL，会新建一个仅仅用于存放key数据的临时callback对象。</span></span><br><span class="line"><span class="comment">    *  @return 返回一个callback对象，如果是 NULL 表示有太多的回调过程未被释放。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">static</span> DataStoreCallback* <span class="title">PrepareRegisterCallback</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">           DataStoreCallback* callback)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">   <span class="keyword">static</span> <span class="keyword">int</span> kHandupCallbacks;  <span class="comment">/// 有多少个回调指针被挂起，达到上限后会停止工作</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">*@brief 用来定义可以持久化对象的数据存储工具接口</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">DataStore</span> :</span> <span class="keyword">public</span> Component &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">   DataStore(DataStoreCallback* callback = <span class="literal">NULL</span>)</span><br><span class="line">           : callback_(callback) &#123;</span><br><span class="line">       <span class="comment">// Do nothing</span></span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">virtual</span> ~DataStore() &#123;</span><br><span class="line">       <span class="comment">// Do nothing</span></span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 初始化数据存取设备的方法，譬如去连接数据库、打开文件之类。</span></span><br><span class="line"><span class="comment">    * @param config 配置对象</span></span><br><span class="line"><span class="comment">    * @param callback 参数 callback 为基本回调对象，初始化的结果会回调其 OnInit() 函数通知用户。</span></span><br><span class="line"><span class="comment">    * @return 基本的配置是否正确，返回 0 表示正常。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Init</span><span class="params">(Config* config, DataStoreCallback* callback)</span></span>;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Init</span><span class="params">(Application* app, Config* cfg)</span></span>&#123;</span><br><span class="line">       app_ = app;</span><br><span class="line">       <span class="keyword">return</span> Init(cfg, callback_);</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">virtual</span> <span class="built_in">std</span>::<span class="function"><span class="built_in">string</span> <span class="title">GetName</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       <span class="keyword">return</span> <span class="string">"den::DataStore"</span>;</span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Stop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">       Close();</span><br><span class="line">       <span class="keyword">return</span> <span class="number">0</span>;  </span><br><span class="line">   &#125;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 驱动存储接口程序运行，触发回调函数。</span></span><br><span class="line"><span class="comment">    * @return 返回 0 表示此次没有进行任何操作，通知上层本次调用后可以 sleep 一下。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Update</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 关闭程序，关闭动作虽然是异步的，但不再返回结果，直接关闭就好。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">Close</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 读取一个数据对象，通过 key ，把数据放入到 value，结果会回调通知 callback。</span></span><br><span class="line"><span class="comment">    * 发起调用前，必须把 callback 的 value 字段设置为输出参数。</span></span><br><span class="line"><span class="comment">    * @param key</span></span><br><span class="line"><span class="comment">    * @param callback 如果NULL，则会回调从 Init() 中传入的 callback 对象。</span></span><br><span class="line"><span class="comment">    * @return 0 表示发起请求成功，其他值为失败</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Get</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key, DataStoreCallback* callback = <span class="literal">NULL</span>)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 写入一个数据对象，写入 key ，value，写入结果会回调通知 callback。</span></span><br><span class="line"><span class="comment">    * @param key</span></span><br><span class="line"><span class="comment">    * @param value</span></span><br><span class="line"><span class="comment">    * @param callback 如果是 NULL，则会回调从 Init() 中传入的 callback 对象。</span></span><br><span class="line"><span class="comment">    * @return 表示发起请求成功，其他值为失败</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Put</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp;key, <span class="keyword">const</span> Serializable&amp; value,</span></span></span><br><span class="line"><span class="function"><span class="params">                   DataStoreCallback* callback = <span class="literal">NULL</span>)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 删除一个数据对象，通过 key ，结果会回调通知 callback。</span></span><br><span class="line"><span class="comment">    * @param key</span></span><br><span class="line"><span class="comment">    * @param callback 如果是 NULL，则会回调从 Init() 中传入的 callback 对象。</span></span><br><span class="line"><span class="comment">    * @return 表示发起请求成功，其他值为失败</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">Remove</span><span class="params">(<span class="keyword">const</span> <span class="built_in">std</span>::<span class="built_in">string</span>&amp; key,</span></span></span><br><span class="line"><span class="function"><span class="params">                      DataStoreCallback* callback = <span class="literal">NULL</span>)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span>:</span><br><span class="line">   <span class="comment">/// 存放初始化传入的回调指针</span></span><br><span class="line">   DataStoreCallback* callback_;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>针对上面的 DataStore 模型，可以实现出多个具体的实现：</p>
+<ol>
+<li><p>文件存储</p>
+</li>
+<li><p>Redis</p>
+</li>
+<li><p>其他的各种数据库</p>
+</li>
+</ol>
+<p>基本上文件存储，是每个操作系统都会具备，所以在测试和一般场景下，是最方便的用法，所以这个是一定需要的。</p>
+<p>在游戏的持久化数据里面，还有两类功能是比较常用的，一种是排行榜的使用；另外一种是拍卖行。这两个功能是基本的 Key-Value 无法完成的。使用 SQL 或者 Redis 一类 NOSQL 都有排序功能，所以实现排行榜问题不大。而拍卖行功能，则需要多个索引，所以只有一个索引的 Key-Value NoSQL 是无法满足的。不过 NOSQL 也可以“手工”的去建立多个 Key 的记录。不过这类需求，还真的很难统一到某一个框架里面，所以设计也是有限度，包含太多的东西可能还会有反效果。因此我并不打算在持久化这里包含太多的模型。</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ServerFramework/" rel="tag"><i class="fa fa-tag"></i> ServerFramework</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/04/教你从头写游戏服务器框架一/" rel="next" title="教你从头写游戏服务器框架一">
+                <i class="fa fa-chevron-left"></i> 教你从头写游戏服务器框架一
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/06/04/教你从头写游戏服务器框架三/" rel="prev" title="教你从头写游戏服务器框架三">
+                教你从头写游戏服务器框架三 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lumieru</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">30</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#对象序列化"><span class="nav-number">1.</span> <span class="nav-text">对象序列化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络传输"><span class="nav-number">1.1.</span> <span class="nav-text">网络传输</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#缓冲和持久化"><span class="nav-number">1.2.</span> <span class="nav-text">缓冲和持久化</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#数据缓冲"><span class="nav-number">2.</span> <span class="nav-text">数据缓冲</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#基本模型"><span class="nav-number">2.1.</span> <span class="nav-text">基本模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分布式设计"><span class="nav-number">2.2.</span> <span class="nav-text">分布式设计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#持久化"><span class="nav-number">3.</span> <span class="nav-text">持久化</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lumieru</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.1"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('复制成功');
+        else $(this).text('复制失败');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
