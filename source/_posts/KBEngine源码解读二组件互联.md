@@ -8,13 +8,9 @@ categories: GameServer
 
 组件在互相发现的时候用的是UDP广播，找到对应组件知道其IP和Port后，用TCP来建立并保持连接。
 
-machine组件会监听20086端口，然后其他组件都会往这个端口广播自己的信息（RPC调用`MachineInterface::onBroadcastInterface`函数）。
-然后machine收到信息后会判断有效性（有没有和其他组件用了相同的设置），如果无效会发回一个无效的通知给该组件，然后该组件就会退出。
-如果有效的则，machine会记录和自己同一台物理机上的组件到自己的组件列表中（不同物理机的组件会被忽略掉）。
+machine组件会监听20086端口，然后其他组件都会往这个端口广播自己的信息（RPC调用`MachineInterface::onBroadcastInterface`函数）。然后machine收到信息后会判断有效性（有没有和其他组件用了相同的设置），如果无效会发回一个无效的通知给该组件，然后该组件就会退出。如果有效的则，machine会记录和自己同一台物理机上的组件到自己的组件列表中（不同物理机的组件会被忽略掉）。
 
-然后组件会有一个需要找的组件的类型的列表，对于每种类型，它都会广播`MachineInterface::onFindInterfaceAddr`这个消息到machine。
-machine收到这个消息后，会把已经注册过的本地同类型组件发回给该组件。如果没有找到对应的类型，会定时到下一个循环继续找，直到找到自己
-感兴趣的所有类型的组件为止。
+然后组件会有一个需要找的组件的类型的列表，对于每种类型，它都会广播`MachineInterface::onFindInterfaceAddr`这个消息到machine。machine收到这个消息后，会把已经注册过的本地同类型组件发回给该组件。如果没有找到对应的类型，会定时到下一个循环继续找，直到找到自己感兴趣的所有类型的组件为止。
 
 external port和telnet的port都是通过配置文件指定好的，internal port传的零，就是让系统决定一个可用的随机端口，bind成功后在用`getsockname()`得到具体的端口。
 
@@ -28,13 +24,17 @@ external port和telnet的port都是通过配置文件指定好的，internal por
 | Cell app mgr | logger, dbmgr, baseAppMgr |
 | db mgr | logger |
 
-在连接其他组件时，会调用被连接组件的`XXX::onRegisterNewApp`函数。当baseApp或者cellApp连接`Dbmgr`时，同样会调用`Dbmgr::onRegisterNewApp`。
-在这个函数中，如果连接者是baseApp或者cellApp，那么就会将自己注册到所有其他baseapp和cellapp中。主要是通过遍历已经注册在Dbmgr中的其他baseapp和cellapp，
-然后RPC调用相应的`onGetEntityAppFromDbmgr`。在被调用的`onGetEntityAppFromDbmgr`中，被调用者会去连接当前组件。这样就能让所有的baseApp和cellApp互相连接了。
+在连接其他组件时，会调用被连接组件的`XXX::onRegisterNewApp`函数。当baseApp或者cellApp连接`Dbmgr`时，同样会调用`Dbmgr::onRegisterNewApp`。在这个函数中，如果连接者是baseApp或者cellApp，那么就会将自己注册到所有其他baseapp和cellapp中。主要是通过遍历已经注册在Dbmgr中的其他baseapp和cellapp，然后RPC调用相应的`onGetEntityAppFromDbmgr`。在被调用的`onGetEntityAppFromDbmgr`中，被调用者会去连接当前组件。这样就能让所有的baseApp和cellApp互相连接了。
 
 <!-- more -->
 
 ## 运行时每个组件的互联情况：
+
+在Windows命令行中运行命令
+```shell
+netstat -ano | findstr <PID>
+```
+可以得到相应程序的网络活动数据。
 
 db mgr：
 
