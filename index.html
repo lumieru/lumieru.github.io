@@ -394,12 +394,24 @@
                 
               
 
-              <time title="创建时间：2019-06-22 17:12:04 / 修改时间：17:21:29" itemprop="dateCreated datePublished" datetime="2019-06-22T17:12:04+08:00">2019-06-22</time>
+              <time title="创建时间：2019-06-22 17:12:04" itemprop="dateCreated datePublished" datetime="2019-06-22T17:12:04+08:00">2019-06-22</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-23 11:47:56" itemprop="dateModified" datetime="2019-06-23T11:47:56+08:00">2019-06-23</time>
               
             
           </span>
@@ -453,8 +465,8 @@
       
         
           <h2 id="server-Components"><a href="#server-Components" class="headerlink" title="server/Components"></a>server/Components</h2><p>组件在互相发现的时候用的是UDP广播，找到对应组件知道其IP和Port后，用TCP来建立并保持连接。</p>
-<p>machine组件会监听20086端口，然后其他组件都会往这个端口广播自己的信息（RPC调用<code>MachineInterface::onBroadcastInterface</code>函数）。<br>然后machine收到信息后会判断有效性（有没有和其他组件用了相同的设置），如果无效会发回一个无效的通知给该组件，然后该组件就会退出。<br>如果有效的则，machine会记录和自己同一台物理机上的组件到自己的组件列表中（不同物理机的组件会被忽略掉）。</p>
-<p>然后组件会有一个需要找的组件的类型的列表，对于每种类型，它都会广播<code>MachineInterface::onFindInterfaceAddr</code>这个消息到machine。<br>machine收到这个消息后，会把已经注册过的本地同类型组件发回给该组件。如果没有找到对应的类型，会定时到下一个循环继续找，直到找到自己<br>感兴趣的所有类型的组件为止。</p>
+<p>machine组件会监听20086端口，然后其他组件都会往这个端口广播自己的信息（RPC调用<code>MachineInterface::onBroadcastInterface</code>函数）。然后machine收到信息后会判断有效性（有没有和其他组件用了相同的设置），如果无效会发回一个无效的通知给该组件，然后该组件就会退出。如果有效的则，machine会记录和自己同一台物理机上的组件到自己的组件列表中（不同物理机的组件会被忽略掉）。</p>
+<p>然后组件会有一个需要找的组件的类型的列表，对于每种类型，它都会广播<code>MachineInterface::onFindInterfaceAddr</code>这个消息到machine。machine收到这个消息后，会把已经注册过的本地同类型组件发回给该组件。如果没有找到对应的类型，会定时到下一个循环继续找，直到找到自己感兴趣的所有类型的组件为止。</p>
 <p>external port和telnet的port都是通过配置文件指定好的，internal port传的零，就是让系统决定一个可用的随机端口，bind成功后在用<code>getsockname()</code>得到具体的端口。</p>
 <p>下面是每个组件感兴趣的列表:</p>
 <table>
@@ -487,7 +499,7 @@
 </tr>
 </tbody>
 </table>
-<p>在连接其他组件时，会调用被连接组件的<code>XXX::onRegisterNewApp</code>函数。当baseApp或者cellApp连接<code>Dbmgr</code>时，同样会调用<code>Dbmgr::onRegisterNewApp</code>。<br>在这个函数中，如果连接者是baseApp或者cellApp，那么就会将自己注册到所有其他baseapp和cellapp中。主要是通过遍历已经注册在Dbmgr中的其他baseapp和cellapp，<br>然后RPC调用相应的<code>onGetEntityAppFromDbmgr</code>。在被调用的<code>onGetEntityAppFromDbmgr</code>中，被调用者会去连接当前组件。这样就能让所有的baseApp和cellApp互相连接了。</p>
+<p>在连接其他组件时，会调用被连接组件的<code>XXX::onRegisterNewApp</code>函数。当baseApp或者cellApp连接<code>Dbmgr</code>时，同样会调用<code>Dbmgr::onRegisterNewApp</code>。在这个函数中，如果连接者是baseApp或者cellApp，那么就会将自己注册到所有其他baseapp和cellapp中。主要是通过遍历已经注册在Dbmgr中的其他baseapp和cellapp，然后RPC调用相应的<code>onGetEntityAppFromDbmgr</code>。在被调用的<code>onGetEntityAppFromDbmgr</code>中，被调用者会去连接当前组件。这样就能让所有的baseApp和cellApp互相连接了。</p>
           <!--noindex-->
           
             <div class="post-button text-center">
