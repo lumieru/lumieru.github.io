@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="BaseApp::createEntityAnywhere123456789101112// 把Entity的类型和参数全部序列化，然后发送给Baseappmgr，由Baseappmgr::reqCreateEntityAnywhere负责创建。BaseApp::createEntityAnywhere// 首先会找一个没有一个实体的baseapp或者是所有baseapp中负载最小的baseapp">
+<meta name="keywords" content="ServerFramework,KBEngine">
+<meta property="og:type" content="article">
+<meta property="og:title" content="KBEngine源码解读三">
+<meta property="og:url" content="https://lumieru.github.io/2019/06/28/KBEngine源码解读三/index.html">
+<meta property="og:site_name" content="Lumieru的知识库">
+<meta property="og:description" content="BaseApp::createEntityAnywhere123456789101112// 把Entity的类型和参数全部序列化，然后发送给Baseappmgr，由Baseappmgr::reqCreateEntityAnywhere负责创建。BaseApp::createEntityAnywhere// 首先会找一个没有一个实体的baseapp或者是所有baseapp中负载最小的baseapp">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2019-06-28T06:18:05.764Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="KBEngine源码解读三">
+<meta name="twitter:description" content="BaseApp::createEntityAnywhere123456789101112// 把Entity的类型和参数全部序列化，然后发送给Baseappmgr，由Baseappmgr::reqCreateEntityAnywhere负责创建。BaseApp::createEntityAnywhere// 首先会找一个没有一个实体的baseapp或者是所有baseapp中负载最小的baseapp">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://lumieru.github.io/2019/06/28/KBEngine源码解读三/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>KBEngine源码解读三 | Lumieru的知识库</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lumieru的知识库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/28/KBEngine源码解读三/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">KBEngine源码解读三
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-28 14:12:53 / 修改时间：14:18:05" itemprop="dateCreated datePublished" datetime="2019-06-28T14:12:53+08:00">2019-06-28</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="BaseApp-createEntityAnywhere"><a href="#BaseApp-createEntityAnywhere" class="headerlink" title="BaseApp::createEntityAnywhere"></a>BaseApp::createEntityAnywhere</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 把Entity的类型和参数全部序列化，然后发送给Baseappmgr，由Baseappmgr::reqCreateEntityAnywhere负责创建。</span></span><br><span class="line">BaseApp::createEntityAnywhere</span><br><span class="line"><span class="comment">// 首先会找一个没有一个实体的baseapp或者是所有baseapp中负载最小的baseapp。</span></span><br><span class="line"><span class="comment">// 然后再调用这个baseapp的onCreateEntityAnywhere函数</span></span><br><span class="line">--&gt; Baseappmgr::reqCreateEntityAnywhere</span><br><span class="line"><span class="comment">// 把数据反序列化，然后调用createEntity函数创建。创建完成后，如果发起方和创建方是相同的，</span></span><br><span class="line"><span class="comment">// 则直接调用_onCreateEntityAnywhereCallback返回创建结果。如果不相同，则发送消息给发起方，</span></span><br><span class="line"><span class="comment">// 调用发起方的onCreateEntityAnywhereCallback函数返回结果。</span></span><br><span class="line">--&gt; BaseApp::onCreateEntityAnywhere</span><br><span class="line">--&gt; BaseApp::onCreateEntityAnywhereCallback <span class="comment">//调用_onCreateEntityAnywhereCallback</span></span><br><span class="line"><span class="comment">// 如果有设置python的callback，就调用python的callback。如果是其他baseapp创建的，则创建并保存成EntityCall。</span></span><br><span class="line">-&gt; BaseApp::_onCreateEntityAnywhereCallback</span><br></pre></td></tr></table></figure>
+<h2 id="Baseapp-createEntityAnywhereFromDBID"><a href="#Baseapp-createEntityAnywhereFromDBID" class="headerlink" title="Baseapp::createEntityAnywhereFromDBID"></a>Baseapp::createEntityAnywhereFromDBID</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Baseapp::createEntityAnywhereFromDBID</span><br><span class="line"><span class="comment">// 首先会找一个没有一个实体的baseapp或者是所有baseapp中负载最小的baseapp。</span></span><br><span class="line"><span class="comment">// 然后再调用这个baseapp的onGetCreateEntityAnywhereFromDBIDBestBaseappID函数</span></span><br><span class="line">--&gt; Baseappmgr::reqCreateEntityAnywhereFromDBIDQueryBestBaseappID</span><br><span class="line">--&gt; Baseapp::onGetCreateEntityAnywhereFromDBIDBestBaseappID</span><br><span class="line"><span class="comment">// 常见DBTaskQueryEntity，添加到bufferedDBTasksMaps_中，然后有task完成任务</span></span><br><span class="line">--&gt; Dbmgr::queryEntity</span><br><span class="line"><span class="comment">// 从数据库中查询相关Entity的信息</span></span><br><span class="line">-&gt; DBTaskQueryEntity::db_thread_process</span><br><span class="line"><span class="comment">// 回到主线程，因为query mode是1，所以调用onCreateEntityAnywhereFromDBIDCallback</span></span><br><span class="line">-&gt; DBTaskQueryEntity::presentMainThread</span><br><span class="line">--&gt; Baseapp::onCreateEntityAnywhereFromDBIDCallback</span><br><span class="line"><span class="comment">// 消息中包含了要在那个Baseapp上创建，就是前面决定的那个Baseapp。</span></span><br><span class="line">--&gt; Baseappmgr::reqCreateEntityAnywhereFromDBID</span><br><span class="line"><span class="comment">// 创建Entity，并调用回调函数onCreateEntityAnywhereFromDBIDOtherBaseappCallback，</span></span><br><span class="line"><span class="comment">// 如果是同一个Baseapp就直接回调，否则就是RPC回调</span></span><br><span class="line">--&gt; Baseapp::createEntityAnywhereFromDBIDOtherBaseapp</span><br><span class="line"><span class="comment">// 如果有python的callback id，就调用python的callback函数。</span></span><br><span class="line">--&gt; Baseapp::onCreateEntityAnywhereFromDBIDOtherBaseappCallback</span><br></pre></td></tr></table></figure>
+<h2 id="Baseapp-createCellEntityInNewSpace"><a href="#Baseapp-createCellEntityInNewSpace" class="headerlink" title="Baseapp::createCellEntityInNewSpace"></a>Baseapp::createCellEntityInNewSpace</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在cellapp上创建一个空间(space)并且将该实体的cell创建到这个新的空间中，它请求通过cellappmgr来完成。</span></span><br><span class="line">Baseapp::createCellEntityInNewSpace</span><br><span class="line"><span class="comment">// 如果CellappIndex &gt; 0，那么用这个index模总的cellapp数量，得到目标cellapp。</span></span><br><span class="line"><span class="comment">// 如果CellappIndex == 0，那么找到负载最小的cellapp作为目标cellapp。</span></span><br><span class="line">--&gt; Cellappmgr::reqCreateCellEntityInNewSpace</span><br><span class="line"><span class="comment">// 通过SpaceMemorys::createNewSpace(spaceID, entityType)创建一个新的SpaceMemory（就是一个space）。</span></span><br><span class="line"><span class="comment">// 并且创建Cellapp上的Entity，设置Baseapp的EntityCall，如果有Client，则还设置Client的EntityCall，并创建Witness。</span></span><br><span class="line"><span class="comment">// 把新创建的Entity加入到SpaceMemory中。</span></span><br><span class="line"><span class="comment">// 在SpaceMemory的构造函数/析构函数中，还会调用Cellappmgr::updateSpaceData。Cellappmgr好像也维护了</span></span><br><span class="line"><span class="comment">// 每个Cellapp中的Space信息，所有需要更新一下。</span></span><br><span class="line">--&gt; Cellapp::onCreateCellEntityInNewSpaceFromBaseapp</span><br><span class="line">--&gt; Baseapp::onEntityGetCell</span><br></pre></td></tr></table></figure>
+<h2 id="Baseapp-createCellEntity"><a href="#Baseapp-createCellEntity" class="headerlink" title="Baseapp::createCellEntity"></a>Baseapp::createCellEntity</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 请求在一个cell里面创建一个关联的实体。</span></span><br><span class="line">Baseapp::createCellEntity</span><br><span class="line">--&gt; Cellapp::onCreateCellEntityFromBaseapp</span><br><span class="line"><span class="comment">// 根据spaceID找到对应的SpaceMemory，然后在该SpaceMemory中创建Entity，</span></span><br><span class="line"><span class="comment">// 设置Baseapp的EntityCall，如果有Client，则还设置Client的EntityCall，并创建Witness。</span></span><br><span class="line"><span class="comment">// 把新创建的Entity加入到SpaceMemory中。</span></span><br><span class="line">-&gt; Cellapp::_onCreateCellEntityFromBaseapp</span><br><span class="line">--&gt; Baseapp::onEntityGetCell</span><br></pre></td></tr></table></figure>
+<a id="more"></a>
+<h2 id="Cell"><a href="#Cell" class="headerlink" title="Cell"></a>Cell</h2><p>目前Cellapp中的Cell和Cells都只有很简单的骨架，没有任何实际功能，也基本没有其他地方用到。所以只是一个占位符，没有相应的功能。</p>
+<h2 id="Space"><a href="#Space" class="headerlink" title="Space"></a>Space</h2><p>Baseapp中也有个Sapce（是Entity的子类），它其实只是Cellapp中Space的一个句柄，用来关联操作Cellapp中的Space的。真正的Space是在Cellapp中的。Cellapp中的Space的c++类是SpaceMemory（也有个Space，但是里面没有东西，也没用到）。<br>SpaceMemory中包含了所有在这个Space中的Entity（Cellapp中的Entity）。</p>
+<h2 id="CoordinateSystem"><a href="#CoordinateSystem" class="headerlink" title="CoordinateSystem"></a>CoordinateSystem</h2><p>有x，y，z三轴的CoordinateNode*的双向链表组成。每插入一个CoordinateNode，先放入三个双向链表的头，然后在update(Node)。每个双向链表中的Node，都是按照x，y或者z值从小到大排序的。如果xyz之发生了变化，那么update(Node)会跟新链表，让其有序。<code>EntityCoordinateNode</code>继承自CoordinateNode，关联了一个Entity。</p>
+<h2 id="SpaceViewer"><a href="#SpaceViewer" class="headerlink" title="SpaceViewer"></a>SpaceViewer</h2><p>将Entity的position和rotation发送给Console，在GUIConsole的SpaceViewer里面可以查看Entity的信息</p>
+<h2 id="RangeTrigger"><a href="#RangeTrigger" class="headerlink" title="RangeTrigger"></a>RangeTrigger</h2><p>需要一个中心点CoordinateNode，和xz范围，和y范围。然后会创建两个RangeTriggerNode来确定范围，如果进入范围了，会调用onEnter(CoordinateNode <em> pNode)虚函数，如果离开范围了，会调用onLeave(CoordinateNode </em> pNode)虚函数。</p>
+<h3 id="ViewTrigger"><a href="#ViewTrigger" class="headerlink" title="ViewTrigger"></a>ViewTrigger</h3><p>RangeTrigger的子类，通过实现onEnter/onLeave，把onEnter/onLeave的消息传递给关联的Witness（这个是RangeTrigger的origin对应的Entity的Witness）。调用Witness::onEnterView/Witness::onLeaveView。</p>
+<h3 id="TrapTrigger"><a href="#TrapTrigger" class="headerlink" title="TrapTrigger"></a>TrapTrigger</h3><p>RangeTrigger的子类，通过实现onEnter/onLeave，把onEnter/onLeave的消息传递给关联的ProximityController。调用ProximityController::onEnter/Witness::onLeave。</p>
+<h2 id="ProximityController"><a href="#ProximityController" class="headerlink" title="ProximityController"></a>ProximityController</h2><p>包含一个TrapTrigger，通过onEnter/onLeave，调用关联的Entity的onEnterTrap/onLeaveTrap</p>
+<h2 id="Witness"><a href="#Witness" class="headerlink" title="Witness"></a>Witness</h2><p>Witness就是客户端在Cellapp中的一个代理，cellapp将实体的View内的其他实体的信息不断的通过Witness同步给客户端。Entity A进入Entity B的viewRadius_范围内，才算进入了Entity B的View。而Entity A要离开Entity B的View，需要离开Entity B的viewRadius_ + viewHysteresisArea_才行。Witness会将进入本View的Entity记录在viewEntities_和viewEntities_map_中。在update()中，会把所有在view中的Entity的信息发送给本Entity的客户端。如果关掉了coordinate_system，那么View的功能就不起作用了，即本View中没有其他的Entity，也不会同步了。Entity A进入Entity B的View后，在Entity A的witnesses_中会记录Entity B的ID，表示Entity A被Entity B目击到了。</p>
+<p>有三种状态，一（将要进入视野范围内）：其他玩家进入拥有者玩家的视野范围，那么将其他玩家在拥有者玩家的Witness里的引用的状态更改成普通状态，并同步其他玩家的客户端信息与位置信息给拥有者玩家，通知拥有者玩家有其他玩家进入视野范围；二（将要离开视1野范围内）：其他玩家离开拥有者玩家的视野范围，那么通知拥有者玩家有其他玩家要离开，并删除其他玩家在拥有者玩家的Witness里的引用；三（普通状态，还在视野范围内），同步还在视野范围的其他玩家的volatile信息给拥有者玩家。一直在update</p>
+<h2 id="Updatable"><a href="#Updatable" class="headerlink" title="Updatable"></a>Updatable</h2><p>用来描述一个总是会被更新的对象。Updatables用来管理所有的Updatable。Cellapp每个tick都会调用Updatables::update, 这个函数会调用所有的Updatable来更新状态。需要实现不同的Updatable来完成不同的更新特性。</p>
+<h2 id="Controllers"><a href="#Controllers" class="headerlink" title="Controllers"></a>Controllers</h2><p>每个Entity都包含一个Controllers的实例，来管理所有的Controller。Entity有对应的函数来创建对应的Controller，然后添加到Controllers实例中来管理。目前有的Controller有MoveController，ProximityController和TurnController。如果Controller需要每帧更新，那么是通过继承Updatable来实现的。</p>
+<h2 id="globalData"><a href="#globalData" class="headerlink" title="globalData"></a>globalData</h2><p>globalData是通过<code>GlobalDataClient</code>和<code>GlobalDataServer</code>来实现的。Dbmgr在初始化的时候会创建三个<code>GlobalDataServer</code>的实例，分别对应globalData，baseAppData和cellAppData。<code>EntityApp</code>在初始化的时候，会创建<code>GlobalDataClient</code>对应globalData的<code>GlobalDataServer</code>。<code>Baseapp</code>在初始化时，会创建<code>GlobalDataClient</code>对应baseAppData的<code>GlobalDataServer</code>。<code>Cellapp</code>在初始化时，会创建<code>GlobalDataClient</code>对应cellAppData的<code>GlobalDataServer</code>。然后只要client的map发生变化，会自动同步到所有的baseApp（对应baseAppData），或者所有的cellApp（对应cellAppData），或者所有的baseApp和cellApp（对应globalData）。</p>
+<h2 id="EntityCall"><a href="#EntityCall" class="headerlink" title="EntityCall"></a>EntityCall</h2><p><code>EntityCall</code>和<code>EntityComponentCall</code>都继承自<code>EntityCallAbstract</code>，两者的行为很类似。只是<code>EntityCall</code>是可以远程调用Entity的方法，而<code>EntityComponentCall</code>是远程调用EntityComponent的方法。<code>EntityCallAbstract</code>中存储了远端机器的COMPONENT_ID和Address，在调用远程方法时（<code>EntityCallAbstract::sendCall</code>），会通过这两个属性找到对应的Channel，然后通过这个Channel把调用消息发送给对应的远程主机。当然其中还包括ENTITY_ID和对应方法的信息。在构建远程方法时（<code>EntityCallAbstract::newCall_</code>），如果远程主机是Baseapp，则会将目标函数<code>BaseApp::onEntityCall</code>编码到消息中，如果是Cellapp，则目标函数是<code>CellApp::onEntityCall</code>。如果是客户端远程调用服务器的方法，则如果是BaseApp的方法，那么目标方法是<code>BaseApp::onRemoteMethodCall</code>，如果是CellApp的方法，那么目标方法是<code>BaseApp::onRemoteCallCellMethodFromClient</code>。</p>
+<p>下面以<code>BaseApp::onEntityCall</code>为例讲解后面的步骤。在这个方法中，会先根据ENTITY_ID从本进程的所有Entity中找到对应的Entity。然后根据ENTITYCALL_TYPE来做不同的处理。如果是ENTITYCALL_TYPE_BASE，则直接调用这个Entity的<code>onRemoteMethodCall</code>方法（这个方法会调用对应的python方法）。如果是ENTITYCALL_TYPE_CELL_VIA_BASE，则会通过<code>pEntity-&gt;cellEntityCall()</code>得到cell部分的EntityCall，然后在转发这个EntityCall给Cell部分。如果是ENTITYCALL_TYPE_CLIENT_VIA_BASE，则会通过<code>pEntity-&gt;clientEntityCall()</code>得到对应Client的EntityCall，然后转发这个EntityCall给Client。</p>
+<h2 id="注册流程"><a href="#注册流程" class="headerlink" title="注册流程"></a>注册流程</h2><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">Unity3d:CreateAccount</span><br><span class="line">--&gt; Loginapp::reqCreateAccount </span><br><span class="line"><span class="comment">// 看看注册是否开放，传入的注册信息是否符合要求，是否已经有相同的账号还在注册中的。</span></span><br><span class="line"><span class="comment">// 还会调用python层的回调函数onRequestCreateAccount来处理。</span></span><br><span class="line"><span class="comment">// 如果中途失败了，则直接调用ClientInterface::onCreateAccountResult返回错误。</span></span><br><span class="line">-&gt; Loginapp::_createAccount </span><br><span class="line"><span class="comment">// 通过findBestInterfacesHandler()找到一个Interface来处理，如果没有第三方Interface，</span></span><br><span class="line"><span class="comment">// 那么默认是InterfacesHandler_Dbmgr来处理，如果有第三方Interface。那么是InterfacesHandler_Interfaces</span></span><br><span class="line"><span class="comment">// 来处理。InterfacesHandler_Interfaces::createAccount会把消息转发给第三方Interface来处理。</span></span><br><span class="line"><span class="comment">// 下面的流程针对InterfacesHandler_Dbmgr来说的</span></span><br><span class="line">--&gt; Dbmgr::reqCreateAccount</span><br><span class="line"><span class="comment">// 会根据是不是mail账号，分别创建DBTaskCreateMailAccount或者DBTaskCreateAccount，</span></span><br><span class="line"><span class="comment">// 然后添加到ThreadPool中，有task来完成相应的任务。下面以DBTaskCreateAccount为例说明。</span></span><br><span class="line">-&gt; InterfacesHandler_Dbmgr::createAccount</span><br><span class="line">-&gt; DBTaskCreateAccount::writeAccount <span class="comment">// 创建新账号，存入数据库，这个函数在其他线程中执行</span></span><br><span class="line">-&gt; DBTaskCreateAccount::presentMainThread <span class="comment">// 回到主线程，把创建结果返回给Loginapp</span></span><br><span class="line">--&gt; Loginapp::onReqCreateAccountResult <span class="comment">// 把结果交给python回调函数处理onCreateAccountCallbackFromDB</span></span><br><span class="line">--&gt; Client::onCreateAccountResult</span><br></pre></td></tr></table></figure>
+<h2 id="登录流程"><a href="#登录流程" class="headerlink" title="登录流程"></a>登录流程</h2><h3 id="登录-Step1"><a href="#登录-Step1" class="headerlink" title="登录 Step1"></a>登录 Step1</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">Unity3d:login</span><br><span class="line"><span class="comment">// 检查数据合法性，调用python回调函数onRequestLogin，</span></span><br><span class="line"><span class="comment">// 如果中途出错了，直接调用ClientInterface::onLoginFailed返回错误</span></span><br><span class="line">--&gt; Loginapp::login</span><br><span class="line"><span class="comment">// 通过findBestInterfacesHandler()找到一个Interface来处理，如果没有第三方Interface，</span></span><br><span class="line"><span class="comment">// 那么默认是InterfacesHandler_Dbmgr来处理，如果有第三方Interface。那么是InterfacesHandler_Interfaces</span></span><br><span class="line"><span class="comment">// 来处理。InterfacesHandler_Interfaces::loginAccount会把消息转发给第三方Interface来处理（InterfacesInterface::onAccountLogin）。</span></span><br><span class="line"><span class="comment">// 下面的流程针对InterfacesHandler_Dbmgr来说的</span></span><br><span class="line">--&gt; Dbmgr::onAccountLogin</span><br><span class="line"><span class="comment">// 创建DBTaskAccountLogin加入到ThreadPool中，有task来完成任务</span></span><br><span class="line">-&gt; InterfacesHandler_Dbmgr::loginAccount</span><br><span class="line">-&gt; DBTaskAccountLogin::db_thread_process <span class="comment">// 查询数据库，验证账号合法性，这个函数在其他线程中执行。</span></span><br><span class="line">-&gt; DBTaskAccountLogin::presentMainThread <span class="comment">// 回到主线程，把账号信息发送回Loginapp</span></span><br><span class="line"><span class="comment">// 调用python的回调函数onLoginCallbackFromDB，如果componentID&gt;0（说明当前账号仍然存活于某个baseapp上），</span></span><br><span class="line"><span class="comment">// 则调用Baseappmgr::registerPendingAccountToBaseappAddr，否则调用Baseappmgr::registerPendingAccountToBaseapp，</span></span><br><span class="line"><span class="comment">// 下面以Baseappmgr::registerPendingAccountToBaseapp来说明</span></span><br><span class="line">--&gt; Loginapp::onLoginAccountQueryResultFromDbmgr</span><br><span class="line"><span class="comment">// 找到当前负载最低的Baseapp，把账号信息发送给该Baseapp。</span></span><br><span class="line">--&gt; Baseappmgr::registerPendingAccountToBaseapp</span><br><span class="line"><span class="comment">// 得到当前Baseapp的IP和port（包括TCP和UDP），再发送回Baseappmgr</span></span><br><span class="line">--&gt; Baseapp::registerPendingLogin</span><br><span class="line">--&gt; Baseappmgr::onPendingAccountGetBaseappAddr</span><br><span class="line">-&gt; Baseappmgr::sendAllocatedBaseappAddr <span class="comment">// 把IP和port等信息，发送给Loginapp</span></span><br><span class="line">--&gt; Loginapp::onLoginAccountQueryBaseappAddrFromBaseappmgr <span class="comment">// 把IP和port等信息，发送给Client</span></span><br><span class="line">--&gt; ClientInterface::onLoginSuccessfully</span><br></pre></td></tr></table></figure>
+<h3 id="登录-Step2"><a href="#登录-Step2" class="headerlink" title="登录 Step2"></a>登录 Step2</h3><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Unity3d:loginBaseapp      <span class="comment">//尝试在指定Baseapp上登录</span></span><br><span class="line"><span class="comment">// 检查登录 处理重复登录 向数据库查询账号详细信息</span></span><br><span class="line">--&gt; Baseapp::loginBaseapp </span><br><span class="line"><span class="comment">// 新建DBTaskQueryAccount，加入到Buffered_DBTasks，然后由task来执行操作</span></span><br><span class="line">--&gt; Dbmgr::queryAccount</span><br><span class="line">-&gt; DBTaskQueryAccount::db_thread_process <span class="comment">// 查询数据库，得到账号详细信息</span></span><br><span class="line">-&gt; DBTaskQueryAccount::presentMainThread <span class="comment">// 回到主线程，把信息发送给Baseapp</span></span><br><span class="line"><span class="comment">// 创建Proxy，并且绑定客户端的EntityCall</span></span><br><span class="line">--&gt; Baseapp::onQueryAccountCBFromDbmgr</span><br><span class="line"><span class="comment">// 调用pEntity-&gt;initClientBasePropertys()，在这个函数调用中，把这个Proxy的一些属性，</span></span><br><span class="line"><span class="comment">// 通过ClientInterface::onUpdatePropertys远程调用，发回给了客户端。</span></span><br><span class="line"><span class="comment">// 最后调用ClientInterface::onCreatedProxies，把proxy的ID等传给了客户端。</span></span><br><span class="line">-&gt; Baseapp::createClientProxies</span><br><span class="line">--&gt; ClientInterface::onCreatedProxies</span><br></pre></td></tr></table></figure>
+<h2 id="Backuper-amp-Archiver"><a href="#Backuper-amp-Archiver" class="headerlink" title="Backuper &amp; Archiver"></a>Backuper &amp; Archiver</h2><p>Backuper是将entity置脏，而Archiver是将数据写入db，如果没有entity没有置脏，那么不会写入db。每帧都会调用Backuper和Archiver的tick函数。他们都会生成一个需要backup/archive的Entity的列表。然后根据设置的备份时间间隔，把列表分散到每个帧中，就是每个帧处理列表中的一部分。知道列表为空了，再重新生成一份列表。至于什么会加入到列表中，是根据shouldAutoBackup_/shouldAutoArchive_这两个flag来的，如果flag&gt;0就是true，默认这两个Flag都是1。如果flag == KBEngine.NEXT_ONLY，那么只有一次是true的，然后就会自动变成false。</p>
+<p>如果此Entity没有dbid，那么DBMgr认为是insert类型，反之，update类型；如果是insert类型 且 Entity有个属性是ARRAY类型，那么这个会在Content的optable循环插入需要insert或update的数据。只要Entity的一个需要持久化的属性改变了，那么它就脏了，整个Entity会存档。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在BaseApp上backup某个Entity</span></span><br><span class="line">Backuper::backup</span><br><span class="line">-&gt; Entity::writeBackupData</span><br><span class="line">-&gt; Entity::onBackup</span><br><span class="line"><span class="comment">// 把需要backup的Cell Entity的ID发给Cellapp</span></span><br><span class="line">-&gt; Entity::reqBackupCellData</span><br><span class="line"><span class="comment">// 找到对应的Entity，调用backupCellData</span></span><br><span class="line">--&gt; Cellapp::reqBackupEntityCellData</span><br><span class="line"><span class="comment">// 通过函数addCellDataToStream序列化自己，然后用sha1做hash，</span></span><br><span class="line"><span class="comment">// 得到的hash值和persistentDigest_的hash值做比较，如果改变了，</span></span><br><span class="line"><span class="comment">// 就说明数据脏了，需要backup，并且把新的hash存到persistentDigest_中。</span></span><br><span class="line"><span class="comment">// 只有数据脏了，才会把序列化的数据发送会Baseapp。</span></span><br><span class="line">-&gt; Entity::backupCellData</span><br><span class="line"><span class="comment">// 找到对应的Entity，调用onBackupCellData</span></span><br><span class="line">--&gt; Baseapp::onBackupEntityCellData</span><br><span class="line"><span class="comment">// 如果Cell数据没脏，那么什么也不做，如果脏了，就把cell数据存下来，并且清空persistentDigest_。</span></span><br><span class="line">-&gt; Entity::onBackupCellData</span><br></pre></td></tr></table></figure>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 在Baseapp上archive某个Entity</span></span><br><span class="line">Archiver::archive</span><br><span class="line"><span class="comment">// 什么也没做，直接调用Cellapp的reqWriteToDBFromBaseapp</span></span><br><span class="line">-&gt; Entity::writeToDB(<span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line"><span class="comment">// 找到对应的Entity，调用writeToDB</span></span><br><span class="line">--&gt; Cellapp::reqWriteToDBFromBaseapp</span><br><span class="line"><span class="comment">// 其中callbackid是0，如果Baseapp中的Entity的DBID &lt;= 0, 那么shouldAutoLoad就是0，否则是-1，extra2是null。</span></span><br><span class="line"><span class="comment">// 调用python的回调函数onWriteToDB，还调用Entity::backupCellData()，如果数据脏了，</span></span><br><span class="line"><span class="comment">// 就序列化并发送给Baseapp中的Entity保存。没脏，那就什么也不做。</span></span><br><span class="line">-&gt; Entity::writeToDB</span><br><span class="line"><span class="comment">// 找到对应的Entity，调用onCellWriteToDBCompleted。</span></span><br><span class="line">--&gt; Baseapp::onCellWriteToDBCompleted</span><br><span class="line"><span class="comment">// 调用python回调onWriteToDB。调用addPersistentsDataToStream，把base和cell部分的数据都序列化。</span></span><br><span class="line"><span class="comment">// 计算sha1，并和persistentDigest_比较，如果没脏，就直接退出了，脏了，就记录新的hash到persistentDigest_，</span></span><br><span class="line"><span class="comment">// 并把数据发送给Dbmgr。如果cell部分的数据脏了，那么persistentDigest_已经被清空了，所以肯定是脏的。</span></span><br><span class="line">-&gt; Entity::onCellWriteToDBCompleted</span><br><span class="line"><span class="comment">// 新建DBTaskWriteEntity，让这个task来处理</span></span><br><span class="line">--&gt; Dbmgr::writeEntity</span><br><span class="line"><span class="comment">// 把Entity数据写入数据库</span></span><br><span class="line">-&gt; DBTaskWriteEntity::db_thread_process </span><br><span class="line"><span class="comment">// 返回写entity的结果， 成功或者失败</span></span><br><span class="line">-&gt; DBTaskWriteEntity::presentMainThread</span><br><span class="line"><span class="comment">// 调用对应Entity的onWriteToDBCallback</span></span><br><span class="line">--&gt; Baseapp::onWriteToDBCallback</span><br><span class="line"><span class="comment">// 如果有python的callback，就调用callback。</span></span><br><span class="line">-&gt; Entity::onWriteToDBCallback</span><br></pre></td></tr></table></figure>
+<h2 id="AllClients"><a href="#AllClients" class="headerlink" title="AllClients"></a>AllClients</h2><p>所有的目击到自己的Entity。</p>
+<h2 id="Entity-teleport"><a href="#Entity-teleport" class="headerlink" title="Entity::teleport"></a>Entity::teleport</h2><ol>
+<li><p>任何形式的teleport都被认为是瞬间移动的（可突破空间限制进入到任何空间）， 哪怕是在当前位置只移动了0.1米, 这就造成如果当前entity刚好在某个trap中， teleport向前移动0.1米但是没有出trap， 因为这是瞬间移动的特性我们目前认为entity会先离开trap并且触发相关回调, 然后瞬时出现在了另一个点， 那么因为该点也是在当前trap中所以又会抛出进入trap回调.</p>
+</li>
+<li><p><code>Entity::teleportLocal</code>如果是当前space上跳转则立即进行移动操作</p>
+</li>
+<li><p><code>Entity::teleportRefEntity</code>如果是跳转到其他space上, 但是那个space也在当前cellapp上的情况时， 立即执行跳转操作(因为不需要进行任何其他关系的维护， 直接切换就好了)。 从当前Space移除，加入到目标Space。</p>
+</li>
+<li><p>如果要跳转的目标space在另一个cellapp上<code>Entity::teleportRefEntityCall</code>：</p>
+<p> 4.1 当前entity没有base部分， 不考虑维护base部分的关系， 但是还是要考虑意外情况导致跳转失败， 那么此时应该返回跳转失败回调并且继续<br> 正常存在于当前space上。</p>
+<p> 4.2 当前entity有base部分， 那么我们需要改变base所映射的cell部分(并且在未正式切换关系时baseapp上所有送达cell的消息都应该不被丢失)， 为了安全我们需要做一些工作</p>
+ <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 如果这个entity有base部分， 假如是本进程级别的传送，那么相关操作按照正常的执行</span></span><br><span class="line"><span class="comment">// 如果是跨cellapp的传送， 那么我们可以先设置entity为ghost并立即序列化entity发往目的cellapp</span></span><br><span class="line"><span class="comment">// 如果期间有base的消息发送过来， entity的ghost机制能够转到real上去， 因此传送之前不需要对base</span></span><br><span class="line"><span class="comment">// 做一些设置，传送成功后先设置base的关系base在被改变关系后仍然有0.1秒的时间收到包继续发往ghost，</span></span><br><span class="line"><span class="comment">// 如果一直有包则一直刷新时间直到没有任何包需要广播并且超时0.1秒之后的包才会直接发往real）, </span></span><br><span class="line"><span class="comment">// 这样做的好处是传送并不需要非常谨慎的与base耦合</span></span><br><span class="line"><span class="comment">// 传送过程中有任何错误也不会影响到base部分，base部分的包也能够按照秩序送往real。</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// 有base会调用Baseapp上的Entity::onMigrationCellappStart</span></span><br><span class="line">Entity::teleportRefEntityCall</span><br><span class="line"><span class="comment">// 我们需要将entity打包发往目的cellapp</span></span><br><span class="line"><span class="comment">// 暂时不销毁这个entity, 把这个entity设置成ghost，等那边成功创建之后再回来销毁</span></span><br><span class="line"><span class="comment">// 此期间的消息可以通过ghost转发给real</span></span><br><span class="line"><span class="comment">// 如果未能正确传输过去则可以从当前cell继续恢复entity.</span></span><br><span class="line">-&gt; Entity::onTeleportRefEntityCall</span><br><span class="line"><span class="comment">// 创建一个新的Entity，并从数据中反序列化，通知Baseapp上的Entity::onMigrationCellappEnd</span></span><br><span class="line"><span class="comment">// 通知客户端离开了老的space，ClientInterface::onEntityLeaveSpace。</span></span><br><span class="line"><span class="comment">// 进入新的Space。把结果发送回原来的Cellapp</span></span><br><span class="line">--&gt; Cellapp::reqTeleportToCellApp</span><br><span class="line"><span class="comment">// 如果传送成功了，就销毁原来的Entity。如果失败了，就恢复Entity，并恢复成Real实体。</span></span><br><span class="line">--&gt; Cellapp::reqTeleportToCellAppCB</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ServerFramework/" rel="tag"><i class="fa fa-tag"></i> ServerFramework</a>
+          
+            <a href="/tags/KBEngine/" rel="tag"><i class="fa fa-tag"></i> KBEngine</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/06/22/KBEngine源码解读二组件互联/" rel="next" title="KBEngine源码解读二组件互联">
+                <i class="fa fa-chevron-left"></i> KBEngine源码解读二组件互联
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lumieru</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">31</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#BaseApp-createEntityAnywhere"><span class="nav-number">1.</span> <span class="nav-text">BaseApp::createEntityAnywhere</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Baseapp-createEntityAnywhereFromDBID"><span class="nav-number">2.</span> <span class="nav-text">Baseapp::createEntityAnywhereFromDBID</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Baseapp-createCellEntityInNewSpace"><span class="nav-number">3.</span> <span class="nav-text">Baseapp::createCellEntityInNewSpace</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Baseapp-createCellEntity"><span class="nav-number">4.</span> <span class="nav-text">Baseapp::createCellEntity</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Cell"><span class="nav-number">5.</span> <span class="nav-text">Cell</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Space"><span class="nav-number">6.</span> <span class="nav-text">Space</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CoordinateSystem"><span class="nav-number">7.</span> <span class="nav-text">CoordinateSystem</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SpaceViewer"><span class="nav-number">8.</span> <span class="nav-text">SpaceViewer</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RangeTrigger"><span class="nav-number">9.</span> <span class="nav-text">RangeTrigger</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#ViewTrigger"><span class="nav-number">9.1.</span> <span class="nav-text">ViewTrigger</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#TrapTrigger"><span class="nav-number">9.2.</span> <span class="nav-text">TrapTrigger</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ProximityController"><span class="nav-number">10.</span> <span class="nav-text">ProximityController</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Witness"><span class="nav-number">11.</span> <span class="nav-text">Witness</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Updatable"><span class="nav-number">12.</span> <span class="nav-text">Updatable</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Controllers"><span class="nav-number">13.</span> <span class="nav-text">Controllers</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#globalData"><span class="nav-number">14.</span> <span class="nav-text">globalData</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#EntityCall"><span class="nav-number">15.</span> <span class="nav-text">EntityCall</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#注册流程"><span class="nav-number">16.</span> <span class="nav-text">注册流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#登录流程"><span class="nav-number">17.</span> <span class="nav-text">登录流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#登录-Step1"><span class="nav-number">17.1.</span> <span class="nav-text">登录 Step1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#登录-Step2"><span class="nav-number">17.2.</span> <span class="nav-text">登录 Step2</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Backuper-amp-Archiver"><span class="nav-number">18.</span> <span class="nav-text">Backuper &amp; Archiver</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AllClients"><span class="nav-number">19.</span> <span class="nav-text">AllClients</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Entity-teleport"><span class="nav-number">20.</span> <span class="nav-text">Entity::teleport</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lumieru</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.1"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('复制成功');
+        else $(this).text('复制失败');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
