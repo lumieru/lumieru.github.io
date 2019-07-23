@@ -349,6 +349,228 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/22/Paragon-Feature-Examples-Animation-Techniques-Feature-Highlight-Unreal-Engine/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/22/Paragon-Feature-Examples-Animation-Techniques-Feature-Highlight-Unreal-Engine/" class="post-title-link" itemprop="url">Paragon Feature Examples: Animation Techniques | Feature Highlight | Unreal Engine</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-22 09:36:36" itemprop="dateCreated datePublished" datetime="2019-05-22T09:36:36+08:00">2019-05-22</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameEngine/" itemprop="url" rel="index"><span itemprop="name">GameEngine</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/1UOY-FMm-xo" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+<p>主要内容：该视频由Paragon游戏制作者Laurent Delayen(Senior Programmer, Gameplay)和RayArnett(Senior Artist, Animation)讲述制作过程中使用到的动画技术。</p>
+<p>包括：Transitions（动画过渡），Synchronize marker（同步标记），Turn（转向动作），Speed Warping（使用IK根据速度调整步幅），Slope Warping（使用IK根据斜坡斜率调整脚步位置），Jump动作的制作，以及AnimGraph。</p>
+<p>声明：以下英文部分为个人听力记录，视频无字幕，不保证准确性，其中带问号的为听不清的单词。中文翻译部分更不保证准确性，建议结合视频看英文部分。</p>
+<p>24’50’’ <strong>Transitions</strong>.Our idea is to do motion prediction. Predict where the character is going to stop. Gives a few frame to do the anticipation for the stop. When we do the starts, we drop the marker and look backwards. Drop the marker location in the world, and we are using them to synchronizing our animations. We translate the physical movement to a curve, a distance curve.</p>
+<p>In the case of start transition, look backing time and where the marker was, that curve describes the distance of the actor to that marker.</p>
+<p>我们的想法是做动作预测。预测角色将要停止的位置。用一些动作帧来做停止动作。当做起步动作时，在起点放标记然后往回看。在世界中放下标记位置，用他们来同步我们的动作。我们把物理移动转换成一个距离曲线。</p>
+<p>在起步的过渡时，往回看标记所在的位置，曲线描述actor到标记的距离。</p>
+<p>26’46’’ 使用DistanceCurve保存Actor to Marker的位置。</p>
+<p>28’21’’ Backward动作的Transition.</p>
+<p>28’50’’ <strong>Pivoting</strong>。两个动作的结合。Reach the pivot and leave that pivot.</p>
+<p>29’39’’ when we call the actor in the studio, remap the recorded motion to the map. Using the distance, we get really precise foot placement, no foot sliding at all.</p>
+<p>30’15’’ For people who are familiar with root motion, like the animation tells the capsule whereto go. If I cross the room in the animation, the capsule will follow the animation along. With this kind of foot slide ahead(?) basically the capsule is gonna cross the room, and looks that curve it say, it walks? across the room,am I in this animation, and plays that for aim. so uses the motion of the capsule to pick which frame to play in the animation. the animation stay is locked. to the capsule is doing movement. If the capsule is sitting still and starts moving forwards , the animation says OK, 2 units from where I started,I’ll find that on this curve and play that for aim. </p>
+<p>对熟悉RootMotion的人来说，动画告诉胶囊该移动到哪里。如果人物在动画中穿过房间，胶囊会跟随动画。所以用胶囊的运动来选取哪一帧来在动画中播放。在胶囊运动的过程中，动画所在位置是锁定的。如果胶囊还在原地准备向前移动，动画说距离出发的位置有2个单位距离，会在曲线上找到那帧来播放。</p>
+<p>33’ synchronize marker? 从start到loop动作。当toe和root交叉时，有标记。</p>
+<p>33’47’’ The reason for doing that way is, they sort of tells us, spash? you where the foot is and we can synchronize animation that way. We thought about this, other people seem to describe the movement when the foot touch the ground and leave the ground,sort of like the anpitute? of the step. and we decided to go instead with the spash? where it was around the player to minimize foot sliding. So when you transition between animations, we sort of try to get the closest position. to where the capsule is basically to minimize sliding. So we sacrifice bits the where the foot is, we try to keep the position.  </p>
+<p>35’10’’ 以脚的动作为标准，可以保证不会滑步。</p>
+<p>37’50’’ <strong>转向</strong>。</p>
+<p>38’50’’ 角度Curve。</p>
+<p>41’02’’ 动画蓝图。</p>
+<p>42’40’’Backward-Forward转换。DistanceCurve标记Turn角度。</p>
+<p>43’40’’ .速度低会导致动作慢，用Speed Warping可以小步移动。</p>
+<p>45’55’’ 显示Speed Warping和无Speed Warping的区别。</p>
+<p>51’ 原理：根据SpeedScale移动IKBone。</p>
+<p>53’24’’ 比如2X速率移动，IKBone在2X距离位置</p>
+<p>54’50’’ 后退动作的有无SpeedWarping比较</p>
+<p>58’ BlendSpace。JogForwardSlopeLean。slope斜率。左右倾斜角度。速度</p>
+<p>60’ Jogging状态机节点。Blend-&gt;AimOffset-&gt;RotateRoot</p>
+<p>60’50’’ 移动效果。</p>
+<p>62’40’’ Slope移动效果。</p>
+<p>64’43’’ <strong>SlopeWarping</strong>开关的区别。</p>
+<p>66’41’’ 斜坡上开启网格模式的效果。能看到地板位置，Normal，IKBone的位置</p>
+<p>68’14’’ TwoBoneIK for legs蓝图节点</p>
+<p>68’47’’ 改变角度观察BlendSpace</p>
+<p>70’50’’ 脚悬空不可避免。</p>
+<p>73’30’’ <strong>Jump动作</strong>。Jumping分解为3个部分。InAir，Apex，Landing。用DistanceCurve标记到地面的距离。We use it here to get a few extra frames of compression. Because animation runs after physics. So when we note that you are jumping, it’s already too late you are already in jumping.  So this allows it to compensate and have a few extra frames that feet on the ground.</p>
+<p>Because the capsule is moving.</p>
+<p>74’53’’ Jump动作演示。</p>
+<p>75’43’’DistanceCurveForLanding. Put a marker on where you are gonna lands. Use that to synchronize the feet getting close to the ground. The arc is synchronizing with the apex?</p>
+<p>76’06’’ Apex。DistanceCurve. How far before it and go past it.</p>
+<p>76’30’’ <strong>Recovery Additive</strong>.Play on top of anything in the game. 为了nice landing compression.如果不用additive。会Blending Jogforward, backward。Maybe the result is not what would be blended exactly, you still get a nice feel without making a time to time content.</p>
+<p>77’38’’ when we do blend between animations, it have difference. Blend feet quickly, Upperbody lowly. </p>
+<p>78’50’’ AnimDynamics. Not show. 可以在另一个视频中看到专门讲这个节点。AnimDynamic features used in Paragon.<a href="https://www.youtube.com/watch?v=5h5CvZEBBWo" target="_blank" rel="noopener">https://www.youtube.com/watch?v=5h5CvZEBBWo</a></p>
+<p>79’36’’ <strong>AnimGraph</strong>. </p>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h2><h3 id="一、曲线的使用。"><a href="#一、曲线的使用。" class="headerlink" title="一、曲线的使用。"></a>一、曲线的使用。</h3><p>根据曲线同步动作。如起步过渡动作中，进入过渡状态时在起点放置标记marker，actor移动时根据当前actor和marker的距离distance，在DistanceCurve上查找该Distance应该对应的帧进行播放。</p>
+<p>如原地转身动作（Rotate）中，根据当前actor的旋转角度angle，在Curve上查找该Angle对应的帧进行播放。</p>
+<h3 id="二、Synchronize-Marker-左右脚同步标记"><a href="#二、Synchronize-Marker-左右脚同步标记" class="headerlink" title="二、Synchronize Marker 左右脚同步标记"></a>二、Synchronize Marker 左右脚同步标记</h3><p>在动画中，当toe和root重合时，添加Notify记录当前是左脚还是右脚。动画过渡时，以脚为基础，避免了滑步的出现。</p>
+<h3 id="三、IK的使用"><a href="#三、IK的使用" class="headerlink" title="三、IK的使用"></a>三、IK的使用</h3><p>SpeedWarping和SlopeWarping，使用IK使脚在动画中处于正确的位置。</p>
+<h3 id="四、Jump动作"><a href="#四、Jump动作" class="headerlink" title="四、Jump动作"></a>四、Jump动作</h3><p>由于胶囊运动，动画制作原地起跳时需要考虑胶囊的移动。Curve标记当前和地面的距离。通过Curve同步动画。</p>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/21/多人快节奏游戏五之演示Demo/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2600,210 +2822,6 @@ updateParameters();
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/构建游戏网络协议三之数据包的分包和重组/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/20/构建游戏网络协议三之数据包的分包和重组/" class="post-title-link" itemprop="url">构建游戏网络协议三之数据包的分包和重组</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-05-20 15:23:15" itemprop="dateCreated datePublished" datetime="2019-05-20T15:23:15+08:00">2019-05-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="本篇自我总结"><a href="#本篇自我总结" class="headerlink" title="本篇自我总结"></a>本篇自我总结</h1><p>本篇主要讲了数据包的分包和重组问题, 到底数据包多大才好呢?是不是越大越好呢?包太大了怎么办呢?<br>请看总结, 不明之处再看文中具体讲解.</p>
-<h2 id="为什么需要做这个分包和重组系统"><a href="#为什么需要做这个分包和重组系统" class="headerlink" title="为什么需要做这个分包和重组系统"></a>为什么需要做这个分包和重组系统</h2><p>每台计算机(路由器)会沿着路由强制要求数据包的大小会有一个最大的上限，这个上限就是所谓的最大传输单元MTU。如果任意一个路由器收到一个数据包的大小超过这个最大传输单元的大小，它有这么两个选择，a)在IP层对这个数据包进行分包，并将分包后的数据包继续传递，b)丢弃这个数据包然后告诉你数据包被丢弃了，你自己负责摆平这个问题。</p>
-<p><strong>实例</strong> : 这儿有一个我会经常遇到的情况。人们在编写多人在线游戏的时候，数据包的平均大小都会非常的小，让我们假设下，这些数据包的平均大小大概只有几百字节，但时不时会在他们的游戏中同时发生大量的事情并且发出去的数据包会出现丢失的情况，这个时候数据包会比通常的情况下要大。突然之间，游戏的数据包的大小就会超过最大传输单元的大小，这样就只有很少一部分玩家能够收到这个数据包，然后整个通信就崩溃了。</p>
-<h2 id="本篇基本术语"><a href="#本篇基本术语" class="headerlink" title="本篇基本术语"></a>本篇基本术语</h2><ul>
-<li>数据包packets</li>
-<li>分包fragments</li>
-</ul>
-<h2 id="分包的数据结构"><a href="#分包的数据结构" class="headerlink" title="分包的数据结构"></a>分包的数据结构</h2><p>我们将允许一个数据包最多可以分成256个数据包，并且每个分包后的数据包的大小不会超过1024个字节。这样的话，我们就可以通过这样一个系统来发送大小最大为256k的数据包</p>
-<pre><del>[protocol id] (32 bits)</del>   // not actually sent, but used to calc crc32
-[crc32] (32 bits)  
-[sequence] (16 bits)  // 数据包序号
-[packet type = 0] (2 bits)
-<strong>[fragment id] (8 bits) // 分包ID
-[num fragments] (8 bits)
-[pad zero bits to nearest byte index] // 用于字节对齐的bits
-&lt;fragment data&gt;</strong></pre>
-
-<h2 id="发送分包后的数据包"><a href="#发送分包后的数据包" class="headerlink" title="发送分包后的数据包"></a>发送分包后的数据包</h2><p>发送分包以后的数据包是一件非常容易的事情。如果数据包的大小小于保守估计的最大传输单元的大小。那么就按正常的方法进行发送。否则的话，就计算这个数据包到底该分成多少个1024字节的数据包分包，然后构建这些分包并按照之前发送正常数据包的方法进行发送。</p>
-<p>发送出去以后也不记录发送的数据包的内容，这种发送以后不记录发送的数据包的内容的方法有一个后果，就是数据包的任意一个分包如果丢失的话，那么整个数据包就都要丢弃。随着分包数量的增加，整个数据包被丢弃的概率也随之增加.由此可见，当你需要发送要给256K的数据包的时候要发送256个分包，如果有一个分包丢失的话，你就要重新把这个256k的数据包再分一次包然后再发送出去。</p>
-<h2 id="什么时候用这个分包和重组系统呢"><a href="#什么时候用这个分包和重组系统呢" class="headerlink" title="什么时候用这个分包和重组系统呢"></a>什么时候用这个分包和重组系统呢</h2><p>因为发送出去以后也不记录发送的数据包, 随着分包数量的增加，整个数据包被丢弃的概率也随之增加, 而一个片段的丢失就会导致整个数据包都要被丢弃掉.所以我建议你要小心分包以后的数量。</p>
-<p><strong>这个分包和重组系统最好是只对2-4个分包的情况进行使用，而且最好是针对那种对时间不怎么敏感的数据使用或者是就算分包lost了也无所谓的情况。</strong>绝对不要只是为了省事就把一大堆依赖顺序的事件打到一个大数据包里面然后依赖数据包的分包和重组机制进行发送。这会让事情变得更加麻烦。</p>
-<p>数据包分包和重组系统的关键弱点是一个片段的丢失就会导致整个数据包都要被丢弃掉, 想要解决这个弱点得使用大块数据发送策略, 见下一篇文章 <a href="/2019/05/20/构建游戏网络协议四之发送大块数据/" title="构建游戏网络协议四之发送大块数据">构建游戏网络协议四之发送大块数据</a>.</p>
-<h2 id="接收分包后的数据包"><a href="#接收分包后的数据包" class="headerlink" title="接收分包后的数据包"></a>接收分包后的数据包</h2><p>之所以对分包后的数据包进行接收很困难的原因是我们不仅需要给缓冲区建立一个数据结构还要把这些分包重组成原始的数据包，我们也要特别小心如果有人试图让我们的程序产生崩溃而给我们发送恶意的数据包。</p>
-<p>要非常小心检查一切可能的情况。除此之外，还有一个非常简单的事情要注意：让分包保存在一个数据结构里面，当一个数据包的所有分包都到达以后（通过计数来判断是否全部到达），将这些分包重组成一个大的数据包，并把这个重组后的大数据包返回给接收方。</p>
-<p>什么样的数据结构在这里是有意义的?这里并没有什么特别的数据结构!我使用的是一种我喜欢称之为序列缓冲区的东西。我想和你分享的最核心的技巧是如何让这个数据结构变得高效：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxEntries = <span class="number">256</span>;</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">SequenceBuffer</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">bool</span> exists[MaxEntries];</span><br><span class="line">    <span class="keyword">uint16_t</span> sequence[MaxEntries];</span><br><span class="line">    Entry entries[MaxEntries];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/05/20/构建游戏网络协议三之数据包的分包和重组/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2850,7 +2868,7 @@ updateParameters();
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">33</span>
+                    <span class="site-state-item-count">34</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2912,7 +2930,9 @@ updateParameters();
                     
                       
                     
-                    <span class="site-state-item-count">10</span>
+                      
+                    
+                    <span class="site-state-item-count">11</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

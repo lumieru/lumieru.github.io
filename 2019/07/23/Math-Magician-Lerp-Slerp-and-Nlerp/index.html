@@ -96,20 +96,23 @@
 
 
 
-  <meta name="description" content="原文出处 Fast-Paced Multiplayer (Part I): Client-Server Game Architecture IntroductionThis is the first in a series of articles exploring the techniques and algorithms that make fast-paced multiplayer gam">
-<meta name="keywords" content="GabrielGambetta">
+  <meta name="description" content="Math Magician – Lerp, Slerp, and Nlerp原文出处  Illustration of linear interpolation on a data set. The same data set is used for other interpolation methods in the interpolation article. (Photo credit: W">
+<meta name="keywords" content="Unity,Math">
 <meta property="og:type" content="article">
-<meta property="og:title" content="多人快节奏游戏一之C&#x2F;S游戏架构">
-<meta property="og:url" content="https://lumieru.github.io/2019/05/21/多人快节奏游戏一之C-S游戏架构/index.html">
+<meta property="og:title" content="Math Magician - Lerp, Slerp, and Nlerp">
+<meta property="og:url" content="https://lumieru.github.io/2019/07/23/Math-Magician-Lerp-Slerp-and-Nlerp/index.html">
 <meta property="og:site_name" content="Lumieru的知识库">
-<meta property="og:description" content="原文出处 Fast-Paced Multiplayer (Part I): Client-Server Game Architecture IntroductionThis is the first in a series of articles exploring the techniques and algorithms that make fast-paced multiplayer gam">
+<meta property="og:description" content="Math Magician – Lerp, Slerp, and Nlerp原文出处  Illustration of linear interpolation on a data set. The same data set is used for other interpolation methods in the interpolation article. (Photo credit: W">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://blog.sensedevil.com/image/fpm1-01.png">
-<meta property="og:updated_time" content="2019-06-22T09:02:57.359Z">
+<meta property="og:image" content="http://blog.sensedevil.com/image/slerp1.svg.png">
+<meta property="og:image" content="http://blog.sensedevil.com/image/slerp2.svg.png">
+<meta property="og:image" content="http://blog.sensedevil.com/image/slerp3.png">
+<meta property="og:image" content="http://blog.sensedevil.com/image/slerp4.gif">
+<meta property="og:updated_time" content="2019-07-23T14:13:52.640Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="多人快节奏游戏一之C&#x2F;S游戏架构">
-<meta name="twitter:description" content="原文出处 Fast-Paced Multiplayer (Part I): Client-Server Game Architecture IntroductionThis is the first in a series of articles exploring the techniques and algorithms that make fast-paced multiplayer gam">
-<meta name="twitter:image" content="http://blog.sensedevil.com/image/fpm1-01.png">
+<meta name="twitter:title" content="Math Magician - Lerp, Slerp, and Nlerp">
+<meta name="twitter:description" content="Math Magician – Lerp, Slerp, and Nlerp原文出处  Illustration of linear interpolation on a data set. The same data set is used for other interpolation methods in the interpolation article. (Photo credit: W">
+<meta name="twitter:image" content="http://blog.sensedevil.com/image/slerp1.svg.png">
 
 
 
@@ -117,7 +120,7 @@
 
   
   
-  <link rel="canonical" href="https://lumieru.github.io/2019/05/21/多人快节奏游戏一之C-S游戏架构/">
+  <link rel="canonical" href="https://lumieru.github.io/2019/07/23/Math-Magician-Lerp-Slerp-and-Nlerp/">
 
 
 
@@ -127,7 +130,7 @@
   };
 </script>
 
-  <title>多人快节奏游戏一之C/S游戏架构 | Lumieru的知识库</title>
+  <title>Math Magician - Lerp, Slerp, and Nlerp | Lumieru的知识库</title>
   
 
 
@@ -355,7 +358,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/21/多人快节奏游戏一之C-S游戏架构/">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/07/23/Math-Magician-Lerp-Slerp-and-Nlerp/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lumieru">
@@ -372,7 +375,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">多人快节奏游戏一之C/S游戏架构
+          <h1 class="post-title" itemprop="name headline">Math Magician - Lerp, Slerp, and Nlerp
 
               
             
@@ -398,24 +401,12 @@
                 
               
 
-              <time title="创建时间：2019-05-21 10:18:29" itemprop="dateCreated datePublished" datetime="2019-05-21T10:18:29+08:00">2019-05-21</time>
+              <time title="创建时间：2019-07-23 21:36:04 / 修改时间：22:13:52" itemprop="dateCreated datePublished" datetime="2019-07-23T21:36:04+08:00">2019-07-23</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
               
             
           </span>
@@ -432,7 +423,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameEngine/" itemprop="url" rel="index"><span itemprop="name">GameEngine</span></a></span>
 
                 
                 
@@ -467,28 +458,33 @@
       
 
       
-        <p><a href="http://www.gabrielgambetta.com/client-server-game-architecture.html" target="_blank" rel="noopener">原文出处</a></p>
-<h1 id="Fast-Paced-Multiplayer-Part-I-Client-Server-Game-Architecture"><a href="#Fast-Paced-Multiplayer-Part-I-Client-Server-Game-Architecture" class="headerlink" title="Fast-Paced Multiplayer (Part I): Client-Server Game Architecture"></a>Fast-Paced Multiplayer (Part I): Client-Server Game Architecture</h1><hr>
-<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>This is the first in a series of articles exploring the techniques and algorithms that make fast-paced multiplayer games possible. If you’re familiar with the concepts behind multiplayer games, you can safely skip to the next article – what follows is an introductory discussion.</p>
-<p>Developing any kind of game is itself challenging; multiplayer games, however, add a completely new set of problems to be dealt with. Interestingly enough, the core problems are human nature and physics!</p>
-<h2 id="The-problem-of-cheating"><a href="#The-problem-of-cheating" class="headerlink" title="The problem of cheating"></a>The problem of cheating</h2><p>It all starts with cheating.</p>
-<p>As a game developer, you usually don’t care whether a player cheats in your single-player game – his actions don’t affect anyone but him. A cheating player may not experience the game exactly as you planned, but since it’s their game, they have the right to play it in any way they please.</p>
-<p>Multiplayer games are different, though. In any competitive game, a cheating player isn’t just making the experience better for himself, he’s also making the experience worse for the other players. As the developer, you probably want to avoid that, since it tends to drive players away from your game.</p>
-<p>There are many things that can be done to prevent cheating, but the most important one (and probably the only really meaningful one) is simple : <em>don’t trust the player</em>. Always assume the worst – that players <em>will</em> try to cheat.</p>
+        <h1 id="Math-Magician-–-Lerp-Slerp-and-Nlerp"><a href="#Math-Magician-–-Lerp-Slerp-and-Nlerp" class="headerlink" title="Math Magician – Lerp, Slerp, and Nlerp"></a>Math Magician – Lerp, Slerp, and Nlerp</h1><p><a href="https://keithmaggio.wordpress.com/2011/02/15/math-magician-lerp-slerp-and-nlerp/" target="_blank" rel="noopener">原文出处</a></p>
+<p> <img src="http://blog.sensedevil.com/image/slerp1.svg.png" alt="Illustration of linear interpolation on a data..."><div align="center"><small><em>Illustration of linear interpolation on a data set. The same data set is used for other interpolation methods in the interpolation article. (Photo credit: Wikipedia)</em></small></div></p>
+<p>Man, I wish I had this blog going through school, because this place has become my online notebook. Game development is like riding a bike – but math, for me, can have a hard time stickin’. I’ve been working in databases so long that I have a lot of <a href="http://en.wikipedia.org/wiki/Bitwise_operation" title="Bitwise operation" target="_blank" rel="noopener">bit-shifting</a> down, but my matrix and vector math is starting to lack. So, a creative way for me to remember all these algorithms is to try to explain them. Today, I’m going through <a href="http://en.wikipedia.org/wiki/Linear_interpolation" title="Linear interpolation" target="_blank" rel="noopener">Linear Interpolation</a>, Spherical Linear Interpolation, and Normalized Linear Interpolation.</p>
 <a id="more"></a>
-<h2 id="Authoritative-servers-and-dumb-clients"><a href="#Authoritative-servers-and-dumb-clients" class="headerlink" title="Authoritative servers and dumb clients"></a>Authoritative servers and dumb clients</h2><p>This leads to a seemingly simple solution – you make everything in your game happen in a central server under your control, and make the clients just privileged spectators of the game. In other words, your game client sends inputs (key presses, commands) to the server, the server runs the game, and you send the results back to the clients. This is usually called using an <em>authoritative server</em>, because the one and only authority regarding everything that happens in the world is the server.</p>
-<p>Of course, your server can be exploited for vulnerabilities, but that’s out of the scope of this series of articles. Using an authoritative server does prevent a wide range of hacks, though. For example, you don’t trust the client with the health of the player; a hacked client can modify its local copy of that value and tell the player it has 10000% health, but the server <em>knows</em> it only has 10% – when the player is attacked it will die, regardless of what a hacked client may think.</p>
-<p>You also don’t trust the player with its position in the world. If you did, a hacked client would tell the server “<strong>I’m at (10,10)</strong>” and a second later “<strong>I’m at (20,10)</strong>”, possibly going through a wall or moving faster than the other players. Instead, the server <em>knows</em> the player is at (10,10), the client tells the server “<strong>I want to move one square to the right</strong>”, the server updates its internal state with the new player position at (11,10), and then replies to the player “<strong>You’re at (11, 10)</strong>”:</p>
-<p><a href="http://blog.sensedevil.com/image/fpm1-01.png" target="_blank" rel="noopener"><img src="http://blog.sensedevil.com/image/fpm1-01.png" alt="Effect of network delays."></a>Effect of network delays.</p>
-<p>In summary: the game state is managed by the server alone. Clients send their actions to the server. The server updates the game state periodically, and then sends the new game state back to clients, who just render it on the screen.</p>
-<h2 id="Dealing-with-networks"><a href="#Dealing-with-networks" class="headerlink" title="Dealing with networks"></a>Dealing with networks</h2><p>The dumb client scheme works fine for slow turn based games, for example strategy games or poker. It would also work in a LAN setting, where communications are, for all practical purposes, instantaneous. But this breaks down when used for a fast-paced game over a network such as the internet.</p>
-<p>Let’s talk physics. Suppose you’re in San Francisco, connected to a server in the NY. That’s approximately 4,000 km, or 2,500 miles (that’s roughly the distance between Lisbon and Moscow). Nothing can travel faster than light, not even bytes on the Internet (which at the lower level are pulses of light, electrons in a cable, or electromagnetic waves). Light travels at approximately 300,000 km/s, so it takes 13 ms to travel 4,000 km.</p>
-<p>This may sound quite fast, but it’s actually a very optimistic setup – it assumes data travels at the speed of light in a straight path, with is most likely not the case. In real life, data goes through a series of jumps (called <em>hops</em> in networking terminology) from router to router, most of which aren’t done at lightspeed; routers themselve introduce a bit of delay, since packets must be copied, inspected, and rerouted.</p>
-<p>For the sake of the argument, let’s assume data takes 50 ms from client to server. This is close to a best-case scenario – what happens if you’re in NY connected to a server in Tokyo? What if there’s network congestion for some reason? Delays of 100, 200, even 500 ms are not unheard of.</p>
-<p>Back to our example, your client sends some input to the server (“<strong>I pressed the right arrow</strong>”). The server gets it 50 ms later. Let’s say the server processes the request and sends back the updated state immediately. Your client gets the new game state (“<strong>You’re now at (1, 0)</strong>”) 50 ms later.</p>
-<p>From your point of view, what happened is that you pressed the right arrow but nothing happened for a tenth of a second; then your character finally moved one square to the right. This perceived <em>lag</em> between your inputs and its consequences may not sound like much, but it’s noticeable – and of course, a lag of half a second isn’t just noticeable, it actually makes the game unplayable.</p>
-<h2 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h2><p>Networked multiplayer games are incredibly fun, but introduce a whole new class of challenges. The authoritative server architecture is pretty good at stopping most cheats, but a straightforward implementation may make games quite unresponsive to the player.</p>
-<p>In the following articles, we’ll explore how can we build a system based on an authoritative server, while minimizing the delay experienced by the players, to the point of making it almost indistinguishable from local or single player games.</p>
+<p><strong>The Code</strong></p>
+<p>I’m starting off with the code to show the similarities and differences with each. One thing similar right off the bat is the parameter list: each function takes the same 3 – A <code>start</code>, an <code>end</code>, and a <code>percent</code>. The <code>start</code> and <code>end</code> can be Vectors, Matrices, or Quaternions. For now, lets use Vectors. The <code>percent</code> is a scalar value between 0 and 1. If <code>percent == 0</code>, then the functions will return <code>start</code>, if <code>percent == 1</code>, the functions return <code>end</code>, and if <code>percent == 0.5</code>, it returns a nice average midpoint between the 2 vectors.</p>
+<hr>
+<p> <img src="http://blog.sensedevil.com/image/slerp2.svg.png" alt="English: Illustration of linear interpolation."><div align="center"><small><em>Illustration of linear interpolation. (Photo credit: Wikipedia)</em></small></div></p>
+<p><a href="http://en.wikipedia.org/wiki/Linear_interpolation" title="Linear interpolation" target="_blank" rel="noopener"><strong><em>Lerp:</em></strong></a> The basic Linear <a href="http://en.wikipedia.org/wiki/Sinc_function" title="Sinc function" target="_blank" rel="noopener">Interpolation function</a>. Lets break this down, right to left. First, we have <code>end - start</code>, which will pretty much return a vector the same distance as <code>start</code> and <code>end</code>, but represented as if it’s <code>start</code> vector was <code>{0, 0, 0}</code>. We multiply that vector by <code>percent</code>, which will give us a vector only <code>percent</code> as long (so if <code>percent</code> is 0.5, the vector now is only half as long as it was). We then add <code>start</code> back to it to return it to its normal position. Done.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Vector3 <span class="title">Lerp</span>(<span class="params">Vector3 start, Vector3 end, <span class="keyword">float</span> percent</span>)  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">     <span class="keyword">return</span> (start + percent*(end - start));  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Lerp is useful for:</strong> Transitions from place to place over time, implementing a <a href="http://en.wikipedia.org/wiki/Health_%28gaming%29" title="Health (gaming)" target="_blank" rel="noopener">Health Bar</a>, etc. Pretty much going from point A to point B.</p>
+<hr>
+<p> <img src="http://blog.sensedevil.com/image/slerp3.png" alt="Oblique vector rectifies to Slerp factor."><div align="center"><small><em>Oblique vector rectifies to Slerp factor. (Photo credit: Wikipedia)</em></small></div></p>
+<p><a href="http://en.wikipedia.org/wiki/Slerp" title="Slerp" target="_blank" rel="noopener"><strong><em>Slerp:</em></strong></a> Slerp is a very powerful function. It’s become very popular in the game industry for it’s ease of use and significant result, however, people tend to ignore its drawbacks. Slerp travels the <em>torque-minimal path</em>, which means it travels along the straightest path the rounded surface of a sphere, which is a major plus and part of the reason it’s so powerful, as well as the fact that it maintains <em>constant velocity</em>. But Slerp is <em>non-commutative</em>, meaning the order of how the vectors/matrices/quaternions are passed in will affect the result. A call to <code>Slerp(A, B, delta)</code> will yield a different result as compared to <code>Slerp(B, A, delta)</code>. Also, Slerp is computationally expensive because of the use of <a href="http://en.wikipedia.org/wiki/Function_%28mathematics%29" title="Function (mathematics)" target="_blank" rel="noopener">mathematical functions</a> like <a href="http://en.wikipedia.org/wiki/Sine" title="Sine" target="_blank" rel="noopener"><code>Sin()</code></a>, <code>Cos()</code> and <code>Acos()</code>.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Special Thanks to Johnathan, Shaun and Geof!  </span></span><br><span class="line"><span class="function">Vector3 <span class="title">Slerp</span>(<span class="params">Vector3 start, Vector3 end, <span class="keyword">float</span> percent</span>)  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">     <span class="comment">// [Dot product](http://en.wikipedia.org/wiki/Dot_product) - the cosine of the angle between 2 vectors.  </span></span><br><span class="line">     <span class="keyword">float</span> dot = Vector3.Dot(start, end);  </span><br><span class="line">     <span class="comment">// Clamp it to be in the range of Acos()  </span></span><br><span class="line">     <span class="comment">// This may be unnecessary, but floating point  </span></span><br><span class="line">     <span class="comment">// precision can be a fickle mistress.  </span></span><br><span class="line">     Mathf.Clamp(dot, <span class="number">-1.0f</span>, <span class="number">1.0f</span>);  </span><br><span class="line">     <span class="comment">// Acos(dot) returns the angle between start and end,  </span></span><br><span class="line">     <span class="comment">// And multiplying that by percent returns the angle between  </span></span><br><span class="line">     <span class="comment">// start and the final result.  </span></span><br><span class="line">     <span class="keyword">float</span> theta = Mathf.Acos(dot)*percent;  </span><br><span class="line">     Vector3 RelativeVec = end - start*dot;  </span><br><span class="line">     RelativeVec.Normalize();  </span><br><span class="line">     <span class="comment">// [Orthonormal basis](http://en.wikipedia.org/wiki/Orthonormal_basis)  </span></span><br><span class="line">     <span class="comment">// The final result.  </span></span><br><span class="line">     <span class="keyword">return</span> ((start*Mathf.Cos(theta)) + (RelativeVec*Mathf.Sin(theta)));  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Slerp is useful for:</strong> Rotation, mostly.</p>
+<hr>
+<p> <img src="http://blog.sensedevil.com/image/slerp4.gif" alt></p>
+<p><strong><em>Nlerp:</em></strong> Nlerp is our solution to Slerp’s computational cost. Nlerp also handles rotation and is much less computationally expensive, however it, too has it’s drawbacks. Both travel a torque-minimal path, but Nlerp _is_ commutative where Slerp is not, and Nlerp <strong><em>also</em></strong> does <em>not</em> maintain a constant velocity, which, in some cases, may be a desired effect. Implementing Nlerp in place of some Slerp calls may produce the same effect and even save on some FPS. However, with every optimization, using this improperly may cause undesired effects. Nlerp should be used <em>more</em>, but it doesn’t mean cut out Slerp all together. Nlerp is very easy, too. Just normalize the result from <code>Lerp()</code>!</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Vector3 <span class="title">Nlerp</span>(<span class="params">Vector3 start, Vector3 end, <span class="keyword">float</span> percent</span>)  </span></span><br><span class="line"><span class="function"></span>&#123;  </span><br><span class="line">     <span class="keyword">return</span> Lerp(start,end,percent).normalized();  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>Nlerp is useful for:</strong> Animation (in regards to rotation and such), optimized rotation.</p>
+<hr>
+<p>The trouble with Lerp, Slerp and Nlerp to most people is that they don’t truly understand the functions. Most people will post “Hey, I have a problem with this” and someone will say use one form of Linear Interpolation, and just patch it in. It’ll work, but will they understand why it works? Could it be improved? I would recommend taking some time and reading articles on the different Linear Interpolations – there are more out there I didn’t mention, and all with different purposes.</p>
+<p>That’s all for now. I’ll find more math to put up in the weeks to come. Till then, take care!</p>
+<p><em>This post is dedicated to the staff at <a href="http://www.zeegeegames.com/" target="_blank" rel="noopener">ZeeGee Games</a>. I may have lost the battle, but I will not lose the war! I will be a Game Dev Jedi!</em></p>
+<p><em>Also, if you’re part of the <a href="http://www.igda.org/" title="International Game Developers Association" target="_blank" rel="noopener">IGDA</a>, <a href="http://grantforigda.wordpress.com/" target="_blank" rel="noopener">Vote For Grant! (This link is really old by now, though…)</a></em></p>
+<p>References:<br><a href="http://number-none.com/product/Understanding%20Slerp,%20Then%20Not%20Using%20It/" target="_blank" rel="noopener">The Inner Product – Understanding Slerp, Then Not Using It, by Jonathan Blow</a><br><a href="http://www.gamedev.net/topic/543189-nlerpslerp-with-2-vectors-solved/" target="_blank" rel="noopener">GameDev.Net – Nlerp/Slerp with 2 vectors. [Solved], Post by ChaosPhoenix, Reply from jyk</a></p>
 
       
     </div>
@@ -512,7 +508,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/GabrielGambetta/" rel="tag"><i class="fa fa-tag"></i> GabrielGambetta</a>
+            <a href="/tags/Unity/" rel="tag"><i class="fa fa-tag"></i> Unity</a>
+          
+            <a href="/tags/Math/" rel="tag"><i class="fa fa-tag"></i> Math</a>
           
         </div>
       
@@ -525,8 +523,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/05/21/NAT穿越基础/" rel="next" title="NAT穿越基础">
-                <i class="fa fa-chevron-left"></i> NAT穿越基础
+              <a href="/2019/06/28/KBEngine源码解读五-转载二/" rel="next" title="KBEngine源码解读五--转载二">
+                <i class="fa fa-chevron-left"></i> KBEngine源码解读五--转载二
               </a>
             
           </div>
@@ -534,10 +532,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/05/21/多人快节奏游戏二之客户端预测与服务器修正/" rel="prev" title="多人快节奏游戏二之客户端预测与服务器修正">
-                多人快节奏游戏二之客户端预测与服务器修正 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -708,7 +702,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Fast-Paced-Multiplayer-Part-I-Client-Server-Game-Architecture"><span class="nav-number">1.</span> <span class="nav-text">Fast-Paced Multiplayer (Part I): Client-Server Game Architecture</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-problem-of-cheating"><span class="nav-number">1.2.</span> <span class="nav-text">The problem of cheating</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Authoritative-servers-and-dumb-clients"><span class="nav-number">1.3.</span> <span class="nav-text">Authoritative servers and dumb clients</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Dealing-with-networks"><span class="nav-number">1.4.</span> <span class="nav-text">Dealing with networks</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Summary"><span class="nav-number">1.5.</span> <span class="nav-text">Summary</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Math-Magician-–-Lerp-Slerp-and-Nlerp"><span class="nav-number">1.</span> <span class="nav-text">Math Magician – Lerp, Slerp, and Nlerp</span></a></li></ol></div>
             
 
           </div>
