@@ -299,3 +299,18 @@ Archiver::archive
     // 如果传送成功了，就销毁原来的Entity。如果失败了，就恢复Entity，并恢复成Real实体。
     --> Cellapp::reqTeleportToCellAppCB
     ```
+## Entity和Proxy等python类不能有虚函数
+
+[原文链接](https://bbs.comblockengine.com/forum.php?mod=viewthread&tid=6744&extra=page%3D1)
+
+最近在做一些底层实体的扩展工作，发现了 如果 entity或者proxy中有虚函数的声明，那么程序在创建实体后 调用__init__方法时会抛出异常。于是我打开调试，看看为什么会这样，发现了很奇怪的事情：
+
+![kbengine3_1.png](http://blog.sensedevil.com/image/kbengine3_1.png)
+
+obj和entity应该是一个对象，但是调试信息里面obj的python结构是正常的，而entity的python结构是异常的。这时我才恍然大悟，原来是C++编译器给对象内存添加了虚函数表的指针导致了内存错位了。
+
+![kbengine3_2.png](http://blog.sensedevil.com/image/kbengine3_2.png)
+
+可以看到，python的GC头部后面应该紧接的是PyObject，但是因为有虚函数，所以C++编译器在给的对象指针顶部添加了一个虚函数表指针数据，导致entity的值比(PyObject*)entity的值小个指针大小。所以 entity 以及派送类是不允许有虚函数以及虚继承的。
+
+总结就是能够被python继承的类，C++对象模型顶部一定是PyObject，所以该类不能有虚函数以及虚继承等 破坏这个内存模型的操作。
