@@ -349,6 +349,224 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架一/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/04/教你从头写游戏服务器框架一/" class="post-title-link" itemprop="url">教你从头写游戏服务器框架一</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-04 13:09:20" itemprop="dateCreated datePublished" datetime="2019-06-04T13:09:20+08:00">2019-06-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><a href="https://mp.weixin.qq.com/s?__biz=MzA5ODExMTkwMA==&amp;mid=2650255962&amp;idx=1&amp;sn=c2878b66c8813bcd5151b384bfb4218a&amp;chksm=88958aa9bfe203bf4537c4d1c459333490fe186384e4a718ef697c512aba9918223cbf975bfb&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">原文出处</a></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>大概已经有差不多一年没写技术文章了，原因是今年投入了一些具体游戏项目的开发。这些新的游戏项目，比较接近独立游戏的开发方式。我觉得公司的“祖传”服务器框架技术不太适合，所以从头写了一个游戏服务器端的框架，以便获得更好的开发效率和灵活性。现在项目将近上线，有时间就想总结一下，这样一个游戏服务器框架的设计和实现过程。</p>
+<p>这个框架的基本运行环境是 Linux ，采用 C++ 编写。为了能在各种环境上运行和使用，所以采用了 gcc 4.8 这个“古老”的编译器，以 C99 规范开发。</p>
+<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>由于“越通用的代码，就是越没用的代码”，所以在设计之初，我就认为应该使用分层的模式来构建整个系统。按照游戏服务器的一般需求划分，最基本的可以分为两层：</p>
+<ol>
+<li><p>底层基础功能：包括通信、持久化等非常通用的部分，关注的是性能、易用性、扩展性等指标。</p>
+</li>
+<li><p>高层逻辑功能：包括具体的游戏逻辑，针对不同的游戏会有不同的设计。</p>
+</li>
+</ol>
+<p><img src="http://blog.sensedevil.com/image/GameServer1_1.webp" alt></p>
+<p>我希望能有一个基本完整的“底层基础功能”的框架，可以被复用于多个不同的游戏。由于目标是开发一个 适合独立游戏开发 的游戏服务器框架。所以最基本的需求分析为：</p>
+<p><strong>功能性需求</strong></p>
+<ol>
+<li><p>并发：所有的服务器程序，都会碰到这个基本的问题：如何处理并发任务。一般来说，会有多线程、异步两种技术。多线程编程在编码上比较符合人类的思维习惯，但带来了“锁”这个问题。而异步非阻塞的模型，其程序执行的情况是比较简单的，而且也能比较充分的利用硬件性能，但是问题是很多代码需要以“回调”的形式编写，对于复杂的业务逻辑来说，显得非常繁琐，可读性非常差。虽然这两种方案各有利弊，也有人结合这两种技术希望能各取所长，但是我更倾向于基础是使用异步、单线程、非阻塞的调度方式，因为这个方案是最清晰简单的。为了解决“回调”的问题，我们可以在其上再添加其他的抽象层，比如协程或者添加线程池之类的技术予以改善。</p>
+</li>
+<li><p>通信：支持 请求响应 模式以及 通知 模式的通信（广播视为一种多目标的通知）。游戏有很多登录、买卖、打开背包之类的功能，都是明确的有请求和响应的。而大量的联机游戏中，多个客户端的位置、HP 等东西都需要经过网络同步，其实就是一种“主动通知”的通信方式。</p>
+</li>
+<li><p>持久化：可以存取 对象 。游戏存档的格式非常复杂，但其索引的需求往往都是根据玩家 ID 来读写就可以。在很多游戏主机如 PlayStation 上，以前的存档都是可以以类似“文件”的方式存放在记忆卡里的。所以游戏持久化最基本的需求，就是一个 key-value 存取模型。当然，游戏中还会有更复杂的持久化需求，比如排行榜、拍卖行等，这些需求应该额外对待，不适合包含在一个最基本的通用底层中。</p>
+</li>
+<li><p>缓存：支持远程、分布式的对象缓存。游戏服务基本上都是“带状态”的服务，因为游戏要求响应延迟非常苛刻，基本上都需要利用服务器进程的内存来存放过程数据。但是游戏的数据，往往是变化越快的，价值越低，比如经验值、金币、HP，而等级、装备等变化比较慢的，价值则越高，这种特征，非常适合用一个缓存模型来处理。</p>
+</li>
+<li><p>协程：可以用 C++ 来编写协程代码，避免大量回调函数分割代码。这个是对于异步代码非常有用的特性，能大大提高代码的可读性和开发效率。特别是把很多底层涉及IO的功能，都提供了协程化 API，使用起来就会像同步的 API 一样轻松惬意。</p>
+</li>
+<li><p>脚本：初步设想是支持可以用 Lua 来编写业务逻辑。游戏需求变化是出了名快的，用脚本语言编写业务逻辑正好能提供这方面的支持。实际上脚本在游戏行业里的使用非常广泛。所以支持脚本，也是一个游戏服务器框架很重要的能力。</p>
+</li>
+<li><p>其他功能：包括定时器、服务器端的对象管理等等。这些功能很常用，所以也需要包含在框架中，但已经有很多成熟方案，所以只要选取常见易懂的模型即可。比如对象管理，我会采用类似 Unity 的组件模型来实现。</p>
+</li>
+</ol>
+<p><strong>非功能性需求</strong></p>
+<ol>
+<li><p>灵活性：支持可替换的通信协议；可替换的持久化设备（如数据库）；可替换的缓存设备（如 memcached/redis）；以静态库和头文件的方式发布，不对使用者代码做过多的要求。游戏的运营环境比较复杂，特别是在不同的项目之间，可能会使用不同的数据库、不同的通信协议。但是游戏本身业务逻辑很多都是基于对象模型去设计的，所以应该有一层能够基于“对象”来抽象所有这些底层功能的模型。这样才能让多个不同的游戏，都基于一套底层进行开发。</p>
+</li>
+<li><p>部署便利性：支持灵活的配置文件、命令行参数、环境变量的引用；支持单独进程启动，而无须依赖数据库、消息队列中间件等设施。一般游戏都会有至少三套运行环境，包括一个开发环境、一个内测环境、一个外测或运营环境。一个游戏的版本更新，往往需要更新多个环境。所以如何能尽量简化部署就成为一个很重要的问题。我认为一个好的服务器端框架，应该能让这个服务器端程序，在无配置、无依赖的情况下独立启动，以符合在开发、测试、演示环境下快速部署。并且能很简单的通过配置文件、或者命令行参数的不同，在集群化下的外部测试或者运营环境下启动。</p>
+</li>
+<li><p>性能：很多游戏服务器，都会使用异步非阻塞的方式来编程。因为异步非阻塞可以很好的提高服务器的吞吐量，而且可以很明确的控制多个用户任务并发下的代码执行顺序，从而避免多线程锁之类的复杂问题。所以这个框架我也希望是以异步非阻塞作为基本的并发模型。这样做还有另外一个好处，就是可以手工的控制具体的进程，充分利用多核 CPU 服务器的性能。当然异步代码可读性因为大量的回调函数，会变得很难阅读，幸好我们还可以用“协程”来改善这个问题。</p>
+</li>
+<li><p>扩展性：支持服务器之间的通信，进程状态管理，类似 SOA 的集群管理。自动容灾和自动扩容，其实关键点是服务进程的状态同步和管理。我希望一个通用的底层，可以把所有的服务器间调用，都通过一个统一的集权管理模型管理起来，这样就可以不再每个项目去关心集群间通信、寻址等问题。</p>
+</li>
+</ol>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/06/04/教你从头写游戏服务器框架一/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/24/Unity的AnimationCurve的实现方法/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2588,208 +2806,6 @@ updateParameters();
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/构建游戏网络协议五之可靠的有序消息/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/20/构建游戏网络协议五之可靠的有序消息/" class="post-title-link" itemprop="url">构建游戏网络协议五之可靠的有序消息</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-05-20 15:23:32" itemprop="dateCreated datePublished" datetime="2019-05-20T15:23:32+08:00">2019-05-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="本篇自我总结"><a href="#本篇自我总结" class="headerlink" title="本篇自我总结"></a>本篇自我总结</h1><p>本篇主要讲了数据包的分包和重组问题, 到底数据包多大才好呢?是不是越大越好呢?包太大了怎么办呢?<br>请看总结, 不明之处再看文中具体讲解.</p>
-<h2 id="为什么需要做这个可靠UDP协议"><a href="#为什么需要做这个可靠UDP协议" class="headerlink" title="为什么需要做这个可靠UDP协议"></a>为什么需要做这个可靠UDP协议</h2><p>网络协议在动作游戏类型（FPS）中的典型特征就是一个持续发送的数据包，在两个方向上以稳定的速度如20或30包每秒发送。这些数据包都包含有不可靠的无序数据例如t时间内的世界状态；所以，当一个数据包丢失，重新发送它并不是特别有用。当重新发送的数据包到达时，时间t已经过去了。</p>
-<p>所以这就是我们将要实现可靠性的现状。对于我们90%的数据包，仅丢弃并不再重新发送它会更好。对于10%或更少（误差允许范围内）的情况，我们确实需要可靠性，但这样的数据是非常罕见的，很少被发送而且比不可靠的数据的平均大小要小得多。这个使用案例适用于所有过去十五年来发布的AAA级的FPS游戏。</p>
-<h2 id="应答系统是实现可靠UDP的最重要的部分"><a href="#应答系统是实现可靠UDP的最重要的部分" class="headerlink" title="应答系统是实现可靠UDP的最重要的部分"></a>应答系统是实现可靠UDP的最重要的部分</h2><p>为实现数据包层级的应答，在每个包的前面添加如下的报头：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Header</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">uint16_t</span> sequence;</span><br><span class="line">    <span class="keyword">uint16_t</span> ack;</span><br><span class="line">    <span class="keyword">uint32_t</span> ack_bits;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<p>这些报头元素组合起来以创建应答系统：</p>
-<ul>
-<li>sequence 是一个数字，随每个数据包发送而增长（并且在达到65535后回往复）。</li>
-<li>ack 是从另一方接收到的最新的数据包序列号。</li>
-<li>ack_bits 是一个位字段，它编码与ack相关的收到的数据包组合：如果位n已经设置，即 ack– n 数据包被接收了。</li>
-</ul>
-<p>ack_bits 不仅是一个节省带宽的巧妙的编码，它同样也增加了信息冗余来抵御包的丢失。每个应答码要被发送32次。如果有一个包丢失了，仍然有其他31个包有着相同的应答码。从统计上来说，应答码还是非常有可能送达的。</p>
-<p>但突发的传送数据包的丢失还是有可能发生的，所以重要的是要注意：</p>
-<ul>
-<li>如果你收到一个数据包n的应答码，那么这个包肯定已经收到了。</li>
-<li>如果你没有收到应答码，那么这个包就很有可能 没有被收到。但是…它也许会是，仅是应答码没有送达。这种情况是极其罕见的。</li>
-</ul>
-<p>以我的经验，没有必要设计完善的应答机制。在一个极少丢应答码的系统上构建一个可靠性系统并不会增加什么大问题。</p>
-<h2 id="发送方如何追踪数据包是否已经被应答"><a href="#发送方如何追踪数据包是否已经被应答" class="headerlink" title="发送方如何追踪数据包是否已经被应答"></a>发送方如何追踪数据包是否已经被应答</h2><p>为实现这个应答系统，我们在发送方还需要一个数据结构来追踪一个数据包是否已经被应答，这样我们就可以忽略冗余的应答（每个包会通过 <code>ack_bits</code>多次应答)。我们同样在接收方也还需要一个数据结构来追踪那些已经收到的包，这样我们就可以在数据包的报头填写<code>ack_bits</code>的值。</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> BufferSize = <span class="number">1024</span>;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">uint32_t</span> sequence_buffer[BufferSize];</span><br><span class="line"> </span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">PacketData</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">bool</span> acked;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line">PacketData packet_data[BufferSize];</span><br><span class="line"> </span><br><span class="line"><span class="function">PacketData * <span class="title">GetPacketData</span><span class="params">( <span class="keyword">uint16_t</span> sequence )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> index = sequence % BufferSize;</span><br><span class="line">    <span class="keyword">if</span> ( sequence_buffer[index] == sequence )</span><br><span class="line">        <span class="keyword">return</span> &amp;packet_data[index];</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>你在这可以看到的窍门是这个滚动的缓冲区是以序列号来作为索引的：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> index = sequence % BufferSize;</span><br></pre></td></tr></table></figure>
-<p>当条目被顺序添加，就像一个被发送的队列，对插入所需要做的就是把这个序列缓冲区的值更新为新的序列号并且在该索引处重写这个数据：</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">PacketData &amp; <span class="title">InsertPacketData</span><span class="params">( <span class="keyword">uint16_t</span> sequence )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">int</span> index = sequence % BufferSize;</span><br><span class="line">    sequence_buffer[index] = sequence;</span><br><span class="line">    <span class="keyword">return</span> packet_data[index];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/05/20/构建游戏网络协议五之可靠的有序消息/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2836,7 +2852,7 @@ updateParameters();
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">35</span>
+                    <span class="site-state-item-count">36</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

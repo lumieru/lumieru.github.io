@@ -349,6 +349,204 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/11/14/UMA-201视频教程备忘录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/11/14/UMA-201视频教程备忘录/" class="post-title-link" itemprop="url">UMA 201视频教程备忘录</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-14 13:19:41 / 修改时间：16:01:57" itemprop="dateCreated datePublished" datetime="2019-11-14T13:19:41+08:00">2019-11-14</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Unity/" itemprop="url" rel="index"><span itemprop="name">Unity</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <ol>
+<li><h2 id="制作Overlay"><a href="#制作Overlay" class="headerlink" title="制作Overlay"></a>制作Overlay</h2><ul>
+<li>先准备好Overlay用到的贴图，每个Overlay单独一个文件夹，把贴图放在文件夹下面。</li>
+<li>菜单UMA-&gt;Core-&gt;Overlay Asset，设置好名字，然后设置Material（是UMA专用的Material），一般选择UMA_Diffuse_Normal_Metallic，选择对应的贴图数量，这个材质是3个贴图。</li>
+<li>把创建好的Overlay放入到UMA Global Library中。</li>
+<li>创建对应的Wardrobe Recipe，菜单UMA-&gt;DCS-&gt;Wardrobe Recipe，选择对应的race，选择Wardrobe Slot，选择对应的Base Slot，最后Add Overlay。</li>
+<li>把创建好的Wardrobe Recipe放入到UMA Global Library中。</li>
+<li><p>PS：如果发现做好的Overlay分辨率比原始素材要低，那是因为UMA在生成最终贴图的时候，会把分辨率减半。这个是可以设置的，在UMA_DCS-&gt;UMAGenerator-&gt;Initial Scale Factor，默认是2，就是贴图尺寸减半，如果改成1，就是保持原来的贴图大小。这样分辨率就高了，当然会占用更多的资源。</p>
+<p><a href="https://www.youtube.com/watch?v=WdnXorLkSSM&amp;list=PLkDHFObfS19yOjGzDUqvoq-oTy97g2G_J&amp;index=2" target="_blank" rel="noopener">UMA 201 - Part 2a Skin Overlays</a></p>
+</li>
+</ul>
+</li>
+<li><h2 id="优化Overlay"><a href="#优化Overlay" class="headerlink" title="优化Overlay"></a>优化Overlay</h2><ul>
+<li>如果制作的Overlay是一张很大的图，但是只用到了其中很小的一部分，其他部分都是空白，那么会浪费很多最后游戏包的空间（runtime内存是不浪费的，因为UMA最终会合成一张贴图）。</li>
+<li>到ps中，找到一个小的长方形区域（2的幂次方），可以完全包含需要的那部分贴图，记住这个区域和整张图的左上角的偏移量。</li>
+<li>然后把原图切小成小的长方形区域大小，并保存放回unity中覆盖原图。</li>
+<li>回到Overlay的设置界面，设置其中的Rect参数。因为ps中偏移量是从原图左上角到小区域的左上角，而unity需要的是原图左下角，到小区域的左下角，所以这里的偏移量需要做计算的，如下图所示。最后还要填上小图的尺寸大小。<br><img src="http://blog.sensedevil.com/image/OverlayOffset.png" alt="OverlayOffset.png"></li>
+<li><p>然后要更新一下对应的Wardrobe Recipe，在其中删除老的Overlay，重新添加修改的Overlay，就大功告成了。</p>
+<p><a href="https://www.youtube.com/watch?v=vPxqvnOuuN4&amp;list=PLkDHFObfS19yOjGzDUqvoq-oTy97g2G_J&amp;index=3" target="_blank" rel="noopener">UMA 201 - Part 2b Optimising Overlays</a></p>
+</li>
+</ul>
+</li>
+<li><h2 id="把其他的模型适配到UMA第一节"><a href="#把其他的模型适配到UMA第一节" class="headerlink" title="把其他的模型适配到UMA第一节"></a>把其他的模型适配到UMA第一节</h2><ul>
+<li>把fbx导入到blender中，注意导入的选项，保证骨骼的方向是正确的。</li>
+<li>通过骨骼的旋转和缩放等，把导入的模型和UMA模型基本重叠起来。</li>
+<li>把旋转和缩放都bake到模型的顶点上，确保骨骼和模型没有旋转和缩放。</li>
+<li><p>把模型和骨骼解除绑定，并删除其中的权重信息。</p>
+<p><a href="https://www.youtube.com/watch?v=bY9n1fO3PnA&amp;list=PLkDHFObfS19yOjGzDUqvoq-oTy97g2G_J&amp;index=4" target="_blank" rel="noopener">UMA 201 - Part 3a Preparing Pre-Rigged Clothing</a></p>
+</li>
+</ul>
+</li>
+</ol>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/11/14/UMA-201视频教程备忘录/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/11/14/UMA-101视频教程备忘录/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2052,224 +2250,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架一/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/06/04/教你从头写游戏服务器框架一/" class="post-title-link" itemprop="url">教你从头写游戏服务器框架一</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-06-04 13:09:20" itemprop="dateCreated datePublished" datetime="2019-06-04T13:09:20+08:00">2019-06-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><a href="https://mp.weixin.qq.com/s?__biz=MzA5ODExMTkwMA==&amp;mid=2650255962&amp;idx=1&amp;sn=c2878b66c8813bcd5151b384bfb4218a&amp;chksm=88958aa9bfe203bf4537c4d1c459333490fe186384e4a718ef697c512aba9918223cbf975bfb&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">原文出处</a></p>
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>大概已经有差不多一年没写技术文章了，原因是今年投入了一些具体游戏项目的开发。这些新的游戏项目，比较接近独立游戏的开发方式。我觉得公司的“祖传”服务器框架技术不太适合，所以从头写了一个游戏服务器端的框架，以便获得更好的开发效率和灵活性。现在项目将近上线，有时间就想总结一下，这样一个游戏服务器框架的设计和实现过程。</p>
-<p>这个框架的基本运行环境是 Linux ，采用 C++ 编写。为了能在各种环境上运行和使用，所以采用了 gcc 4.8 这个“古老”的编译器，以 C99 规范开发。</p>
-<h2 id="需求"><a href="#需求" class="headerlink" title="需求"></a>需求</h2><p>由于“越通用的代码，就是越没用的代码”，所以在设计之初，我就认为应该使用分层的模式来构建整个系统。按照游戏服务器的一般需求划分，最基本的可以分为两层：</p>
-<ol>
-<li><p>底层基础功能：包括通信、持久化等非常通用的部分，关注的是性能、易用性、扩展性等指标。</p>
-</li>
-<li><p>高层逻辑功能：包括具体的游戏逻辑，针对不同的游戏会有不同的设计。</p>
-</li>
-</ol>
-<p><img src="http://blog.sensedevil.com/image/GameServer1_1.webp" alt></p>
-<p>我希望能有一个基本完整的“底层基础功能”的框架，可以被复用于多个不同的游戏。由于目标是开发一个 适合独立游戏开发 的游戏服务器框架。所以最基本的需求分析为：</p>
-<p><strong>功能性需求</strong></p>
-<ol>
-<li><p>并发：所有的服务器程序，都会碰到这个基本的问题：如何处理并发任务。一般来说，会有多线程、异步两种技术。多线程编程在编码上比较符合人类的思维习惯，但带来了“锁”这个问题。而异步非阻塞的模型，其程序执行的情况是比较简单的，而且也能比较充分的利用硬件性能，但是问题是很多代码需要以“回调”的形式编写，对于复杂的业务逻辑来说，显得非常繁琐，可读性非常差。虽然这两种方案各有利弊，也有人结合这两种技术希望能各取所长，但是我更倾向于基础是使用异步、单线程、非阻塞的调度方式，因为这个方案是最清晰简单的。为了解决“回调”的问题，我们可以在其上再添加其他的抽象层，比如协程或者添加线程池之类的技术予以改善。</p>
-</li>
-<li><p>通信：支持 请求响应 模式以及 通知 模式的通信（广播视为一种多目标的通知）。游戏有很多登录、买卖、打开背包之类的功能，都是明确的有请求和响应的。而大量的联机游戏中，多个客户端的位置、HP 等东西都需要经过网络同步，其实就是一种“主动通知”的通信方式。</p>
-</li>
-<li><p>持久化：可以存取 对象 。游戏存档的格式非常复杂，但其索引的需求往往都是根据玩家 ID 来读写就可以。在很多游戏主机如 PlayStation 上，以前的存档都是可以以类似“文件”的方式存放在记忆卡里的。所以游戏持久化最基本的需求，就是一个 key-value 存取模型。当然，游戏中还会有更复杂的持久化需求，比如排行榜、拍卖行等，这些需求应该额外对待，不适合包含在一个最基本的通用底层中。</p>
-</li>
-<li><p>缓存：支持远程、分布式的对象缓存。游戏服务基本上都是“带状态”的服务，因为游戏要求响应延迟非常苛刻，基本上都需要利用服务器进程的内存来存放过程数据。但是游戏的数据，往往是变化越快的，价值越低，比如经验值、金币、HP，而等级、装备等变化比较慢的，价值则越高，这种特征，非常适合用一个缓存模型来处理。</p>
-</li>
-<li><p>协程：可以用 C++ 来编写协程代码，避免大量回调函数分割代码。这个是对于异步代码非常有用的特性，能大大提高代码的可读性和开发效率。特别是把很多底层涉及IO的功能，都提供了协程化 API，使用起来就会像同步的 API 一样轻松惬意。</p>
-</li>
-<li><p>脚本：初步设想是支持可以用 Lua 来编写业务逻辑。游戏需求变化是出了名快的，用脚本语言编写业务逻辑正好能提供这方面的支持。实际上脚本在游戏行业里的使用非常广泛。所以支持脚本，也是一个游戏服务器框架很重要的能力。</p>
-</li>
-<li><p>其他功能：包括定时器、服务器端的对象管理等等。这些功能很常用，所以也需要包含在框架中，但已经有很多成熟方案，所以只要选取常见易懂的模型即可。比如对象管理，我会采用类似 Unity 的组件模型来实现。</p>
-</li>
-</ol>
-<p><strong>非功能性需求</strong></p>
-<ol>
-<li><p>灵活性：支持可替换的通信协议；可替换的持久化设备（如数据库）；可替换的缓存设备（如 memcached/redis）；以静态库和头文件的方式发布，不对使用者代码做过多的要求。游戏的运营环境比较复杂，特别是在不同的项目之间，可能会使用不同的数据库、不同的通信协议。但是游戏本身业务逻辑很多都是基于对象模型去设计的，所以应该有一层能够基于“对象”来抽象所有这些底层功能的模型。这样才能让多个不同的游戏，都基于一套底层进行开发。</p>
-</li>
-<li><p>部署便利性：支持灵活的配置文件、命令行参数、环境变量的引用；支持单独进程启动，而无须依赖数据库、消息队列中间件等设施。一般游戏都会有至少三套运行环境，包括一个开发环境、一个内测环境、一个外测或运营环境。一个游戏的版本更新，往往需要更新多个环境。所以如何能尽量简化部署就成为一个很重要的问题。我认为一个好的服务器端框架，应该能让这个服务器端程序，在无配置、无依赖的情况下独立启动，以符合在开发、测试、演示环境下快速部署。并且能很简单的通过配置文件、或者命令行参数的不同，在集群化下的外部测试或者运营环境下启动。</p>
-</li>
-<li><p>性能：很多游戏服务器，都会使用异步非阻塞的方式来编程。因为异步非阻塞可以很好的提高服务器的吞吐量，而且可以很明确的控制多个用户任务并发下的代码执行顺序，从而避免多线程锁之类的复杂问题。所以这个框架我也希望是以异步非阻塞作为基本的并发模型。这样做还有另外一个好处，就是可以手工的控制具体的进程，充分利用多核 CPU 服务器的性能。当然异步代码可读性因为大量的回调函数，会变得很难阅读，幸好我们还可以用“协程”来改善这个问题。</p>
-</li>
-<li><p>扩展性：支持服务器之间的通信，进程状态管理，类似 SOA 的集群管理。自动容灾和自动扩容，其实关键点是服务进程的状态同步和管理。我希望一个通用的底层，可以把所有的服务器间调用，都通过一个统一的集权管理模型管理起来，这样就可以不再每个项目去关心集群间通信、寻址等问题。</p>
-</li>
-</ol>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/06/04/教你从头写游戏服务器框架一/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2316,7 +2296,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">35</span>
+                    <span class="site-state-item-count">36</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

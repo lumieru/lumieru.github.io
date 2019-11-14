@@ -477,10 +477,10 @@
 <ol start="7">
 <li><p>通过代码来改变人物的外貌</p>
 <ol>
-<li><h4 id="得到DynamicCharacterAvatar实例："><a href="#得到DynamicCharacterAvatar实例：" class="headerlink" title="得到DynamicCharacterAvatar实例："></a>得到DynamicCharacterAvatar实例：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">using UMA;</span><br><span class="line">using UMA.CharacterSystem;</span><br><span class="line"></span><br><span class="line">DynamicCharacterAvatar avatar = GetComponent&lt;DynamicCharacterAvatar&gt;();</span><br></pre></td></tr></table></figure>
+<li><h4 id="得到DynamicCharacterAvatar实例："><a href="#得到DynamicCharacterAvatar实例：" class="headerlink" title="得到DynamicCharacterAvatar实例："></a>得到DynamicCharacterAvatar实例：</h4><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> UMA;</span><br><span class="line"><span class="keyword">using</span> UMA.CharacterSystem;</span><br><span class="line"></span><br><span class="line">DynamicCharacterAvatar avatar = GetComponent&lt;DynamicCharacterAvatar&gt;();</span><br></pre></td></tr></table></figure>
 <p><a href="https://www.youtube.com/watch?v=wZ3fM1iya98&amp;list=PLkDHFObfS19zFVfbrfB14P-u5QJJQyvtP&amp;index=9" target="_blank" rel="noopener">UMA 101 - Part 9 Modify Characters with Code</a></p>
 </li>
-<li><h4 id="设置Dna："><a href="#设置Dna：" class="headerlink" title="设置Dna："></a>设置Dna：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">//得到所有的DnaSetter</span><br><span class="line">Dictionary&lt;string, DnaSetter&gt; dna = avatar.GetDNA();</span><br><span class="line">//设置height dna</span><br><span class="line">dna[&quot;height&quot;].Set(1f);</span><br><span class="line">//得到height dna</span><br><span class="line">dna[&quot;height&quot;].Get();</span><br><span class="line">//重建人物</span><br><span class="line">avatar.BuildCharacter();</span><br></pre></td></tr></table></figure>
+<li><h4 id="设置Dna："><a href="#设置Dna：" class="headerlink" title="设置Dna："></a>设置Dna：</h4><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//得到所有的DnaSetter</span></span><br><span class="line">Dictionary&lt;<span class="keyword">string</span>, DnaSetter&gt; dna = avatar.GetDNA();</span><br><span class="line"><span class="comment">//设置height dna</span></span><br><span class="line">dna[<span class="string">"height"</span>].Set(<span class="number">1f</span>);</span><br><span class="line"><span class="comment">//得到height dna</span></span><br><span class="line">dna[<span class="string">"height"</span>].Get();</span><br><span class="line"><span class="comment">//重建人物</span></span><br><span class="line">avatar.BuildCharacter();</span><br></pre></td></tr></table></figure>
 </li>
 <li><h4 id="改变种族："><a href="#改变种族：" class="headerlink" title="改变种族："></a>改变种族：</h4><figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 把race改成HumanMaleDCS，改变后不需要调用BuildCharacter，</span></span><br><span class="line"><span class="comment">// race改变后所对应的dnaSetter的字典也会改变。</span></span><br><span class="line">avatar.ChangeRace(<span class="string">"HumanMaleDCS"</span>);</span><br><span class="line"><span class="comment">// 得到当前种族</span></span><br><span class="line">avatar.activeRace;</span><br></pre></td></tr></table></figure>
 </li>
@@ -573,6 +573,10 @@
 
           <div class="post-nav-prev post-nav-item">
             
+              <a href="/2019/11/14/UMA-201视频教程备忘录/" rel="prev" title="UMA 201视频教程备忘录">
+                UMA 201视频教程备忘录 <i class="fa fa-chevron-right"></i>
+              </a>
+            
           </div>
         </div>
       
@@ -640,7 +644,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">35</span>
+                    <span class="site-state-item-count">36</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
