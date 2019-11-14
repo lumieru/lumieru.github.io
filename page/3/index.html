@@ -349,6 +349,219 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/构建游戏网络协议四之发送大块数据/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/20/构建游戏网络协议四之发送大块数据/" class="post-title-link" itemprop="url">构建游戏网络协议四之发送大块数据</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-20 15:23:24" itemprop="dateCreated datePublished" datetime="2019-05-20T15:23:24+08:00">2019-05-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="本篇自我总结"><a href="#本篇自我总结" class="headerlink" title="本篇自我总结"></a>本篇自我总结</h1><p>有了本系列上篇文章中的分包和重组系统为何还要这个发送大块数据系统?是否是多余的?是雷同的吗?<br>请看总结概要理清思路, 再细看文章.</p>
+<h2 id="为什么需要做这个发送大块数据系统"><a href="#为什么需要做这个发送大块数据系统" class="headerlink" title="为什么需要做这个发送大块数据系统"></a>为什么需要做这个发送大块数据系统</h2><p>第一眼看上去，这种替代性的技术似乎非常类似于数据包的分包和重组，但是它的实现是完全不同的。这种实现上的差异的目的是为了解决数据包分包和重组的一个关键弱点 : 一个片段的丢失就会导致整个数据包都要被丢弃掉然后重新分包重发。</p>
+<p>你可能需要这样做的一些常见的例子包括：客户端在首次加入的时候，服务器需要下发一个大的数据块给客户端(可能是世界的初始状态)、一开始用来做增量编码的基线或者是在一个多人在线网络游戏里面客户端在加载界面所等待的大块数据。</p>
+<p>在这些情况下非常重要的是不仅要优雅地处理数据包的丢失，还要尽可能的利用可用的带宽并尽可能快的发送大块数据。</p>
+<p>这个发送大块数据系统大致可以理解为是一个在原来分包和重组系统的基础上增加了分包确认功能, 也就是说增加了可靠性的部分.</p>
+<h2 id="本篇基本术语"><a href="#本篇基本术语" class="headerlink" title="本篇基本术语"></a>本篇基本术语</h2><p>In this new system blocks of data are called chunks. Chunks are split up into slices. This name change keeps the chunk system terminology (chunks/slices) distinct from packet fragmentation and reassembly (packets/fragments).</p>
+<ul>
+<li>块 : 在这个新系统中，大块的数据被称为”块”(chunks)</li>
+<li>片段 : 而块被分成的分包被称为”片段”(slices)</li>
+</ul>
+<h2 id="数据包的结构设计"><a href="#数据包的结构设计" class="headerlink" title="数据包的结构设计"></a>数据包的结构设计</h2><p>这个系统在网络上发送的数据包类型一共有两种类型：</p>
+<ul>
+<li><p>Slice packet片段数据包 : 这包括了一个块的片段，最多大小为1k。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> SliceSize = <span class="number">1024</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxSlicesPerChunk = <span class="number">256</span>;</span><br><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxChunkSize = SliceSize  MaxSlicesPerChunk;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">SlicePacket</span> :</span> <span class="keyword">public</span> protocol2::Packet</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">uint16_t</span> chunkId;</span><br><span class="line">	<span class="keyword">int</span> sliceId;</span><br><span class="line">	<span class="keyword">int</span> numSlices;</span><br><span class="line">	<span class="keyword">int</span> sliceBytes;</span><br><span class="line">	<span class="keyword">uint8_t</span> data[SliceSize];</span><br><span class="line"> </span><br><span class="line">	<span class="keyword">template</span> &lt;<span class="keyword">typename</span> stream&gt; <span class="function"><span class="keyword">bool</span> <span class="title">Serialize</span><span class="params">( Stream &amp; stream )</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		serialize_bits( stream, chunkId, <span class="number">16</span> );</span><br><span class="line">		serialize_int( stream, sliceId, <span class="number">0</span>, MaxSlicesPerChunk - <span class="number">1</span> );</span><br><span class="line">		serialize_int( stream, numSlices, <span class="number">1</span>, MaxSlicesPerChunk );</span><br><span class="line">		<span class="keyword">if</span> ( sliceId == numSlices - <span class="number">1</span> )</span><br><span class="line">		&#123;</span><br><span class="line">			serialize_int( stream, sliceBytes, <span class="number">1</span>, SliceSize );</span><br><span class="line">		&#125;</span><br><span class="line">		<span class="keyword">else</span> <span class="keyword">if</span> ( Stream::IsReading )</span><br><span class="line">		&#123;</span><br><span class="line">			sliceBytes = SliceSize;</span><br><span class="line">		&#125;</span><br><span class="line">		serialize_bytes( stream, data, sliceBytes );</span><br><span class="line">		<span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<ul>
+<li><p>Ack packet确认数据包 : 一个位域bitfield指示哪些片段已经收到, we just send the entire state of all acked slices in each ack packet. When the ack packet is received (including the slice that was just received).</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">AckPacket</span> :</span> <span class="keyword">public</span> protocol2::Packet </span><br><span class="line">&#123; </span><br><span class="line">	<span class="keyword">uint16_t</span> chunkId; </span><br><span class="line">	<span class="keyword">int</span> numSlices; </span><br><span class="line">	<span class="keyword">bool</span> acked[MaxSlicesPerChunk]; </span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">bool</span> <span class="title">Serialize</span><span class="params">( Stream &amp; stream )</span></span></span><br><span class="line"><span class="function">	</span>&#123; </span><br><span class="line">		serialize_bits( stream, chunkId, <span class="number">16</span> ); </span><br><span class="line">		serialize_int( stream, numSlices, <span class="number">1</span>, MaxSlicesPerChunk ); </span><br><span class="line">		<span class="keyword">for</span> ( <span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numSlices; ++i ) </span><br><span class="line">			serialize_bool( stream, acked[i] ); <span class="keyword">return</span> <span class="literal">true</span>; &#125; &#125;;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+</li>
+</ul>
+<h2 id="发送方的实现"><a href="#发送方的实现" class="headerlink" title="发送方的实现"></a>发送方的实现</h2><p>与之前文章介绍的数据包的分包和重组系统不同，块系统在同一时间只能由一个块正在传输。<br>发送方的策略是：</p>
+<ul>
+<li>持续的发送片段数据包，直到所有的片段数据包都被确认。</li>
+<li>不再对已经确认过的片段数据包进行发送。</li>
+</ul>
+<p>对于发送方而言有一点比较微妙，实现一个片段数据包重新发送的最小延迟是一个很棒的主意，如果不这么做的话，就可能会出现这种一样情况，对于很小的块数据或者一个块的最后几个片段数据包，很容易不停的发送它们把整个网络都塞满。正是因为这一原因，我们使用了一个数组来记录每个片段数据包的上一次发送时间。重新发送延迟的一个选择是使用一个估计的网络往返时延，或者只有在超过上一次发送时间网络往返时延*1.25还没有收到确认数据包的情况才会重新发送。或者，你可以说“这根本就无所谓”，只要超过上一次发送时间100毫秒了就重新发送。我只是列举适合我自己的方案！</p>
+<p>我们使用以下的数据结构来描述发送方：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ChunkSender</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">bool</span> sending;</span><br><span class="line">    <span class="keyword">uint16_t</span> chunkId;</span><br><span class="line">    <span class="keyword">int</span> chunkSize;</span><br><span class="line">    <span class="keyword">int</span> numSlices;</span><br><span class="line">    <span class="keyword">int</span> numAckedSlices;</span><br><span class="line">    <span class="keyword">int</span> currentSliceId;</span><br><span class="line">    <span class="keyword">bool</span> acked[MaxSlicesPerChunk];</span><br><span class="line">    <span class="keyword">uint8_t</span> chunkData[MaxChunkSize];</span><br><span class="line">    <span class="keyword">double</span> timeLastSent[MaxSlicesPerChunk];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="接收方的实现思路"><a href="#接收方的实现思路" class="headerlink" title="接收方的实现思路"></a>接收方的实现思路</h2><p>首先，接收方的设置会从块0开始。当一个片段数据包从网络上传递过来，并且能够匹配这个块id的话，“receiving”状态会从false翻转为true，第一个片段数据包的数据会插入” chunkData“变量的合适位置，片段数据包的数量会根据第一个片段数据包里面的数据进行正确的设置，已经接收到的片段数据包的数量会加一，也就是从0到1，针对每个片段数据包的接收标记里面对应这个片段数据包的项会变为true。</p>
+<p>随着这个块数据的其他片段数据包的到来，会对每一个片段数据包进行检测，判断它们的id是否与当前块的id相同，如果不相同的话就会被丢弃。如果这个片段数据包已经收到过的话，那么这个包也会被丢弃。否则，这个片段数据包的数据会插入” chunkData“变量的合适位置、已经接收到的片段数据包的数量会加一、针对每个片段数据包的接收标记里面对应这个片段数据包的项会变为true。</p>
+<p>这一过程会持续进行，直到接收到所有的片段数据包。一旦接收到所有的片段数据包（也就是已经接收到的片段数据包的数量等于片段数据包的数量的时候），接收方会把“receiving “状态改为false，而把”readyToRead“状态改为true。当”readyToRead”状态为true的时候，所有收到的片段数据包都会被丢弃。在这一点上，这个处理过程通常非常的短，会在收到片段数据包的同一帧进行处理，调用者会检查”我有一块数据要读取么？“并处理块数据。然后会重置数据块接收器的所有数据为默认值，除了块数据的id从0增加到1，这样我们就准备好接收下一个块了。</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ChunkReceiver</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">bool</span> receiving;</span><br><span class="line">    <span class="keyword">bool</span> readyToRead;</span><br><span class="line">    <span class="keyword">uint16_t</span> chunkId;</span><br><span class="line">    <span class="keyword">int</span> chunkSize;</span><br><span class="line">    <span class="keyword">int</span> numSlices;</span><br><span class="line">    <span class="keyword">int</span> numReceivedSlices;</span><br><span class="line">    <span class="keyword">bool</span> received[MaxSlicesPerChunk];</span><br><span class="line">    <span class="keyword">uint8_t</span> chunkData[MaxChunkSize];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="防DDos"><a href="#防DDos" class="headerlink" title="防DDos"></a>防DDos</h2><p>如果你对每个收到的片段数据包都会回复一个确认数据包的话，那么发送方能够构造一个很小的片段数据包发送给你，而你会回复一个比发送给你的片段数据包还大的确认数据包，这样你的服务器就变成了一个可以被人利用来进行DDos放大攻击的工具。</p>
+<p>永远不要设计一个包含对接收到的数据包进行一对一的映射响应的协议。让我们举个简单例子来说明一下这个问题。如果有人给你发送1000个片段数据包，永远不要给他回复1000个确认数据包。相反只发一个确认数据包，而且最多每50毫秒或者100毫秒才发送一个确认数据包。如果你是这样设计的话，那么DDos攻击完全不可能的。</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/05/20/构建游戏网络协议四之发送大块数据/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/构建游戏网络协议三之数据包的分包和重组/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2110,198 +2323,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/游戏网络开发五之每个游戏开发者都需要知道的游戏网络知识/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/20/游戏网络开发五之每个游戏开发者都需要知道的游戏网络知识/" class="post-title-link" itemprop="url">游戏网络开发五之每个游戏开发者都需要知道的游戏网络知识</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-05-20 12:02:12" itemprop="dateCreated datePublished" datetime="2019-05-20T12:02:12+08:00">2019-05-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><a href="https://gafferongames.com/post/what_every_programmer_needs_to_know_about_game_networking/" target="_blank" rel="noopener">原文出处</a></p>
-<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Hi, I’m <a href="https://gafferongames.com/about" target="_blank" rel="noopener">Glenn Fiedler</a> and welcome to <a href="https://gafferongames.com/categories/game-networking/" target="_blank" rel="noopener"><strong>Networking for Game Programmers</strong></a>.</p>
-<p>Have you ever wondered how multiplayer games work?</p>
-<p>From the outside it seems magical: two or more players sharing a consistent experience across the network like they actually exist together in the same virtual world.</p>
-<p>But as programmers we know the truth of what is actually going on underneath is quite different from what you see. It turns out it’s all an illusion. A massive sleight-of-hand. What you perceive as a shared reality is only an approximation unique to your own point of view and place in time.</p>
-<h2 id="Peer-to-Peer-Lockstep"><a href="#Peer-to-Peer-Lockstep" class="headerlink" title="Peer-to-Peer Lockstep"></a>Peer-to-Peer Lockstep</h2><p>In the beginning games were networked peer-to-peer, with each each computer exchanging information with each other in a fully connected mesh topology. You can still see this model alive today in RTS games, and interestingly for some reason, perhaps because it was the first way - it’s still how most people think that game networking works.</p>
-<p>The basic idea is to abstract the game into a series of turns and a set of command messages when processed at the beginning of each turn direct the evolution of the game state. For example: move unit, attack unit, construct building. All that is needed to network this is to run exactly the same set of commands and turns on each player’s machine starting from a common initial state.</p>
-<p>Of course this is an overly simplistic explanation and glosses over many subtle points, but it gets across the basic idea of how networking for RTS games work. You can read more about this networking model here: <a href="http://www.gamasutra.com/view/feature/3094/1500_archers_on_a_288_network_.php" target="_blank" rel="noopener">1500 Archers on a 28.8: Network Programming in Age of Empires and Beyond</a>.</p>
-<p>It seems so simple and elegant, but unfortunately there are several limitations.</p>
-<p>First, it’s exceptionally difficult to ensure that a game is completely deterministic; that each turn plays out identically on each machine. For example, one unit could take slightly a different path on two machines, arriving sooner to a battle and saving the day on one machine, while arriving later on the other and erm. not saving the day. Like a butterfly flapping it’s wings and causing a hurricane on the other side of the world, one <em>tiny difference</em> results in complete desynchronization over time.</p>
-<p>The next limitation is that in order to ensure that the game plays out identically on all machines it is necessary to wait until all player’s commands for that turn are received <em>before</em> simulating that turn. This means that each player in the game has latency equal to the most lagged player. RTS games typically hide this by providing audio feedback immediately and/or playing cosmetic animation, but ultimately any truly game affecting action may occur only after this delay has passed.</p>
-<p>The final limitation occurs because of the way the game synchronizes by sending just the command messages which change the state. In order for this to work it is necessary for all players to start from the same initial state. Typically this means that each player must join up in a lobby before commencing play, although it is technically possible to support late join, this is not common due to the difficulty of capturing and transmitting a completely deterministic starting point in the middle of a live game.</p>
-<p>Despite these limitations this model naturally suits RTS games and it still lives on today in games like “Command and Conquer”, “Age of Empires” and “Starcraft”. The reason being that in RTS games the game state consists of many thousands of units and is simply too large to exchange between players. These games have no choice but to exchange the commands which drive the evolution of the game state.</p>
-<p>But for other genres, the state of the art has moved on. So that’s it for the deterministic peer-to-peer lockstep networking model. Now lets look at the evolution of action games starting with Doom, Quake and Unreal.</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/05/20/游戏网络开发五之每个游戏开发者都需要知道的游戏网络知识/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2348,7 +2369,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">34</span>
+                    <span class="site-state-item-count">35</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2373,7 +2394,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">4</span>
+                      
+                    
+                    <span class="site-state-item-count">5</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2412,7 +2435,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">11</span>
+                      
+                    
+                    <span class="site-state-item-count">12</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
