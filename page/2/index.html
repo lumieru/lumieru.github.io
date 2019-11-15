@@ -349,6 +349,197 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架二/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/04/教你从头写游戏服务器框架二/" class="post-title-link" itemprop="url">教你从头写游戏服务器框架二</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-04 13:09:27" itemprop="dateCreated datePublished" datetime="2019-06-04T13:09:27+08:00">2019-06-04</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><a href="https://mp.weixin.qq.com/s?__biz=MzA5ODExMTkwMA==&amp;mid=2650255971&amp;idx=1&amp;sn=bef0819b24df85978db1fb875abe3102&amp;chksm=88958a90bfe2038679464d8bbddcbafd95a9f2e113b452e241746e9e2c0cb194b3f09782399f&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">原文出处</a></p>
+<h2 id="对象序列化"><a href="#对象序列化" class="headerlink" title="对象序列化"></a>对象序列化</h2><p><img src="http://blog.sensedevil.com/image/GameServer2_1.webp" alt></p>
+<p>现代编程技术中，面向对象是一个最常见的思想。因此不管是 C++ Java C#，还是 Python JS，都有对象的概念。虽然说面向对象并不是软件开发的“银弹”，但也不失为一种解决复杂逻辑的优秀工具。回到游戏服务器端程序来说，自然我会希望能有一定面向对象方面的支持。所以，从游戏服务器端的整个处理过程来看，我认为，有以下几个地方，是可以用对象来抽象业务数据的：</p>
+<ol>
+<li><p>数据传输：我们可以把通过网络传输的数据，看成是一个对象。这样我们可以简单的构造一个对象，然后直接通过网络收、发它。</p>
+</li>
+<li><p>数据缓存：一批在内存中的，可以用对象进行“抽象”。而 key-value 的模型也是最常见的数据容器，因此我们可以起码把 key-value 中的 value 作为对象处理。</p>
+</li>
+<li><p>数据持久化：长久以来，我们使用 SQL 的二维表结构来持久化数据。但是 ORM （对象关系映射）的库一直非常流行，就是想在二维表和对象之间搭起桥梁。现在 NoSQL 的使用越来越常见，其实也是一种 key-value 模型。所以也是可以视为一个存放“对象”的工具。</p>
+</li>
+</ol>
+<p>对象序列化的标准模式也很常见，因此我定义成：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Serializable</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 序列化到一个数组中</span></span><br><span class="line"><span class="comment">    * @param buffer 目地缓冲区数组</span></span><br><span class="line"><span class="comment">    * @param buffer_length 缓冲区长度</span></span><br><span class="line"><span class="comment">    * @return 返回写入了 buffer 的数据长度。如果返回 -1 表示出错，比如 buffer_length 不够。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> ssize_t <span class="title">SerializeTo</span><span class="params">(<span class="keyword">char</span>* buffer, <span class="keyword">int</span> buffer_length)</span> <span class="keyword">const</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 从一个 buffer 中读取 length 个字节，反序列化到本对象。</span></span><br><span class="line"><span class="comment">    *@return  返回 0 表示成功，其他值表示出错。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">SerializeFrom</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* buffer, <span class="keyword">int</span> length)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">virtual</span> ~Serializable()&#123;&#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/06/04/教你从头写游戏服务器框架二/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架一/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2590,222 +2781,6 @@ updateParameters();
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/构建游戏网络协议六之客户端与服务器的连接/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/20/构建游戏网络协议六之客户端与服务器的连接/" class="post-title-link" itemprop="url">构建游戏网络协议六之客户端与服务器的连接</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-05-20 15:23:40" itemprop="dateCreated datePublished" datetime="2019-05-20T15:23:40+08:00">2019-05-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="本篇自我总结"><a href="#本篇自我总结" class="headerlink" title="本篇自我总结"></a>本篇自我总结</h1><p>这篇文章网上找不到翻译, 我也没时间详细翻译, 大概总结一下吧.<br>本篇主要讲了把本系列之前五篇文章的技术应用到实战中处理客户端与服务器的的连接.<br>请看总结, 不明之处再看文中具体讲解.</p>
-<h2 id="简单的连接协议"><a href="#简单的连接协议" class="headerlink" title="简单的连接协议"></a>简单的连接协议</h2><p>First up we have the client state machine.<br>The client is in one of three states:</p>
-<ul>
-<li>Disconnected</li>
-<li>Connecting</li>
-<li>Connected</li>
-</ul>
-<p>The goal is to create an abstraction on top of a UDP socket where our server presents a number of virtual slots for clients to connect to.</p>
-<p>When a client requests a connection, it gets assigned to one of these slots.</p>
-<p>If a client requests connection, but no slots are available, the server is full and the connection request is denied.</p>
-<p>On the server, we have the following data structure:</p>
-<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> <span class="keyword">int</span> MaxClients = <span class="number">64</span>;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Server</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span> m_maxClients;</span><br><span class="line">    <span class="keyword">int</span> m_numConnectedClients;</span><br><span class="line">    <span class="keyword">bool</span> m_clientConnected[MaxClients];</span><br><span class="line">    Address m_clientAddress[MaxClients];</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-<h2 id="这个简单协议存在的问题"><a href="#这个简单协议存在的问题" class="headerlink" title="这个简单协议存在的问题"></a>这个简单协议存在的问题</h2><ul>
-<li>易被攻击者利用我们的服务器当做DDos放大攻击的工具</li>
-<li>攻击者可以很轻松的占满我们的client slots</li>
-<li>Traffic between the client and server can be read and modified in transit by a third party.</li>
-<li>一旦被攻击者知道了客户端或者服务器的地址, 他就可以伪装服务器或客户端来欺骗对方获取利益</li>
-<li>没有一个明确的断开连接的方式, 只能等time out</li>
-</ul>
-<p>这些问题需要用授权系统和加密系统来解决.</p>
-<h2 id="如何改进这个连接协议"><a href="#如何改进这个连接协议" class="headerlink" title="如何改进这个连接协议"></a>如何改进这个连接协议</h2><ul>
-<li><p>we no longer accept client connections immediately on connection request, instead we send back a challenge packet, and only complete connection when a client replies with information that can only be obtained by receiving the challenge packet.</p>
-</li>
-<li><p>为了防止攻击者利用我们的服务器当做DDos放大攻击的工具, 我们让客户端发的包比服务器发的包要大些.</p>
-</li>
-<li><p>We’ll add some unique random identifiers, or ‘salts’, to make each client connection unique from previous ones coming from the same IP address and port.</p>
-</li>
-<li><p>一旦彼此连接上之后, 就用 client salt 和 server salt 的异或值来标识彼此.</p>
-</li>
-<li><p>以上的防御措施让我们的服务器做到了 no longer able to be used as port of DDoS amplification attacks, and with a trivial xor based authentication, 但对于一个经验丰富的会抓包分析的攻击者来说, 还存在以下问题 :</p>
-<ul>
-<li>This attacker can read and modify packets in flight.</li>
-<li>This breaks the trivial identification based around salt values…</li>
-<li>giving an attacker the power to disconnect any client at will.</li>
-</ul>
-</li>
-</ul>
-<p>To solve this, we need to get serious with cryptography to encrypt and sign packets so they can’t be read or modified by a third party.</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/05/20/构建游戏网络协议六之客户端与服务器的连接/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2852,7 +2827,7 @@ updateParameters();
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">36</span>
+                    <span class="site-state-item-count">37</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

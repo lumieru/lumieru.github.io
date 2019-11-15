@@ -349,6 +349,217 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/11/14/UMA-301视频教程备忘录/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/11/14/UMA-301视频教程备忘录/" class="post-title-link" itemprop="url">UMA 301视频教程备忘录</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-14 18:53:25" itemprop="dateCreated datePublished" datetime="2019-11-14T18:53:25+08:00">2019-11-14</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-15 13:32:05" itemprop="dateModified" datetime="2019-11-15T13:32:05+08:00">2019-11-15</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Unity/" itemprop="url" rel="index"><span itemprop="name">Unity</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <ol>
+<li><h2 id="制作一个Base-Model"><a href="#制作一个Base-Model" class="headerlink" title="制作一个Base Model"></a>制作一个Base Model</h2><ul>
+<li>用Adobe Fuse生成一个光头T pose模型，导出上传到Mixamo，Mixamo会自动为这个模型绑定骨骼，还要生成一些脸部表情的Blend Shapes。</li>
+<li>导入Blender，删除一些多余的骨骼，可以看到有很多面部表情的Blend Shapes。</li>
+<li><p>还可以利用其他的工具来生成模型，比如Daz。</p>
+<p><a href="https://www.youtube.com/watch?v=W0mK2k-IbGE&amp;list=PLkDHFObfS19yjYoQsMR0dCGjCLsrF1dB4&amp;index=1" target="_blank" rel="noopener">UMA 301 - Part 1 Creating a Base Model</a></p>
+</li>
+</ul>
+</li>
+<li><h2 id="修正一些不对的地方"><a href="#修正一些不对的地方" class="headerlink" title="修正一些不对的地方"></a>修正一些不对的地方</h2><ul>
+<li>Fuse导入Blender的模型，normal map没有起作用，要调整一下的。</li>
+<li>模型的全局Scale不是1，Rotation也不都是0，需要apply scale &amp; rotation，把他们烘培到mesh顶点上，让scale和rotation归一化。</li>
+<li><p>要在原有的以Hip为root的骨架上，在加两个骨骼Global-&gt;Position，这是UMA需要的骨架结构。</p>
+<p><a href="https://www.youtube.com/watch?v=7ZjdNoA1WKk&amp;list=PLkDHFObfS19yjYoQsMR0dCGjCLsrF1dB4&amp;index=2" target="_blank" rel="noopener">UMA 301 - Part 2 Fixing Scale &amp; Global Bones</a></p>
+</li>
+</ul>
+</li>
+<li><h2 id="添加一些调整用的骨骼来改变人物外形"><a href="#添加一些调整用的骨骼来改变人物外形" class="headerlink" title="添加一些调整用的骨骼来改变人物外形"></a>添加一些调整用的骨骼来改变人物外形</h2><ul>
+<li>因为现有的骨骼，你在调整上级的scale的时候，所有的下级都会受到影响，这不是我们想要的，所以我们需要在调整的地方复制一个骨骼（没有下级）。</li>
+<li>然后把复制的骨骼作为原骨骼的子（本来他们应该是同一级的），并且把原骨骼的权重全部转移到复制的骨骼上（原骨骼不在影响任何顶点，所有的影响都到复制的骨骼上了）。</li>
+<li><p>以上步骤是针对现有的骨骼的，如果要新建一个调整骨骼（一般都是叶子节点了），那么先新建好骨骼，放在对应的层级下面，然后再刷顶点权重。</p>
+<p><a href="https://www.youtube.com/watch?v=50NPn9WgbD4&amp;list=PLkDHFObfS19yjYoQsMR0dCGjCLsrF1dB4&amp;index=3" target="_blank" rel="noopener">UMA 301 - Part 3 Creating Adjustment Bones</a></p>
+</li>
+</ul>
+</li>
+<li><h2 id="创建BlendShape来改变人物外形"><a href="#创建BlendShape来改变人物外形" class="headerlink" title="创建BlendShape来改变人物外形"></a>创建BlendShape来改变人物外形</h2><ul>
+<li>每个BlendShape（morph target）都是原始mesh的一个copy，所以如果有很多blendshape的话，会占用很多内存的</li>
+<li><p>在Blender中新建一个ShapeKey，然后进入编辑模式，改变一些顶点，就可以创建一个新的BlendShape了。</p>
+<p><a href="https://www.youtube.com/watch?v=WWbiPWTuS7k&amp;list=PLkDHFObfS19yjYoQsMR0dCGjCLsrF1dB4&amp;index=4" target="_blank" rel="noopener">UMA 301 - Part 4 Creating Blendshapes</a></p>
+</li>
+</ul>
+</li>
+</ol>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/11/14/UMA-301视频教程备忘录/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/11/14/UMA-201视频教程备忘录/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2059,197 +2270,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/04/教你从头写游戏服务器框架二/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/06/04/教你从头写游戏服务器框架二/" class="post-title-link" itemprop="url">教你从头写游戏服务器框架二</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-06-04 13:09:27" itemprop="dateCreated datePublished" datetime="2019-06-04T13:09:27+08:00">2019-06-04</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><a href="https://mp.weixin.qq.com/s?__biz=MzA5ODExMTkwMA==&amp;mid=2650255971&amp;idx=1&amp;sn=bef0819b24df85978db1fb875abe3102&amp;chksm=88958a90bfe2038679464d8bbddcbafd95a9f2e113b452e241746e9e2c0cb194b3f09782399f&amp;scene=21#wechat_redirect" target="_blank" rel="noopener">原文出处</a></p>
-<h2 id="对象序列化"><a href="#对象序列化" class="headerlink" title="对象序列化"></a>对象序列化</h2><p><img src="http://blog.sensedevil.com/image/GameServer2_1.webp" alt></p>
-<p>现代编程技术中，面向对象是一个最常见的思想。因此不管是 C++ Java C#，还是 Python JS，都有对象的概念。虽然说面向对象并不是软件开发的“银弹”，但也不失为一种解决复杂逻辑的优秀工具。回到游戏服务器端程序来说，自然我会希望能有一定面向对象方面的支持。所以，从游戏服务器端的整个处理过程来看，我认为，有以下几个地方，是可以用对象来抽象业务数据的：</p>
-<ol>
-<li><p>数据传输：我们可以把通过网络传输的数据，看成是一个对象。这样我们可以简单的构造一个对象，然后直接通过网络收、发它。</p>
-</li>
-<li><p>数据缓存：一批在内存中的，可以用对象进行“抽象”。而 key-value 的模型也是最常见的数据容器，因此我们可以起码把 key-value 中的 value 作为对象处理。</p>
-</li>
-<li><p>数据持久化：长久以来，我们使用 SQL 的二维表结构来持久化数据。但是 ORM （对象关系映射）的库一直非常流行，就是想在二维表和对象之间搭起桥梁。现在 NoSQL 的使用越来越常见，其实也是一种 key-value 模型。所以也是可以视为一个存放“对象”的工具。</p>
-</li>
-</ol>
-<p>对象序列化的标准模式也很常见，因此我定义成：</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Serializable</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 序列化到一个数组中</span></span><br><span class="line"><span class="comment">    * @param buffer 目地缓冲区数组</span></span><br><span class="line"><span class="comment">    * @param buffer_length 缓冲区长度</span></span><br><span class="line"><span class="comment">    * @return 返回写入了 buffer 的数据长度。如果返回 -1 表示出错，比如 buffer_length 不够。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> ssize_t <span class="title">SerializeTo</span><span class="params">(<span class="keyword">char</span>* buffer, <span class="keyword">int</span> buffer_length)</span> <span class="keyword">const</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * @brief 从一个 buffer 中读取 length 个字节，反序列化到本对象。</span></span><br><span class="line"><span class="comment">    *@return  返回 0 表示成功，其他值表示出错。</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="function"><span class="keyword">virtual</span> <span class="keyword">int</span> <span class="title">SerializeFrom</span><span class="params">(<span class="keyword">const</span> <span class="keyword">char</span>* buffer, <span class="keyword">int</span> length)</span> </span>= <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">   <span class="keyword">virtual</span> ~Serializable()&#123;&#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/06/04/教你从头写游戏服务器框架二/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2296,7 +2316,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">36</span>
+                    <span class="site-state-item-count">37</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
