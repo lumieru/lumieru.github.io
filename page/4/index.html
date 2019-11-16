@@ -349,6 +349,208 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/网络物理模拟三之具有确定性的帧同步/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/20/网络物理模拟三之具有确定性的帧同步/" class="post-title-link" itemprop="url">网络物理模拟三之具有确定性的帧同步</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-20 14:23:18" itemprop="dateCreated datePublished" datetime="2019-05-20T14:23:18+08:00">2019-05-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="自我总结"><a href="#自我总结" class="headerlink" title="自我总结"></a>自我总结</h1><p>帧同步要点如下 :</p>
+<ul>
+<li><strong>确定性</strong> : 去除随机数</li>
+<li><strong>缓冲</strong> : 因为数据包并不是均匀地到达, 所以要做一个缓冲区, 然后再均匀地取出</li>
+<li><strong>不用TCP</strong> : 因为我们的数据对时间非常敏感, 不接受到第n个输入包就无法继续模拟第n帧, 而TCP的确认机制以及重传机制当我们丢包时, 我们只能暂停等待它重发造成卡顿</li>
+<li><strong>用UDP</strong> :<ul>
+<li><strong>发送冗余数据</strong> : 因为帧同步只发送玩家input数据, 而input包是很小的, 所以发冗余也不会很大</li>
+<li><strong>增量包</strong> : 加一个bit来标志跟上一个包的比较结果, 如果这个包跟上个包一致则只发送一个1, 如果不一致则发送0和这个包的完整数据</li>
+</ul>
+</li>
+<li><strong>帧同步的缺点</strong> :<ul>
+<li><strong>等的人太多</strong> : 因为你要收到所有玩家对应帧的输入才能对这一帧进行模拟.在实践中，这意味着每个人必须等待最滞后的那个玩家.人越多等得越久, 所以帧同步不适合mmo.</li>
+<li><strong>比较耗性能</strong> : 因为帧同步技术的话, 在客户端中，每个对象都要执行所有的物理之类的运算; 而状态同步可以只同步当前玩家周围对象的状态, 不需要同步所有对象</li>
+</ul>
+</li>
+</ul>
+<p><strong>. . .</strong></p>
+<h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><a href="https://gafferongames.com/post/deterministic_lockstep/" target="_blank" rel="noopener">原文出处</a></p>
+<p>原文标题 : <strong>Deterministic Lockstep</strong> (<em>Keeping simulations in sync by sending only inputs</em>)</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Hi, I’m <a href="https://gafferongames.com/about" target="_blank" rel="noopener">Glenn Fiedler</a> and welcome to <strong><a href="https://gafferongames.com/categories/networked-physics/" target="_blank" rel="noopener">Networked Physics</a></strong>.</p>
+<p>In the <a href="https://gafferongames.com/post/introduction_to_networked_physics/" target="_blank" rel="noopener">previous article</a> we explored the physics simulation we’re going to network in this article series. In this article specifically, we’re going to network this physics simulation using <strong>deterministic lockstep</strong>.</p>
+<p>Deterministic lockstep is a method of networking a system from one computer to another by sending only the _inputs_that control that system, rather than the <em>state</em> of that system. In the context of networking a physics simulation, this means we send across a small amount of input, while avoiding sending state like position, orientation, linear velocity and angular velocity per-object.</p>
+<p>The benefit is that bandwidth is proportional to the size of the input, not the number of objects in the simulation. Yes, with deterministic lockstep you can network a physics simulation of one million objects with the same bandwidth as just one.</p>
+<p>While this sounds great in theory, in practice it’s difficult to implement deterministic lockstep because most physics simulations are not deterministic. Differences in floating point behavior between compilers, OS’s and even instruction sets make it almost impossible to guarantee determinism for floating point calculations.</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/05/20/网络物理模拟三之具有确定性的帧同步/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/网络物理模拟二之网络物理部分的视频演示/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1732,7 +1934,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">37</span>
+                    <span class="site-state-item-count">38</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>

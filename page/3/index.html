@@ -349,6 +349,212 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/21/NAT穿越基础/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/21/NAT穿越基础/" class="post-title-link" itemprop="url">NAT穿越基础</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-21 10:09:17" itemprop="dateCreated datePublished" datetime="2019-05-21T10:09:17+08:00">2019-05-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Network/" itemprop="url" rel="index"><span itemprop="name">Network</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <ol>
+<li><a href="#NAT类型">NAT类型</a><ol>
+<li><a href="#锥NAT"><em>锥NAT</em></a></li>
+<li><a href="#对称NAT"><em>对称NAT</em></a></li>
+</ol>
+</li>
+<li><a href="#NAT作用">NAT作用</a></li>
+<li><a href="#穿透锥NAT">穿透锥NAT</a><ol>
+<li><a href="#网络拓扑结构"><em>网络拓扑结构</em></a></li>
+<li><a href="#使用UDP穿透NAT"><em>使用UDP穿透NAT</em></a></li>
+<li><a href="#使用TCP穿透NAT"><em>使用TCP穿透NAT</em></a></li>
+</ol>
+</li>
+<li><a href="#穿透对称NAT">穿透对称NAT</a><ol>
+<li><a href="#同时开放TCP（ Simultaneous TCP open ）策略"><em>同时开放TCP（ Simultaneous TCP open ）策略</em></a></li>
+<li><a href="#UDP端口猜测策略"><em>UDP端口猜测策略</em></a></li>
+</ol>
+</li>
+<li><a href="#问题总结">问题总结</a></li>
+<li><a href="#参考">参考</a></li>
+</ol>
+<h1 id="NAT类型"><a href="#NAT类型" class="headerlink" title="NAT类型"></a>NAT类型</h1><p><strong>注</strong> : 我们本文主要讨论穿越<strong>锥NAT</strong></p>
+<h2 id="锥NAT"><a href="#锥NAT" class="headerlink" title="锥NAT"></a><em>锥NAT</em></h2><ul>
+<li>全锥NAT ：全锥NAT 把所有来自相同内部IP 地址和端口的请求映射到相同的外部IP 地址和端口。任何一个外部主机均可通过该映射发送数据包到该内部主机。</li>
+<li>限制性锥NAT ：限制性锥NAT 把所有来自相同内部IP 地址和端口的请求映射到相同的外部IP 地址和端口。但是, 和全锥NAT 不同的是：只有当内部主机先给外部主机发送数据包, 该外部主机才能向该内部主机发送数据包。</li>
+<li>端口限制性锥NAT ：端口限制性锥NAT 与限制性锥NAT 类似, 只是多了端口号的限制, 即只有内部主机先向外部地址：端口号对发送数据包, 该外部主机才能使用特定的端口号向内部主机发送数据包。</li>
+</ul>
+<h2 id="对称NAT"><a href="#对称NAT" class="headerlink" title="对称NAT"></a><em>对称NAT</em></h2><p>对称NAT 与上述3 种类型都不同, 不管是全锥NAT ，限制性锥NAT 还是端口限制性锥NAT ，它们都属于锥NAT （Cone NAT ）。当同一内部主机使用相同的端口与不同地址的外部主机进行通信时, 对称NAT 会重新建立一个Session ，为这个Session 分配不同的端口号，或许还会改变IP 地址。</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/05/21/NAT穿越基础/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/构建游戏网络协议六之客户端与服务器的连接/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2163,208 +2369,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/网络物理模拟三之具有确定性的帧同步/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/20/网络物理模拟三之具有确定性的帧同步/" class="post-title-link" itemprop="url">网络物理模拟三之具有确定性的帧同步</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-05-20 14:23:18" itemprop="dateCreated datePublished" datetime="2019-05-20T14:23:18+08:00">2019-05-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="自我总结"><a href="#自我总结" class="headerlink" title="自我总结"></a>自我总结</h1><p>帧同步要点如下 :</p>
-<ul>
-<li><strong>确定性</strong> : 去除随机数</li>
-<li><strong>缓冲</strong> : 因为数据包并不是均匀地到达, 所以要做一个缓冲区, 然后再均匀地取出</li>
-<li><strong>不用TCP</strong> : 因为我们的数据对时间非常敏感, 不接受到第n个输入包就无法继续模拟第n帧, 而TCP的确认机制以及重传机制当我们丢包时, 我们只能暂停等待它重发造成卡顿</li>
-<li><strong>用UDP</strong> :<ul>
-<li><strong>发送冗余数据</strong> : 因为帧同步只发送玩家input数据, 而input包是很小的, 所以发冗余也不会很大</li>
-<li><strong>增量包</strong> : 加一个bit来标志跟上一个包的比较结果, 如果这个包跟上个包一致则只发送一个1, 如果不一致则发送0和这个包的完整数据</li>
-</ul>
-</li>
-<li><strong>帧同步的缺点</strong> :<ul>
-<li><strong>等的人太多</strong> : 因为你要收到所有玩家对应帧的输入才能对这一帧进行模拟.在实践中，这意味着每个人必须等待最滞后的那个玩家.人越多等得越久, 所以帧同步不适合mmo.</li>
-<li><strong>比较耗性能</strong> : 因为帧同步技术的话, 在客户端中，每个对象都要执行所有的物理之类的运算; 而状态同步可以只同步当前玩家周围对象的状态, 不需要同步所有对象</li>
-</ul>
-</li>
-</ul>
-<p><strong>. . .</strong></p>
-<h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><a href="https://gafferongames.com/post/deterministic_lockstep/" target="_blank" rel="noopener">原文出处</a></p>
-<p>原文标题 : <strong>Deterministic Lockstep</strong> (<em>Keeping simulations in sync by sending only inputs</em>)</p>
-<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Hi, I’m <a href="https://gafferongames.com/about" target="_blank" rel="noopener">Glenn Fiedler</a> and welcome to <strong><a href="https://gafferongames.com/categories/networked-physics/" target="_blank" rel="noopener">Networked Physics</a></strong>.</p>
-<p>In the <a href="https://gafferongames.com/post/introduction_to_networked_physics/" target="_blank" rel="noopener">previous article</a> we explored the physics simulation we’re going to network in this article series. In this article specifically, we’re going to network this physics simulation using <strong>deterministic lockstep</strong>.</p>
-<p>Deterministic lockstep is a method of networking a system from one computer to another by sending only the _inputs_that control that system, rather than the <em>state</em> of that system. In the context of networking a physics simulation, this means we send across a small amount of input, while avoiding sending state like position, orientation, linear velocity and angular velocity per-object.</p>
-<p>The benefit is that bandwidth is proportional to the size of the input, not the number of objects in the simulation. Yes, with deterministic lockstep you can network a physics simulation of one million objects with the same bandwidth as just one.</p>
-<p>While this sounds great in theory, in practice it’s difficult to implement deterministic lockstep because most physics simulations are not deterministic. Differences in floating point behavior between compilers, OS’s and even instruction sets make it almost impossible to guarantee determinism for floating point calculations.</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/05/20/网络物理模拟三之具有确定性的帧同步/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2411,7 +2415,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">37</span>
+                    <span class="site-state-item-count">38</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
