@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Lumieru的知识库">
 <meta property="og:description" content="名词解释 UnityEngine.SkeletonBone:  是一个Struct Details of the Transform name mapped to the skeleton bone of a model and its default position and rotation in the T-pose. 表示模型中的骨骼，其中带有骨骼的名字，还有在TPose时的平移缩放旋转">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-16T06:58:25.812Z">
+<meta property="og:updated_time" content="2019-11-19T10:24:35.599Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UMA是如何动态生成Unity的Avatar的">
 <meta name="twitter:description" content="名词解释 UnityEngine.SkeletonBone:  是一个Struct Details of the Transform name mapped to the skeleton bone of a model and its default position and rotation in the T-pose. 表示模型中的骨骼，其中带有骨骼的名字，还有在TPose时的平移缩放旋转">
@@ -396,12 +396,24 @@
                 
               
 
-              <time title="创建时间：2019-11-16 14:05:51 / 修改时间：14:58:25" itemprop="dateCreated datePublished" datetime="2019-11-16T14:05:51+08:00">2019-11-16</time>
+              <time title="创建时间：2019-11-16 14:05:51" itemprop="dateCreated datePublished" datetime="2019-11-16T14:05:51+08:00">2019-11-16</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-11-19 18:24:35" itemprop="dateModified" datetime="2019-11-19T18:24:35+08:00">2019-11-19</time>
               
             
           </span>
@@ -498,13 +510,15 @@
 </li>
 </ul>
 </li>
-<li><h2 id="生成UMA用的TPose文件"><a href="#生成UMA用的TPose文件" class="headerlink" title="生成UMA用的TPose文件"></a>生成UMA用的TPose文件</h2><p> ExtractTPose()函数中包含了两种提取TPose的方法，这个函数是在Unity的Config Avatar界面执行的。</p>
+<li><h2 id="生成UMA用的TPose文件"><a href="#生成UMA用的TPose文件" class="headerlink" title="生成UMA用的TPose文件"></a>生成UMA用的TPose文件</h2><p> 在TPoseExtracter.cs文件中的ExtractTPose()函数中包含了两种提取TPose的方法，这个函数是在Unity的Config Avatar界面执行的。</p>
 <ul>
 <li>把选中的asset变成一个ModelImporter，然后从modelImporter.humanDescription中读取HumanDescription信息。用这种方法只能提取出avatar的其他配置信息，而关键的<code>SkeletonBone</code>的数组和<code>HumanBone</code>的数组是得不到的。<font color="#F08080"><em>而且实际运行中，这部分代码并没有执行到</em></font>。</li>
 <li>全局找带有Animator的GameObject，并且从这个GameObject和它的下属层次结构中得到<code>SkeletonBone</code>的数组和<code>HumanBone</code>的数组。这个方法不能得到avatar的其他配置信息，但是没关系，这些信息但用到之前会赋予和unity中一样的默认值。<font color="#F08080"><em>实际运行中，UMA是用了这个方法来提取TPose的</em></font>。因为在Config Avatar界面，模型就是在TPose的。</li>
 </ul>
 </li>
-<li><h2 id="运行时动态生成Avatar"><a href="#运行时动态生成Avatar" class="headerlink" title="运行时动态生成Avatar"></a>运行时动态生成Avatar</h2><ul>
+<li><h2 id="运行时动态生成Avatar"><a href="#运行时动态生成Avatar" class="headerlink" title="运行时动态生成Avatar"></a>运行时动态生成Avatar</h2><p>  在UMAGeneratorBuiltin.cs文件的<code>public virtual bool HandleDirtyUpdate(UMAData data)</code>函数中，<code>umaData.isShapeDirty</code>为true时，就会调用<code>UpdateUMABody(umaData);</code>函数，函数代码如下：</p>
+  <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">umaData.skeleton.ResetAll();</span><br><span class="line"><span class="comment">// Put the skeleton into TPose so rotations will be valid for generating avatar</span></span><br><span class="line">umaData.GotoTPose();</span><br><span class="line">umaData.ApplyDNA();</span><br><span class="line">umaData.FireDNAAppliedEvents();</span><br><span class="line">umaData.skeleton.EndSkeletonUpdate();</span><br><span class="line">UpdateAvatar(umaData);</span><br></pre></td></tr></table></figure>
+<ul>
 <li>当UMA检测到人物的骨架发生变化时（通过DNA调整），就会重建Avatar。</li>
 <li>UMA会将骨架重置到没有运用DNA修改的状态，就是去掉DNA的功能。</li>
 <li>UMA会利用提取出来的TPose文件，让骨架回到TPose的状态。</li>
