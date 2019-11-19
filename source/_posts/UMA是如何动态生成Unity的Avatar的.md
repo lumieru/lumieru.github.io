@@ -44,12 +44,24 @@ categories: Unity
 
 2. ## 生成UMA用的TPose文件
 
-    ExtractTPose()函数中包含了两种提取TPose的方法，这个函数是在Unity的Config Avatar界面执行的。
+    在TPoseExtracter.cs文件中的ExtractTPose()函数中包含了两种提取TPose的方法，这个函数是在Unity的Config Avatar界面执行的。
 
     + 把选中的asset变成一个ModelImporter，然后从modelImporter.humanDescription中读取HumanDescription信息。用这种方法只能提取出avatar的其他配置信息，而关键的`SkeletonBone`的数组和`HumanBone`的数组是得不到的。<font color=#F08080>_而且实际运行中，这部分代码并没有执行到_</font>。
     + 全局找带有Animator的GameObject，并且从这个GameObject和它的下属层次结构中得到`SkeletonBone`的数组和`HumanBone`的数组。这个方法不能得到avatar的其他配置信息，但是没关系，这些信息但用到之前会赋予和unity中一样的默认值。<font color=#F08080>_实际运行中，UMA是用了这个方法来提取TPose的_</font>。因为在Config Avatar界面，模型就是在TPose的。
 
 3. ## 运行时动态生成Avatar
+
+     在UMAGeneratorBuiltin.cs文件的`public virtual bool HandleDirtyUpdate(UMAData data)`函数中，`umaData.isShapeDirty`为true时，就会调用`UpdateUMABody(umaData);`函数，函数代码如下：
+
+     ```csharp
+     umaData.skeleton.ResetAll();
+     // Put the skeleton into TPose so rotations will be valid for generating avatar
+     umaData.GotoTPose();
+     umaData.ApplyDNA();
+     umaData.FireDNAAppliedEvents();
+     umaData.skeleton.EndSkeletonUpdate();
+     UpdateAvatar(umaData);
+     ```
 
     + 当UMA检测到人物的骨架发生变化时（通过DNA调整），就会重建Avatar。
     + UMA会将骨架重置到没有运用DNA修改的状态，就是去掉DNA的功能。
