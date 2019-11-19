@@ -96,25 +96,18 @@
 
 
 
-  <meta name="description" content="原文出处 Fast-Paced Multiplayer (Part II): Client-Side Prediction and Server Reconciliation IntroductionIn the first article of this series, we explored a client-server model with an authoritative server">
-<meta name="keywords" content="GabrielGambetta">
+  <meta name="description" content="名词解释 UMA.UMABlendFrame:   在UMAMeshData.cs文件中   1234567public class UMABlendFrame&amp;#123;    public float frameWeight = 100.0f; //should be 100% for one frame    public Vector3[] deltaVertices = null;">
+<meta name="keywords" content="Unity,UMA">
 <meta property="og:type" content="article">
-<meta property="og:title" content="多人快节奏游戏二之客户端预测与服务器修正">
-<meta property="og:url" content="https://lumieru.github.io/2019/05/21/多人快节奏游戏二之客户端预测与服务器修正/index.html">
+<meta property="og:title" content="UMA中Mesh的管理和合成">
+<meta property="og:url" content="https://lumieru.github.io/2019/11/19/UMA中Mesh的管理和合成/index.html">
 <meta property="og:site_name" content="Lumieru的知识库">
-<meta property="og:description" content="原文出处 Fast-Paced Multiplayer (Part II): Client-Side Prediction and Server Reconciliation IntroductionIn the first article of this series, we explored a client-server model with an authoritative server">
+<meta property="og:description" content="名词解释 UMA.UMABlendFrame:   在UMAMeshData.cs文件中   1234567public class UMABlendFrame&amp;#123;    public float frameWeight = 100.0f; //should be 100% for one frame    public Vector3[] deltaVertices = null;">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="http://blog.sensedevil.com/image/fpm2-01.png">
-<meta property="og:image" content="http://blog.sensedevil.com/image/fpm2-02.png">
-<meta property="og:image" content="http://blog.sensedevil.com/image/fpm2-03.png">
-<meta property="og:image" content="http://blog.sensedevil.com/image/fpm2-04.png">
-<meta property="og:image" content="http://blog.sensedevil.com/image/fpm2-05.png">
-<meta property="og:image" content="http://blog.sensedevil.com/image/fpm2-06.png">
-<meta property="og:updated_time" content="2019-06-22T09:02:57.359Z">
+<meta property="og:updated_time" content="2019-11-19T12:07:46.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="多人快节奏游戏二之客户端预测与服务器修正">
-<meta name="twitter:description" content="原文出处 Fast-Paced Multiplayer (Part II): Client-Side Prediction and Server Reconciliation IntroductionIn the first article of this series, we explored a client-server model with an authoritative server">
-<meta name="twitter:image" content="http://blog.sensedevil.com/image/fpm2-01.png">
+<meta name="twitter:title" content="UMA中Mesh的管理和合成">
+<meta name="twitter:description" content="名词解释 UMA.UMABlendFrame:   在UMAMeshData.cs文件中   1234567public class UMABlendFrame&amp;#123;    public float frameWeight = 100.0f; //should be 100% for one frame    public Vector3[] deltaVertices = null;">
 
 
 
@@ -122,7 +115,7 @@
 
   
   
-  <link rel="canonical" href="https://lumieru.github.io/2019/05/21/多人快节奏游戏二之客户端预测与服务器修正/">
+  <link rel="canonical" href="https://lumieru.github.io/2019/11/19/UMA中Mesh的管理和合成/">
 
 
 
@@ -132,7 +125,7 @@
   };
 </script>
 
-  <title>多人快节奏游戏二之客户端预测与服务器修正 | Lumieru的知识库</title>
+  <title>UMA中Mesh的管理和合成 | Lumieru的知识库</title>
   
 
 
@@ -360,7 +353,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/21/多人快节奏游戏二之客户端预测与服务器修正/">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/11/19/UMA中Mesh的管理和合成/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Lumieru">
@@ -377,7 +370,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">多人快节奏游戏二之客户端预测与服务器修正
+          <h1 class="post-title" itemprop="name headline">UMA中Mesh的管理和合成
 
               
             
@@ -403,24 +396,12 @@
                 
               
 
-              <time title="创建时间：2019-05-21 10:18:55" itemprop="dateCreated datePublished" datetime="2019-05-21T10:18:55+08:00">2019-05-21</time>
+              <time title="创建时间：2019-11-19 18:30:32 / 修改时间：20:07:46" itemprop="dateCreated datePublished" datetime="2019-11-19T18:30:32+08:00">2019-11-19</time>
             
 
             
               
 
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
               
             
           </span>
@@ -437,7 +418,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Unity/" itemprop="url" rel="index"><span itemprop="name">Unity</span></a></span>
 
                 
                 
@@ -472,37 +453,73 @@
       
 
       
-        <p><a href="http://www.gabrielgambetta.com/client-side-prediction-server-reconciliation.html" target="_blank" rel="noopener">原文出处</a></p>
-<h1 id="Fast-Paced-Multiplayer-Part-II-Client-Side-Prediction-and-Server-Reconciliation"><a href="#Fast-Paced-Multiplayer-Part-II-Client-Side-Prediction-and-Server-Reconciliation" class="headerlink" title="Fast-Paced Multiplayer (Part II): Client-Side Prediction and Server Reconciliation"></a>Fast-Paced Multiplayer (Part II): Client-Side Prediction and Server Reconciliation</h1><hr>
-<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>In the <a href="/2019/05/21/多人快节奏游戏一之C-S游戏架构/" title="first article">first article</a> of this series, we explored a client-server model with an authoritative server and dumb clients that just send inputs to the server and then render the updated game state when the server sends it.</p>
-<p>A naive implementation of this scheme leads to a delay between user commands and changes on the screen; for example, the player presses the right arrow key, and the character takes half a second before it starts moving. This is because the client input must first travel to the server, the server must process the input and calculate a new game state, and the updated game state must reach the client again.</p>
-<p><a href="http://blog.sensedevil.com/image/fpm2-01.png" target="_blank" rel="noopener"><img src="http://blog.sensedevil.com/image/fpm2-01.png" alt="Effect of network delays."></a>Effect of network delays.</p>
-<p>In a networked environment such as the internet, where delays can be in the orders of tenths of a second, a game may feel unresponsive at best, or in the worst case, be rendered unplayable. In this article, we’ll find ways to minimize or even eliminate that problem.</p>
+        <ol>
+<li><h2 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h2><ul>
+<li><p><code>UMA.UMABlendFrame</code>:</p>
+<p>  在UMAMeshData.cs文件中</p>
+  <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">UMABlendFrame</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">float</span> frameWeight = <span class="number">100.0f</span>; <span class="comment">//should be 100% for one frame</span></span><br><span class="line">    <span class="keyword">public</span> Vector3[] deltaVertices = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">public</span> Vector3[] deltaNormals = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">public</span> Vector3[] deltaTangents = <span class="literal">null</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>一个BlendShape可以包含很多帧，最后一帧（<code>frameWeight = 100.0f</code>）是这个BlendShape的最终形态，而中间还可以有很多过度的平滑帧（就像放动画一样）。他们一般都是按frameWeight从小到大排列的。</li>
+<li><code>UMABlendFrame</code>代表BlendShape的某一帧。在大部分情况下，一个BlendShape只有一帧。</li>
+<li><code>frameWeight</code>表示这一帧是最终形态的百分之多少。</li>
+<li><code>deltaVertices</code>数组，大小和整个base mesh的顶点数相同。数组中的每一项，表示这一帧BlendShape的顶点和baseMesh中相应顶点的位置差（offset）。baseMesh中的顶点位置加上这个deltaVertices可以得到BlendShape中顶点的绝对位置。</li>
+<li><code>deltaNormals</code>数组，意义同上，只是表示的是法线。</li>
+<li><code>deltaTangents</code>数组，意义同上，只是表示的是切线。</li>
+</ul>
+</li>
+<li><p><code>UMA.UMABlendShape</code>:</p>
+<p>  在UMAMeshData.cs文件中</p>
+  <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">UMABlendShape</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> shapeName;</span><br><span class="line">    <span class="keyword">public</span> UMABlendFrame[] frames;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>表示一个完整的BlendShape，里面可以包含多个帧。</p>
 <a id="more"></a>
-<h2 id="Client-side-prediction"><a href="#Client-side-prediction" class="headerlink" title="Client-side prediction"></a>Client-side prediction</h2><p>Even though there are some cheating players, most of the time the game server is processing valid requests (from non-cheating clients and from cheating clients who aren’t cheating at that particular time). This means most of the input received will be valid and will update the game state as expected; that is, if your character is at (10, 10) and the right arrow key is pressed, it will end up at (11, 10).</p>
-<p>We can use this to our advantage. If the game world is <em>deterministic</em> enough (that is, given a game state and a set of inputs, the result is completely predictable),</p>
-<p>Let’s suppose we have a 100 ms lag, and the animation of the character moving from one square to the next takes 100 ms. Using the naive implementation, the whole action would take 200 ms:</p>
-<p><a href="http://blog.sensedevil.com/image/fpm2-02.png" target="_blank" rel="noopener"><img src="http://blog.sensedevil.com/image/fpm2-02.png" alt="Network delay + animation."></a>Network delay + animation.</p>
-<p>Since the world is deterministic, we can assume the inputs we send to the server will be executed successfully. Under this assumption, the client can predict the state of the game world after the inputs are processed, and most of the time this will be correct.</p>
-<p>Instead of sending the inputs and waiting for the new game state to start rendering it, we can send the input and start rendering the outcome of that inputs as if they had succeded, while we wait for the server to send the “true” game state – which more often than not, will match the state calculated locally :</p>
-<p><a href="http://blog.sensedevil.com/image/fpm2-03.png" target="_blank" rel="noopener"><img src="http://blog.sensedevil.com/image/fpm2-03.png" alt="Animation plays while the server confirms the action."></a>Animation plays while the server confirms the action.</p>
-<p>Now there’s absolutely no delay between the player’s actions and the results on the screen, while the server is still authoritative (if a hacked client would send invalid inputs, it could render whatever it wanted on the screen, but it wouldn’t affect the state of the server, which is what the other players see).</p>
-<h2 id="Synchronization-issues"><a href="#Synchronization-issues" class="headerlink" title="Synchronization issues"></a>Synchronization issues</h2><p>In the example above, I chose the numbers carefully to make everything work fine. However, consider a slightly modified scenario: let’s say we have a 250 ms lag to the server, and moving from a square to the next takes 100 ms. Let’s also say the player presses the right key 2 times in a row, trying to move 2 squares to the right.</p>
-<p>Using the techniques so far, this is what would happen:</p>
-<p><a href="http://blog.sensedevil.com/image/fpm2-04.png" target="_blank" rel="noopener"><img src="http://blog.sensedevil.com/image/fpm2-04.png" alt="Predicted state and authoritative state mismatch."></a>Predicted state and authoritative state mismatch.</p>
-<p>We run into an interesting problem at <strong>t = 250 ms</strong>, when the new game state arrives. The predicted state at the client is <strong>x = 12</strong>, but the server says the new game state is <strong>x = 11</strong>. Because the server is authoritative, the client must move the character back to <strong>x = 11</strong>. But then, a new server state arrives at <strong>t = 350</strong>, which says <strong>x = 12</strong>, so the character jumps again, forward this time.</p>
-<p>From the point of view of the player, he pressed the right arrow key twice; the character moved two squares to the right, stood there for 50 ms, jumped one square to the left, stood there for 100 ms, and jumped one square to the right. This, of course, is unacceptable.</p>
-<h2 id="Server-reconciliation"><a href="#Server-reconciliation" class="headerlink" title="Server reconciliation"></a>Server reconciliation</h2><p>The key to fix this problem is to realize that the client sees the game world <em>in present time</em>, but because of lag, the updates it gets from the server are actually the state of the game <em>in the past</em>. By the time the server sent the updated game state, it hadn’t processed all the commands sent by the client.</p>
-<p>This isn’t terribly difficult to work around, though. First, the client adds a sequence number to each request; in our example, the first key press is request #1, and the second key press is request #2. Then, when the server replies, it includes the sequence number of the last input it processed:</p>
-<p><a href="http://blog.sensedevil.com/image/fpm2-05.png" target="_blank" rel="noopener"><img src="http://blog.sensedevil.com/image/fpm2-05.png" alt="Client-side prediction + server reconciliation."></a>Client-side prediction + server reconciliation.</p>
-<p><a href="http://blog.sensedevil.com/image/fpm2-06.png" target="_blank" rel="noopener"><img src="http://blog.sensedevil.com/image/fpm2-06.png" alt="或许这幅图更加解释得清楚些"></a>或许这幅图更加解释得清楚些</p>
-<p>Now, at <strong>t = 250</strong>, the server says “<strong>based on what I’ve seen up to your request #1, your position is x = 11</strong>”. Because the server is authoritative, it sets the character position at <strong>x = 11</strong>. Now let’s assume the client keeps a copy of the requests it sends to the server. Based on the new game state, it knows the server has already processed request #1, so it can discard that copy. But it also knows the server still has to send back the result of processing request #2. So applying client-side prediction again, the client can calculate the “present” state of the game based on the last authoritative state sent by the server, plus the inputs the server hasn’t processed yet.</p>
-<p>So, at <strong>t = 250</strong>, the client gets “<strong>x = 11, last processed request = #1</strong>”. It discards its copies of sent input up to #1 – but it retains a copy of #2, which hasn’t been acknowledged by the server. It updates it internal game state with what the server sent, <strong>x = 11</strong>, and then applies all the input still not seen by the server – in this case, input #2, “move to the right”. The end result is <strong>x = 12</strong>, which is correct.</p>
-<p>Continuing with our example, at <strong>t = 350</strong> a new game state arrives from the server; this time it says “<strong>x = 12, last processed request = #2</strong>”. At this point, the client discards all input up to #2, and updates the state with <strong>x = 12</strong>. There’s no unprocessed input to replay, so processing ends there, with the correct result.</p>
-<h2 id="Odds-and-ends"><a href="#Odds-and-ends" class="headerlink" title="Odds and ends"></a>Odds and ends</h2><p>The example discussed above implies movement, but the same principle can be applied to almost anything else. For example, in a turn-based combat game, when the player attacks another character, you can show blood and a number representing the damage done, but you shouldn’t actually update the health of the character until the server says so.</p>
-<p>Because of the complexities of game state, which isn’t always easily reversible, you may want to avoid killing a character until the server says so, even if its health dropped below zero in the client’s game state (what if the other character used a first-aid kit just before receiving your deadly attack, but the server hasn’t told you yet?)</p>
-<p>This brings us to an interesting point – even if the world is completely deterministic and no clients cheat at all, it’s still possible that the state predicted by the client and the state sent by the server don’t match after a reconciliation. The scenario is impossible as described above with a single player, but it’s easy to run into when several players are connected to the server at once. This will be the topic of the next article.</p>
-<h3 id="Summary"><a href="#Summary" class="headerlink" title="Summary"></a>Summary</h3><p>When using an authoritative server, you need to give the player the illusion of responsiveness, while you wait for the server to actually process your inputs. To do this, the client simulates the results of the inputs. When the updated server state arrives, the predicted client state is recomputed from the updated state and the inputs the client sent but the server hasn’t acknowledged yet.</p>
+</li>
+</ul>
+</li>
+<li><p><code>UMA.UMAMeshData</code>:</p>
+<p>  在UMAMeshData.cs文件中</p>
+<ul>
+<li>UMA用来表示unity中mesh data的类。</li>
+<li>主要包含了mesh的所有顶点数据（包括顶点，法线，切线，颜色，多组uv），骨骼权重信息，bindPose，三角形面的索引信息（通过SubMesh来管理），所有的BlendShapes等。</li>
+<li>这其中还有static版本的mesh数据，主要是在mesh合成时用来优化内存，减少gc用的。（每次合并mesh，都会生成一个临时的UMAMeshData来缓存数据，生成完，把数据赋给unity后就释放了）。</li>
+</ul>
+</li>
+<li><p><code>UMA.SlotDataAsset</code>:</p>
+<p>  在SlotDataAsset.cs文件中</p>
+<ul>
+<li>Contains the immutable data shared between slots of the same type.</li>
+<li>这个类中包含了slot所用到的数据，这些数据是不可变的，而且是在相同类型的slot间共享的。</li>
+<li>在运行时，<code>SlotLibrary</code>中会有场景中用到的所有slot的SlotDataAsset，每个类型有且仅有一份。</li>
+<li>这个类的其中一个成员变量就是<code>UMAMeshData</code>类型的，保存了这个slot所用的mesh的数据，包括BlendShapes。所以生成完slot后，对应的fbx就没用了，UMA自己会保存所有相关信息。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><h2 id="Mesh合成过程"><a href="#Mesh合成过程" class="headerlink" title="Mesh合成过程"></a>Mesh合成过程</h2><ul>
+<li><p>在UMAGeneratorBuiltin.cs文件的<code>public virtual bool HandleDirtyUpdate(UMAData data)</code>函数中</p>
+  <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (umaData.isMeshDirty)</span><br><span class="line">&#123;</span><br><span class="line">    UpdateUMAMesh(umaData.isAtlasDirty);</span><br><span class="line">    umaData.isAtlasDirty = <span class="literal">false</span>;</span><br><span class="line">    umaData.isMeshDirty = <span class="literal">false</span>;</span><br><span class="line">    SlotsChanged++;</span><br><span class="line">    forceGarbageCollect++;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!fastGeneration)</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  当<code>umaData.isMeshDirty</code>为true时，就会调用<code>UpdateUMAMesh()</code>来更新Mesh。</p>
+</li>
+<li><p><code>UpdateUMAMesh()</code>函数会调用<code>meshCombiner.UpdateUMAMesh()</code>来执行合并生成工作。这是一个虚函数，实际上会调用到<code>UMADefaultMeshCombiner.UpdateUMAMesh()</code>函数。</p>
+</li>
+<li><code>UMADefaultMeshCombiner.UpdateUMAMesh()</code>函数中，会根据合并得到的材质数量，来确定最终会合成几个mesh。然后把所有用到相同材质的mesh合并成一个mesh，减少draw call。合并的结果会保存在一个临时的UMAMeshData中，最后通过函数<code>umaMesh.ApplyDataToUnityMesh()</code>赋值给unity的mesh。</li>
+<li><p>其中的具体合并工作是通过<code>SkinnedMeshCombiner.CombineMeshes()</code>函数来完成的。它会把所有mesh的顶点数据都合并到一个mesh中，这个比较简单。我们主要详细看一下BlendShape的合并和Bake过程。</p>
+<ul>
+<li>先通过函数<code>AnalyzeBlendShapeSources()</code>统计所有需要合并的BlendShape的信息，如果某个BlendShape设置了bake，那么这个统计就会跳过这个BlendShape。</li>
+<li>在函数<code>InitializeBlendShapeData()</code>中，根据统计结果，生成需要合并的target BlendShape的初始化数据，这里生成的BlendShape的顶点数是和最终要生成的Mesh的顶点数相同的，并且生成的BlendShape其实是没有作用的，所有的delta都为零。设置为bake的BlendShape会跳过这步。</li>
+<li>然后把源BlendShape中的数据，根据顶点序号的offset，设置到刚才生成的target BlendShape中。如果某个BlendShape设置了bake，那么不会执行copy这步，取而代之的会执行<code>BakeBlendShape()</code>函数。</li>
+<li>在<code>BakeBlendShape()</code>函数中，会根据权重把BlendShape直接插值合并到最终生成的Mesh中，然后这个BlendShape就不会到Unity的Mesh的BlendShape中去了，可以减小内存和加快每帧的渲染速度。</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><h2 id="BlendShape要点"><a href="#BlendShape要点" class="headerlink" title="BlendShape要点"></a>BlendShape要点</h2><ul>
+<li>带有BlendShape的Slot的顶点数越小越好，因为占有的内存少。（这部分内存是整个race共享的，和单独人物的多少没有关系）。</li>
+<li>设置BlendShape的bake后，就把BlendShape烘培到Unity的Mesh中去了，Unity的Mesh中就不会带有BlendShape了，可以减少内存消耗，加快每帧的渲染速度。</li>
+<li>如果不bake，那么每个人物的Unity的mesh中都会带有相应的BlendShape顶点数据，人物越多浪费的内存就越多。而且每帧Unity都要去把BlendShape插值计算一次，浪费渲染时间。</li>
+</ul>
+</li>
+</ol>
 
       
     </div>
@@ -526,7 +543,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/GabrielGambetta/" rel="tag"><i class="fa fa-tag"></i> GabrielGambetta</a>
+            <a href="/tags/Unity/" rel="tag"><i class="fa fa-tag"></i> Unity</a>
+          
+            <a href="/tags/UMA/" rel="tag"><i class="fa fa-tag"></i> UMA</a>
           
         </div>
       
@@ -539,8 +558,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/05/21/多人快节奏游戏一之C-S游戏架构/" rel="next" title="多人快节奏游戏一之C/S游戏架构">
-                <i class="fa fa-chevron-left"></i> 多人快节奏游戏一之C/S游戏架构
+              <a href="/2019/11/16/UMA是如何动态生成Unity的Avatar的/" rel="next" title="UMA是如何动态生成Unity的Avatar的">
+                <i class="fa fa-chevron-left"></i> UMA是如何动态生成Unity的Avatar的
               </a>
             
           </div>
@@ -548,10 +567,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/05/21/多人快节奏游戏三之实体插值/" rel="prev" title="多人快节奏游戏三之实体插值">
-                多人快节奏游戏三之实体插值 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -726,7 +741,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Fast-Paced-Multiplayer-Part-II-Client-Side-Prediction-and-Server-Reconciliation"><span class="nav-number">1.</span> <span class="nav-text">Fast-Paced Multiplayer (Part II): Client-Side Prediction and Server Reconciliation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Client-side-prediction"><span class="nav-number">1.2.</span> <span class="nav-text">Client-side prediction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Synchronization-issues"><span class="nav-number">1.3.</span> <span class="nav-text">Synchronization issues</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Server-reconciliation"><span class="nav-number">1.4.</span> <span class="nav-text">Server reconciliation</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Odds-and-ends"><span class="nav-number">1.5.</span> <span class="nav-text">Odds and ends</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Summary"><span class="nav-number">1.5.1.</span> <span class="nav-text">Summary</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#名词解释"><span class="nav-number">1.</span> <span class="nav-text">名词解释</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Mesh合成过程"><span class="nav-number">2.</span> <span class="nav-text">Mesh合成过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#BlendShape要点"><span class="nav-number">3.</span> <span class="nav-text">BlendShape要点</span></a></li></ol></div>
             
 
           </div>

@@ -349,6 +349,191 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/11/19/UMA中Mesh的管理和合成/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/11/19/UMA中Mesh的管理和合成/" class="post-title-link" itemprop="url">UMA中Mesh的管理和合成</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-11-19 18:30:32 / 修改时间：20:07:46" itemprop="dateCreated datePublished" datetime="2019-11-19T18:30:32+08:00">2019-11-19</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Unity/" itemprop="url" rel="index"><span itemprop="name">Unity</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <ol>
+<li><h2 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h2><ul>
+<li><p><code>UMA.UMABlendFrame</code>:</p>
+<p>  在UMAMeshData.cs文件中</p>
+  <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">UMABlendFrame</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">float</span> frameWeight = <span class="number">100.0f</span>; <span class="comment">//should be 100% for one frame</span></span><br><span class="line">    <span class="keyword">public</span> Vector3[] deltaVertices = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">public</span> Vector3[] deltaNormals = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">public</span> Vector3[] deltaTangents = <span class="literal">null</span>;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>一个BlendShape可以包含很多帧，最后一帧（<code>frameWeight = 100.0f</code>）是这个BlendShape的最终形态，而中间还可以有很多过度的平滑帧（就像放动画一样）。他们一般都是按frameWeight从小到大排列的。</li>
+<li><code>UMABlendFrame</code>代表BlendShape的某一帧。在大部分情况下，一个BlendShape只有一帧。</li>
+<li><code>frameWeight</code>表示这一帧是最终形态的百分之多少。</li>
+<li><code>deltaVertices</code>数组，大小和整个base mesh的顶点数相同。数组中的每一项，表示这一帧BlendShape的顶点和baseMesh中相应顶点的位置差（offset）。baseMesh中的顶点位置加上这个deltaVertices可以得到BlendShape中顶点的绝对位置。</li>
+<li><code>deltaNormals</code>数组，意义同上，只是表示的是法线。</li>
+<li><code>deltaTangents</code>数组，意义同上，只是表示的是切线。</li>
+</ul>
+</li>
+<li><p><code>UMA.UMABlendShape</code>:</p>
+<p>  在UMAMeshData.cs文件中</p>
+  <figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">UMABlendShape</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> shapeName;</span><br><span class="line">    <span class="keyword">public</span> UMABlendFrame[] frames;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>表示一个完整的BlendShape，里面可以包含多个帧。</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/11/19/UMA中Mesh的管理和合成/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </li></ul></li></ul></li></ol></div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/11/16/UMA是如何动态生成Unity的Avatar的/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2115,193 +2300,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/14/KBEngine源码解读一/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/06/14/KBEngine源码解读一/" class="post-title-link" itemprop="url">KBEngine源码解读一</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-06-14 16:31:27" itemprop="dateCreated datePublished" datetime="2019-06-14T16:31:27+08:00">2019-06-14</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="一-libs-common部分"><a href="#一-libs-common部分" class="headerlink" title="一. libs/common部分"></a>一. libs/common部分</h2><p><strong>MemoryStream：</strong></p>
-<p>将常用数据类型二进制序列化与反序列化，内部封装了一个<code>std::vector&lt;uint8&gt;</code>。使用方法:<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">MemoryStream stream; </span><br><span class="line">stream &lt;&lt; (int64)<span class="number">100000000</span>;</span><br><span class="line">stream &lt;&lt; (uint8)<span class="number">1</span>;</span><br><span class="line">stream &lt;&lt; (uint8)<span class="number">32</span>;</span><br><span class="line">stream &lt;&lt; <span class="string">"kbe"</span>;</span><br><span class="line">stream.print_storage();</span><br><span class="line">uint8 n, n1;</span><br><span class="line">int64 x;</span><br><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> a;</span><br><span class="line">stream &gt;&gt; x;</span><br><span class="line">stream &gt;&gt; n;</span><br><span class="line">stream &gt;&gt; n1;</span><br><span class="line">stream &gt;&gt; a;</span><br><span class="line"><span class="built_in">printf</span>(<span class="string">"还原: %lld, %d, %d, %s"</span>, x, n, n1, a.c_str());</span><br></pre></td></tr></table></figure></p>
-<p><strong>Tasks:</strong></p>
-<p>任务<code>Task</code>的管理类，内部封装了<code>std::vector&lt;Task *&gt;</code>，通过调用<code>process()</code>来遍历所有<code>Tash</code>的<code>process()</code>虚函数。</p>
-<p><strong>TimersT&lt;T&gt;:</strong></p>
-<p>定时器管理类，内部用小顶堆管理所有的定时器。通过<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">TimerHandle <span class="title">add</span><span class="params">(TimeStamp startTime, TimeStamp interval,</span></span></span><br><span class="line"><span class="function"><span class="params">                TimerHandler* pHandler, <span class="keyword">void</span> * pUser)</span></span>;</span><br></pre></td></tr></table></figure></p>
-<p>来新增一个定时器，返回的<code>TimerHandle</code>是新增定时器的句柄，可以控制相应的定时器。用户需要继承<code>TimerHandler</code>类，并重载<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">handleTimeout</span><span class="params">(TimerHandle handle, <span class="keyword">void</span> * pUser)</span></span></span><br></pre></td></tr></table></figure></p>
-<p>虚函数来实现定时器的回调。</p>
-<p>内部预定义了两个<code>TimersT&lt;T&gt;</code>类<br><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">typedef</span> TimersT&lt;uint32&gt; Timers;</span><br><span class="line"><span class="keyword">typedef</span> TimersT&lt;uint64&gt; Timers64;</span><br></pre></td></tr></table></figure></p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/06/14/KBEngine源码解读一/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2348,7 +2346,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">38</span>
+                    <span class="site-state-item-count">39</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
