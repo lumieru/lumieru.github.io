@@ -104,7 +104,7 @@
 <meta property="og:site_name" content="Lumieru的知识库">
 <meta property="og:description" content="制作一个Base Model 用Adobe Fuse生成一个光头T pose模型，导出上传到Mixamo，Mixamo会自动为这个模型绑定骨骼，还要生成一些脸部表情的Blend Shapes。 导入Blender，删除一些多余的骨骼，可以看到有很多面部表情的Blend Shapes。 还可以利用其他的工具来生成模型，比如Daz。 UMA 301 - Part 1 Creating a Base">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-11-15T05:32:05.809Z">
+<meta property="og:updated_time" content="2019-11-23T10:29:05.947Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UMA 301视频教程备忘录">
 <meta name="twitter:description" content="制作一个Base Model 用Adobe Fuse生成一个光头T pose模型，导出上传到Mixamo，Mixamo会自动为这个模型绑定骨骼，还要生成一些脸部表情的Blend Shapes。 导入Blender，删除一些多余的骨骼，可以看到有很多面部表情的Blend Shapes。 还可以利用其他的工具来生成模型，比如Daz。 UMA 301 - Part 1 Creating a Base">
@@ -413,7 +413,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-11-15 13:32:05" itemprop="dateModified" datetime="2019-11-15T13:32:05+08:00">2019-11-15</time>
+                <time title="修改时间：2019-11-23 18:29:05" itemprop="dateModified" datetime="2019-11-23T18:29:05+08:00">2019-11-23</time>
               
             
           </span>
@@ -536,7 +536,9 @@
 <li>然后设置Text Recipe，把它命名为BaseRecipe，把RaceData设置到RaceData字段，点击Add to Global Index，把身体slot和对应的overlay加入其中。 </li>
 <li>因为这个FuseRace，和UMA自带的Race的骨架结构不相同，所以需要勾选Dynamic Character Avatar-&gt;Active Race-&gt;Race Change Options-&gt;Rebuild Skeleton选项，才能在各个race间正常切换。</li>
 <li>只有在运行时需要切换race，而且race的骨架不一样，才需要勾选Rebuild Skeleton选项，其他时候不需要，因为有效率影响。</li>
-<li><p>如果需要BlendShape起作用，需要勾选Dynamic Character Avatar-&gt;Advanced Options-&gt;Load BlendShapes选项。</p>
+<li>如果需要BlendShape起作用，需要勾选Dynamic Character Avatar-&gt;Advanced Options-&gt;Load BlendShapes选项。</li>
+<li><font color="#F08080"><em>如果某个骨骼（必须是叶子骨骼？不是很确定）不影响mesh中的任何一个顶点，那么在生成slot的时候就不会包含这个骨骼的信息，同样在合成最终mesh生成相应的skeleton的时候也会没有这些骨骼。</em></font>
+
 <p><a href="https://www.youtube.com/watch?v=KGgyv3CSWek&amp;list=PLkDHFObfS19yjYoQsMR0dCGjCLsrF1dB4&amp;index=7" target="_blank" rel="noopener">UMA 301 - Part 7 Creating a Basic Race</a></p>
 </li>
 </ul>
