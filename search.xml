@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[UMA自定义材质设置和带cloth的slot制作指南]]></title>
+    <url>%2F2020%2F03%2F06%2FUMA%E8%87%AA%E5%AE%9A%E4%B9%89%E6%9D%90%E8%B4%A8%E8%AE%BE%E7%BD%AE%E5%92%8C%E5%B8%A6cloth%E7%9A%84slot%E5%88%B6%E4%BD%9C%E6%8C%87%E5%8D%97%2F</url>
+    <content type="text"><![CDATA[UMA的贴图处理UMA检测到贴图需要处理时，就会调用TextureProcessPROCoroutine.cs文件里的workerMethod()来合并贴图，并把最终结果输出到一个RenderTexture中。真正合成贴图的操作是在TextureMerge.cs中完成的。对于UMA提供的5中贴图类型，只有其中三种是需要调用shader来进行合并处理的，剩下的两种不处理贴图，只是把原图设置到目标材质，或者把颜色设置到目标材质。具体的操作如下表 贴图类型 操作 对应shader Texture 利用shader合图 AtlasShader DiffuseTexture 利用shader合图 AtlasDiffuseShader NormalMap 利用shader合图 AtlasNormalShader MaterialColor 不处理贴图，只设置颜色 无 TintedTexture 不处理贴图，设置颜色和原始贴图 无 上面提到的3个shader，除了需要一张_MainTex外，还需要一张_ExtraTex，这张_ExtraTex是作为alpha mash来使用的，不同的shader有不同的用法。还有两个颜色参数_Color和_AdditiveColor，对应的是recipe中设置的乘法颜色和加法颜色。 这个_ExtraTex默认是来自于overlay中设置的Alpha Mask的，如果改overlay中没有设置Alpha Mask，那么就用改overlay的第一张贴图的alpha通过。 三个shader对于这张_ExtraTex的使用是不同的，具体如下： AtlasShader 123456half4 frag (v2f i) : COLOR&#123; half4 texcol = tex2D (_MainTex, i.uv) * _Color + _AdditiveColor; half4 maskcol = tex2D (_ExtraTex, i.uv); return texcol * maskcol.a;&#125; _ExtraTex的alpha通道乘以_MainTex的所有通道，得到最终值。 AtlasDiffuseShader 123456half4 frag (v2f i) : COLOR&#123; half4 texcol = tex2D(_MainTex, i.uv); half4 mask = tex2D(_ExtraTex, i.uv); return half4(texcol.xyz, mask.w)*_Color+_AdditiveColor;&#125; _ExtraTex的alpha通道替换_MainTex的alpha通道，得到最终值。 AtlasNormalShader 123456789101112half4 frag(v2f i) : COLOR&#123; half4 n = tex2D(_MainTex, i.uv); half4 extra = tex2D(_ExtraTex, i.uv);#if !defined(UNITY_NO_DXT5nm) //swizzle the alpha and red channel, we will swizzle back in the post process SwizzleShader n.r = n.a;#endif n.a = min(extra.a, _Color.a); return n;&#125; _ExtraTex的alpha和_Color的alpha取小的那个，作为最后的alpha值。因为normal map的特殊性，执行完合图shader后，还会执行一次post process的shader: NormalSwizzleShader 123456789101112131415// This works in conjunction with the AtlasNormalShader that// swizzles the alpha to red channel of the packed normal and blends them.// Then this post effect re-swizzles the normal into the// packed format for use with standard shaders.half4 frag(v2f_img i) : COLOR&#123; half4 r = tex2D(_MainTex, i.uv); //G and A are the important ones.#if defined(UNITY_NO_DXT5nm) return half4(r.r, r.g, r.b, 0);#else return half4(1, r.y, 1, r.x);#endif&#125; 带cloth物理组件的slot的制作指南 首先准备好一个skin好的fbx，这和普通的slot制作是一样的。 把fbx整个放到一个unity场景中，在有SkinMeshRender的GameObject上添加cloth组件。 设置好cloth组件的参数，刷好constrain权重，主要是衣服的上沿要刷成完全constrain的，就是max distance为0，这样衣服才不会掉下来。对于其他部分，根据需要刷对应的max distance，如果不刷，就是没有constrain的，可以完全自由移动。 把设置好的整个GameObject变成一个Prefab。 设置好slot builder，除了Slot Mesh不能设置留空（因为我们制作的Prefab不是mesh类型的）。 然后把整个Prefab拖到Slot Builder的Drag meshes hehe框里面，这样就会自动用这个Prefab生成一个Slot，并且是带有cloth组件的。 新建一个ClothProperties，设置好里面的参数，这些参数和cloth组件的参数基本是相同的，当cloth组件被创建后，应该是用这些参数去设置cloth组件的。 新建一个RendererAssert，设置好Renderer Name（这个名字是会作为cloth组件所在的GameObject的名字的）。在Cloth Properties中设置刚才创建的ClothProperties。 在创建好的Slot中，设置Renderer Asset为刚才创建的RendererAssert。 后面的操作就和普通的slot是一样的了。运行时cloth组件会单独用一个Renderer来渲染的。]]></content>
+      <categories>
+        <category>Unity</category>
+      </categories>
+      <tags>
+        <tag>UMA</tag>
+        <tag>Unity</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Unity的MemoryPool模块]]></title>
     <url>%2F2020%2F01%2F14%2FUnity%E7%9A%84MemoryPool%E6%A8%A1%E5%9D%97%2F</url>
     <content type="text"><![CDATA[原文原文出处 MemoryPool主要是对内存分配的碎片化和频繁分配和释放进行优化。 结构MemoryPool的设计结构如下: 123456789101112131415161718public class MemoryPool&#123; ... private: struct Bubble &#123; char data[1]; //只是一个占位符,其实这个成员变量加不加sizeof(Block)大小都是1个字节 &#125;; typedef dynamic_array&lt;Bubble*&gt; Bubbles; Bubble m_Bubbles; void* m_HeadOfFreeList; ...&#125; 这里解释下里面的结构布局: 这里有个巧妙的设计就是Bubble分配了一块内存，这块内存会被分成几个指定的Block。这些Block在没有分配给用户使用的时候每个Block的首部4字节会存储下一个Block的首部地址，对于第一个Block的首部地址就单独用一个4字节的成员变量保存，就像一个链表一样。这样就不需要另外在用其他变量去保存每个Block的地址。 分配每次用户请求内存的时候，固定给用户返回一个Block，这里有一个限制就是用户不能一次请求大于Block大小的内存。具体如下: 1234567891011121314151617181920Bubble * bubble = (Bubble*)malloc(BubbleSize);//BubbleSize大小在创建MemoryPool的时候固定设置m_Bubbles.push_back(bubble); //所有分配的bubble都会存起来，等待用户清理，然后在循环利用m_HeadOfFreeList = bubble-&gt;data;void* oldHeadOfFreeList = m_HeadOfFreeList;void **newBubble = (void**)m_HeadOfFreeList;//这里是把新分配的Bubble这块内存，相当于分成若干个Block，每个Block的首地址内存存储下一个Block的首地址for (int j=0; j&lt;m_BlocksPerBubble-1; ++j)//m_BlocksPerBubble是每个Bubble有几个Block&#123; //当前地址存储下一个Block的首地址 newBubble[0] = (char*)newBubble + m_BlockSize;//m_BlockSize是每个Block的大小。 //newBubble移动到一下个Block地址 newBubble = (void**)newBubble[0];&#125;newBubble[0] = oldHeadOfFreeList; //保存到之前可用内存的首地址 通过上述操作就可以分配一块新的可用的内存，当用户申请内存的时候直接返回给用户一个Block的地址即可: 123void * allocBlock = m_HeadOfFreeList; //allocBlock返回给用户m_HeadOfFreeList = *((void**)m_HeadOfFreeList); //移动到下一个Block 分配内存给用户的时候会有两个问题。 分配内存给用户的时候必须限制用户最大分配Block大小的内存，否则返回NULL。 因为分配的这个Block是在一个大块的连续的Bubble内存中，如果Block不是Bubble中最后一块内存，那么用户越界的话不会产生错误，但是会把下一个Block的数据给覆盖的问题。 释放1234567//首先判断释放的这块内存是否是m_Bubbles分配的//先把需要释放的这块内存存储下当前可用内存的地址*((void**)mem_Block) = m_HeadOfFreeList; //mem_Block是要释放的内存//再把当前可用内存的地址只想释放的这块内存m_HeadOfFreeList = mem_Block;]]></content>
@@ -20,8 +32,8 @@
         <category>Unity</category>
       </categories>
       <tags>
-        <tag>Unity</tag>
         <tag>UMA</tag>
+        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -32,8 +44,8 @@
         <category>Unity</category>
       </categories>
       <tags>
-        <tag>Unity</tag>
         <tag>UMA</tag>
+        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -44,8 +56,8 @@
         <category>Unity</category>
       </categories>
       <tags>
-        <tag>Unity</tag>
         <tag>UMA</tag>
+        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -56,8 +68,8 @@
         <category>Unity</category>
       </categories>
       <tags>
-        <tag>Unity</tag>
         <tag>UMA</tag>
+        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>
@@ -68,8 +80,8 @@
         <category>Unity</category>
       </categories>
       <tags>
-        <tag>Unity</tag>
         <tag>UMA</tag>
+        <tag>Unity</tag>
       </tags>
   </entry>
   <entry>

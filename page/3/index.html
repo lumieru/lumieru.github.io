@@ -349,6 +349,193 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/21/多人快节奏游戏三之实体插值/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/21/多人快节奏游戏三之实体插值/" class="post-title-link" itemprop="url">多人快节奏游戏三之实体插值</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-21 10:19:11" itemprop="dateCreated datePublished" datetime="2019-05-21T10:19:11+08:00">2019-05-21</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><a href="http://www.gabrielgambetta.com/entity-interpolation.html" target="_blank" rel="noopener">原文出处</a></p>
+<h1 id="Fast-Paced-Multiplayer-Part-III-Entity-Interpolation"><a href="#Fast-Paced-Multiplayer-Part-III-Entity-Interpolation" class="headerlink" title="Fast-Paced Multiplayer (Part III): Entity Interpolation"></a>Fast-Paced Multiplayer (Part III): Entity Interpolation</h1><hr>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>In the <a href="/2019/05/21/多人快节奏游戏一之C-S游戏架构/" title="first article">first article</a> of the series, we introduced the concept of an <em>authoritative server</em> and its usefulness to prevent client cheats. However, using this technique naively can lead to potentially showstopper issues regarding playability and responsiveness. In the <a href="/2019/05/21/多人快节奏游戏二之客户端预测与服务器修正/" title="second article">second article</a>, we proposed <em>client-side prediction</em> as a way to overcome these limitations.</p>
+<p>The net result of these two articles is a set of concepts and techniques that allow a player to control an in-game character in a way that feels exactly like a single-player game, even when connected to an authoritative server through an internet connection with transmission delays.</p>
+<p>In this article, we’ll explore the consequences of having other player-controled characters connected to the same server.</p>
+<h2 id="Server-time-step"><a href="#Server-time-step" class="headerlink" title="Server time step"></a>Server time step</h2><p>In the previous article, the behavior of the server we described was pretty simple – it read client inputs, updated the game state, and sent it back to the client. When more than one client is connected, though, the main server loop is somewhat different.</p>
+<p>In this scenario, several clients may be sending inputs simultaneously, and at a fast pace (as fast as the player can issue commands, be it pressing arrow keys, moving the mouse or clicking the screen). Updating the game world every time inputs are received from each client and then broadcasting the game state would consume too much CPU and bandwidth.</p>
+<p>A better approach is to queue the client inputs as they are received, without any processing. Instead, the game world is updated periodically at low frequency, for example 10 times per second. The delay between every update, 100ms in this case, is called the <em>time step</em>. In every update loop iteration, all the unprocessed client input is applied (possibly in smaller time increments than the time step, to make physics more predictable), and the new game state is broadcast to the clients.</p>
+<p>In summary, the game world updates independent of the presence and amount of client input, at a predictable rate.</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/05/21/多人快节奏游戏三之实体插值/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/21/多人快节奏游戏二之客户端预测与服务器修正/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2139,218 +2326,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/网络物理模拟六之状态同步/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/20/网络物理模拟六之状态同步/" class="post-title-link" itemprop="url">网络物理模拟六之状态同步</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-05-20 15:07:26" itemprop="dateCreated datePublished" datetime="2019-05-20T15:07:26+08:00">2019-05-20</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="自我总结"><a href="#自我总结" class="headerlink" title="自我总结"></a>自我总结</h1><p>状态同步的要点为 :</p>
-<ul>
-<li><strong>input+state</strong> : 既通过网络发送输入信息又会发送状态信息来进行同步</li>
-<li><strong>发送端</strong><ul>
-<li><strong>优先级累加器</strong> : 只发送一些重要的实体状态更新, 而不是所有都发. 如果遇到一个物体的状态更新信息不合适放到这个数据包里面，那么就跳过这个物体并尝试下一个。当你序列化完这个数据包以后，将那些已经在这帧更新过的物体在优先级累加器里面的值重置为0，但是那些没有在这帧更新过的物体在优先级累加器里面的值则保持不变。</li>
-</ul>
-</li>
-<li><strong>接收端</strong><ul>
-<li><strong>抗网络抖动</strong> : 做一个jitter buffer来缓冲数据, 然后以相同时间的间隔均匀取出</li>
-<li><strong>应用状态更新</strong> : 一旦你的数据包从抖动缓冲器里面出来，你该在状态更新直接应用这些信息进行仿真。</li>
-</ul>
-</li>
-<li><strong>对两边都量化(这里的量化指的是&lt;&lt;<a href="/2019/05/20/网络物理模拟五之快照压缩/" title="网络物理模拟五之快照压缩">网络物理模拟五之快照压缩</a>>&gt;说的量化压缩技术)</strong> : 如果只有接收端用了量化的数据, 那接收端模拟的结果很可能与发送端不同, 所以要对两边都量化来避免发送端和接收端模拟的差异</li>
-<li><strong>长时间丢包的平滑处理</strong> : 对于不同的网络断开时间用不同的平滑因子, 来自适应误差</li>
-<li><strong>增量压缩</strong> :<ul>
-<li><strong>相对编码</strong> : 在数据包的包头里面发送最近确认的数据包的序列号（这个数据是从可靠的确认系统里面得到的）然后对每个物体编码相对这个基准帧的偏移量</li>
-<li><strong>绝对编码</strong></li>
-</ul>
-</li>
-</ul>
-<h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><a href="https://gafferongames.com/post/state_synchronization/" target="_blank" rel="noopener">原文出处</a></p>
-<p>原文标题 : <strong>State Synchronization</strong> (<em>Keeping simulations in sync by sending state</em>)</p>
-<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Hi, I’m <a href="https://gafferongames.com/about" target="_blank" rel="noopener">Glenn Fiedler</a> and welcome to <strong><a href="https://gafferongames.com/categories/networked-physics/" target="_blank" rel="noopener">Networked Physics</a></strong>.</p>
-<p>In the <a href="https://gafferongames.com/post/snapshot_compression/" target="_blank" rel="noopener">previous article</a> we discussed techniques for compressing snapshots.</p>
-<p>In this article we round out our discussion of networked physics strategies with <strong>state synchronization</strong>, the third and final strategy in this article series.</p>
-<h2 id="State-Synchronization"><a href="#State-Synchronization" class="headerlink" title="State Synchronization"></a>State Synchronization</h2><p>What is state synchronization? The basic idea is that, somewhat like deterministic lockstep, we run the simulation on both sides but, <em>unlike</em> deterministic lockstep, we don’t just send input, we send both input and state.</p>
-<p>This gives state synchronization interesting properties. Because we send state, we don’t need perfect determinism to stay in sync, and because the simulation runs on both sides, objects continue moving forward between updates.</p>
-<p>This lets us approach state synchronization differently to snapshot interpolation. Instead of sending state updates for every object in each packet, we can now send updates for only a few, and if we’re smart about how we select the objects for each packet, we can save bandwidth by concentrating updates on the most important objects.</p>
-<p>So what’s the catch? State synchronization is an approximate and lossy synchronization strategy. In practice, this means you’ll spend a lot of time tracking down sources of extrapolation divergence and pops. But other than that, it’s a quick and easy strategy to get started with.</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/05/20/网络物理模拟六之状态同步/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
   </nav>
 
 
@@ -2392,7 +2372,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">40</span>
+                    <span class="site-state-item-count">41</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
