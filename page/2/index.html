@@ -349,6 +349,220 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/28/KBEngine源码解读四-转载一/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/06/28/KBEngine源码解读四-转载一/" class="post-title-link" itemprop="url">KBEngine源码解读四--转载一</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-06-28 15:05:39 / 修改时间：16:45:19" itemprop="dateCreated datePublished" datetime="2019-06-28T15:05:39+08:00">2019-06-28</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <p><a href="https://blog.csdn.net/qq98756524aa/article/details/77449772?locationNum=4&amp;fps=1" target="_blank" rel="noopener">原文地址</a></p>
+<p>此笔记是本人在开发及研读的过程中记录下来的，由于没整理，会看得有些吃力，请读者视能力而读，个人理解，如有问题，悉心接受。部分引用KBEngine官网的一些句段，感谢kbe。</p>
+<p>下列符号解释 =：继承 ==：等同 +：与上具有子关系</p>
+<p><strong>CellAppMgr</strong>:管理多个CellApp</p>
+<pre><code>+CellApp:管理多个区域
+
+    + Cell：一个区域
+
+    ==Space：等同Cell
+
+    +此区域上的玩家entity：代表玩家
+
+    +Witness（对象）：监视周围的玩家entity，将发生的事件消息同步给客户端
+
+    +AOI（兴趣范围）：默认500M
+
+    +GhostEntitys（list）：存取此区域边沿外界一定距离内的玩家entity的列表
+
+    +GhostEntity：从邻近的Cell的对应的entity的部分数据的拷贝的实体
+
+    +属性数据：只读，如果某个属性对于客户端是可见的，那么该属性必须是可以存在
+
+    Ghost的，例如：当前的武器、等级、名称
+
+    +范围：默认500M，可配置，大于等于玩家的AOI
+
++负载平衡：CellApp会告诉它们的Cell的边界应该在哪里
+
++新建的玩家Entity加入到正确的Cell上
+
++一个服务器组一个Mgr实例
+</code></pre><p><strong>DBMgr</strong>：管理Entity数据的数据库存储</p>
+<ul>
+<li>+存数据：在BaseApp间轮流调度处理，BaseApp向CellApp要entity的cell部分的数据再定时转给DBMgr存储</li>
+</ul>
+<p><strong>Machine</strong>：监视服务器进程信息，每个服务器机器上有一个machine</p>
+<ul>
+<li><p>+作用：启动/停止服务器进程，通知服务器群组各个进程的存活状态，监视机器的使用状态：cpu/内存/带宽</p>
+</li>
+<li><p>+machine不会tcp连接的</p>
+</li>
+</ul>
+<p><strong>ObjectPool</strong>：对象池，一些对象频繁的被创建，例如：moneystream，bundle，tcppacket等等，这个对象池通过服务端峰值有效的预估提前创建一些对象缓存起来，在用到的时候直接从对象池中提取</p>
+<p><strong>SmartPoolObject</strong>：智能池对象，创建一个智能池对象，与相应的对象池绑定，只要此对象析构时，那么会调用绑定的对象池进行回收</p>
+<p><strong>Components</strong>：组件类，记录当前组件信息</p>
+<p><strong>ServerApp</strong>：App基类，每个app都需继承这个类，基本的C++框架模块 都会存在这个类，其中有继承通道超时操作，继承通道取消注册操作，</p>
+<p><strong>Resmgr</strong>：资源类，存有一切环境信息，例如bin或者资源目录，和一些已打开文件</p>
+<p><strong>ThreadPool</strong>：线程池类</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/06/28/KBEngine源码解读四-转载一/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/28/KBEngine源码解读三/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2592,214 +2806,6 @@ updateParameters();
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/21/多人快节奏游戏四之延迟补偿实现爆头/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/21/多人快节奏游戏四之延迟补偿实现爆头/" class="post-title-link" itemprop="url">多人快节奏游戏四之延迟补偿实现爆头</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-05-21 10:19:22" itemprop="dateCreated datePublished" datetime="2019-05-21T10:19:22+08:00">2019-05-21</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><a href="http://www.gabrielgambetta.com/lag-compensation.html" target="_blank" rel="noopener">原文出处</a></p>
-<h1 id="Fast-Paced-Multiplayer-Part-IV-Lag-Compensation"><a href="#Fast-Paced-Multiplayer-Part-IV-Lag-Compensation" class="headerlink" title="Fast-Paced Multiplayer (Part IV): Lag Compensation"></a>Fast-Paced Multiplayer (Part IV): Lag Compensation</h1><hr>
-<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>The previous three articles explained a client-server game architecture which can be summarized as follows:</p>
-<ul>
-<li>Server gets inputs from all the clients, with timestamps</li>
-</ul>
-<ul>
-<li>Server processes inputs and updates world status</li>
-</ul>
-<ul>
-<li>Server sends regular world snapshots to all clients</li>
-</ul>
-<ul>
-<li>Client sends input and simulates their effects locally</li>
-</ul>
-<ul>
-<li>Client get world updates and<ul>
-<li>Syncs predicted state to authoritative state</li>
-<li>Interpolates known past states for other entities</li>
-</ul>
-</li>
-</ul>
-<p>From a player’s point of view, this has two important consequences:</p>
-<ul>
-<li>Player sees <strong>himself</strong> in the <strong>present</strong></li>
-</ul>
-<ul>
-<li>Player sees <strong>other entities</strong> in the <strong>past</strong></li>
-</ul>
-<p>This situation is generally fine, but it’s quite problematic for very time- and space-sensitive events; for example, shooting your enemy in the head!</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/05/21/多人快节奏游戏四之延迟补偿实现爆头/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2846,7 +2852,7 @@ updateParameters();
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">41</span>
+                    <span class="site-state-item-count">42</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2873,7 +2879,9 @@ updateParameters();
                     
                       
                     
-                    <span class="site-state-item-count">5</span>
+                      
+                    
+                    <span class="site-state-item-count">6</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2916,7 +2924,9 @@ updateParameters();
                     
                       
                     
-                    <span class="site-state-item-count">13</span>
+                      
+                    
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

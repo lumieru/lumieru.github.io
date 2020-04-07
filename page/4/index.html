@@ -349,6 +349,202 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/构建游戏网络协议一之数据包的读取和写入/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/20/构建游戏网络协议一之数据包的读取和写入/" class="post-title-link" itemprop="url">构建游戏网络协议一之数据包的读取和写入</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-20 15:22:58" itemprop="dateCreated datePublished" datetime="2019-05-20T15:22:58+08:00">2019-05-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="自我总结"><a href="#自我总结" class="headerlink" title="自我总结"></a>自我总结</h1><p>这篇文章只是介绍, 之后的文章才是正题. 此篇文章大体介绍了 :</p>
+<ul>
+<li>文本格式传输的低效率问题， 为了可读性而产生了太多冗余无用数据</li>
+<li>为什么不用目前已经有了的库比如Protocol Buffers：因为我们不需要版本信息，也不需要什么跨语言的支持。所以让我们直接忽略掉这些功能并用我们自己的不带属性的二进制流进行代替，在这个过程中我们可以获得更多的控制性和灵活性</li>
+<li>要注意大小端的问题</li>
+<li>实现一个位打包器， 工作在32位或者64位的级别， 而不是是工作在字节这个级别。因为现代机器对这个长度进行了专门的优化而不应该像1985年那样在字节的级别对缓冲区进行处理。</li>
+<li>要注意防止恶意数据包的问题 ：<ul>
+<li>我们需要实现一个方法来判断整数值是否超出预期范围，如果超出了就要中止网络包的读取和解析，因为会有一些不怀好意的人给我们发送恶意网络包希望我们的程序和内存崩溃掉。网络包的读取和解析的中止必须是自动化的，而且不能使用异常处理，因为异常处理太慢了会拖累我们的程序。</li>
+<li>如果独立的读取和写入函数是手动编解码的，那么维护它们真的是一个噩梦。我们希望能够为包一次性的编写好序列化代码并且没有任何运行时的性能消耗（主要是额外的分支、虚化等等）。</li>
+</ul>
+</li>
+<li>我们为了不想自己手动检查各种可能会被攻击的地方， 需要实现检查自动化， 在下一篇文章 <a href="/2019/05/20/构建游戏网络协议二之序列化策略/" title="构建游戏网络协议二之序列化策略">构建游戏网络协议二之序列化策略</a> 里将会说。<br><strong>. . .</strong></li>
+</ul>
+<h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><a href="https://gafferongames.com/post/reading_and_writing_packets/" target="_blank" rel="noopener">原文出处</a></p>
+<p>原文标题 : <strong>Reading and Writing Packets</strong> (<em>Best practices for reading and writing packets</em>)</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Hi, I’m <a href="https://gafferongames.com/about" target="_blank" rel="noopener">Glenn Fiedler</a> and welcome to <strong><a href="https://gafferongames.com/categories/building-a-game-network-protocol/" target="_blank" rel="noopener">Building a Game Network Protocol</a></strong>.</p>
+<p>In this article we’re going to explore how AAA multiplayer games like first person shooters read and write packets. We’ll start with text based formats then move into binary hand-coded binary formats and bitpacking.</p>
+<p>At the end of this article and the next, you should understand exactly how to implement your own packet read and write the same way the pros do it.</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/05/20/构建游戏网络协议一之数据包的读取和写入/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/网络物理模拟六之状态同步/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2094,199 +2290,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/19/游戏网络开发二之数据的发送与接收/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/19/游戏网络开发二之数据的发送与接收/" class="post-title-link" itemprop="url">游戏网络开发二之数据的发送与接收</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-05-19 11:28:18" itemprop="dateCreated datePublished" datetime="2019-05-19T11:28:18+08:00">2019-05-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><a href="https://gafferongames.com/post/sending_and_receiving_packets/" target="_blank" rel="noopener">原文出处</a></p>
-<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Hi, I’m <a href="https://gafferongames.com/about" target="_blank" rel="noopener">Glenn Fiedler</a> and welcome to <a href="https://gafferongames.com/categories/game-networking/" target="_blank" rel="noopener"><strong>Networking for Game Programmers</strong></a>.</p>
-<p>In the <a href="https://gafferongames.com/post/udp_vs_tcp/" target="_blank" rel="noopener">previous article</a> we discussed options for sending data between computers and decided to use UDP instead of TCP for time critical data.</p>
-<p>In this article I am going to show you how to send and receive UDP packets.</p>
-<h2 id="BSD-sockets"><a href="#BSD-sockets" class="headerlink" title="BSD sockets"></a>BSD sockets</h2><p>For most modern platforms you have some sort of basic socket layer available based on BSD sockets.</p>
-<p>BSD sockets are manipulated using simple functions like “socket”, “bind”, “sendto” and “recvfrom”. You can of course work directly with these functions if you wish, but it becomes difficult to keep your code platform independent because each platform is slightly different.</p>
-<p>So although I will first show you BSD socket example code to demonstrate basic socket usage, we won’t be using BSD sockets directly for long. Once we’ve covered all basic socket functionality we’ll abstract everything away into a set of classes, making it easy to you to write platform independent socket code.</p>
-<h2 id="Platform-specifics"><a href="#Platform-specifics" class="headerlink" title="Platform specifics"></a>Platform specifics</h2><p>First let’s setup a define so we can detect what our current platform is and handle the slight differences in sockets from one platform to another:</p>
- <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// platform detection  </span></span><br><span class="line">  </span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PLATFORM_WINDOWS  1  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PLATFORM_MAC      2  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PLATFORM_UNIX     3  </span></span><br><span class="line">  </span><br><span class="line"><span class="meta">#<span class="meta-keyword">if</span> defined(_WIN32)  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PLATFORM PLATFORM_WINDOWS  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">elif</span> defined(APPLE)  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PLATFORM PLATFORM_MAC  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">else</span>  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PLATFORM PLATFORM_UNIX  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
-<p>Now let’s include the appropriate headers for sockets. Since the header files are platform specific, we’ll use the platform #define to include different sets of files depending on the platform:</p>
- <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">if</span> PLATFORM == PLATFORM_WINDOWS  </span></span><br><span class="line">  </span><br><span class="line">    <span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;winsock2.h&gt;  </span></span></span><br><span class="line">  </span><br><span class="line"><span class="meta">#<span class="meta-keyword">elif</span> PLATFORM == PLATFORM_MAC ||  </span></span><br><span class="line">      PLATFORM == PLATFORM_UNIX  </span><br><span class="line">  </span><br><span class="line">    #include &lt;sys/socket.h&gt;  </span><br><span class="line">    #include &lt;netinet/in.h&gt;  </span><br><span class="line">    #include &lt;fcntl.h&gt;  </span><br><span class="line">  </span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
-<p>Sockets are built in to the standard system libraries on unix-based platforms so we don’t have to link to any additonal libraries. However, on Windows we need to link to the winsock library to get socket functionality.</p>
-<p>Here is a simple trick to do this without having to change your project or makefile:</p>
- <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">if</span> PLATFORM == PLATFORM_WINDOWS  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">pragma</span> comment( lib, <span class="meta-string">"wsock32.lib"</span> )  </span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
-<p>I like this trick because I’m super lazy. You can always link from your project or makefile if you wish.</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/05/19/游戏网络开发二之数据的发送与接收/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2333,7 +2336,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">41</span>
+                    <span class="site-state-item-count">42</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2360,7 +2363,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">5</span>
+                      
+                    
+                    <span class="site-state-item-count">6</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2403,7 +2408,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">13</span>
+                      
+                    
+                    <span class="site-state-item-count">14</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
