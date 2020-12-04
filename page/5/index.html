@@ -349,6 +349,202 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/19/游戏网络开发三之基于UDP的虚拟连接/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/19/游戏网络开发三之基于UDP的虚拟连接/" class="post-title-link" itemprop="url">游戏网络开发三之基于UDP的虚拟连接</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-19 11:36:58" itemprop="dateCreated datePublished" datetime="2019-05-19T11:36:58+08:00">2019-05-19</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><a href="https://gafferongames.com/post/virtual_connection_over_udp/" target="_blank" rel="noopener">原文出处</a></p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Hi, I’m <a href="https://gafferongames.com/about" target="_blank" rel="noopener">Glenn Fiedler</a> and welcome to <a href="https://gafferongames.com/categories/game-networking/" target="_blank" rel="noopener"><strong>Networking for Game Programmers</strong></a>.</p>
+<p>In the <a href="https://gafferongames.com/post/sending_and_receiving_packets" target="_blank" rel="noopener">previous article</a> we sent and received packets over UDP. Since UDP is connectionless, one UDP socket can be used to exchange packets with any number of different computers. In multiplayer games however, we usually only want to exchange packets between a small set of connected computers.</p>
+<p>As the first step towards a general connection system, we’ll start with the simplest case possible: creating a virtual connection between two computers on top of UDP.</p>
+<p>But first, we’re going to dig in a bit deeper about how the Internet really works!</p>
+<h2 id="The-Internet-NOT-a-series-of-tubes"><a href="#The-Internet-NOT-a-series-of-tubes" class="headerlink" title="The Internet NOT a series of tubes"></a>The Internet NOT a series of tubes</h2><p>In 2006, Senator Ted Stevens made internet history with his <a href="https://en.wikipedia.org/wiki/Series_of_tubes" target="_blank" rel="noopener">famous speech</a> on the net neutrality act:</p>
+<p>“The internet is not something that you just dump something on. It’s not a big truck. It’s a series of tubes”</p>
+<p>When I first started using the Internet, I was just like Ted. Sitting in the computer lab in University of Sydney in 1995, I was “surfing the web” with this new thing called Netscape Navigator, and I had absolutely no idea what was going on.</p>
+<p>You see, I thought each time you connected to a website there was some actual connection going on, like a telephone line. I wondered, how much does it cost each time I connect to a new website? 30 cents? A dollar? Was somebody from the university going to tap me on the shoulder and ask me to pay the long distance charges? :)</p>
+<p>Of course, this all seems silly now.</p>
+<p>There is no switchboard somewhere that directly connects you via a physical phone line to the other computer you want to talk to, let alone a series of pneumatic tubes like Sen. Stevens would have you believe.</p>
+<h2 id="No-Direct-Connections"><a href="#No-Direct-Connections" class="headerlink" title="No Direct Connections"></a>No Direct Connections</h2><p>Instead your data is sent over Internet Protocol (IP) via packets that hop from computer to computer.</p>
+<p>A packet may pass through several computers before it reaches its destination. You cannot know the exact set of computers in advance, as it changes dynamically depending on how the network decides to route packets. You could even send two packets A and B to the same address, and they may take different routes.</p>
+<p>On unix-like systems can inspect the route that packets take by calling “traceroute” and passing in a destination hostname or IP address.</p>
+<p>On windows, replace “traceroute” with “tracert” to get it to work.</p>
+<p>Try it with a few websites like this:</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">traceroute slashdot.org  </span><br><span class="line">traceroute amazon.com  </span><br><span class="line">traceroute google.com  </span><br><span class="line">traceroute bbc.co.uk  </span><br><span class="line">traceroute news.com.au</span><br></pre></td></tr></table></figure>
+<p>Take a look and you should be able to convince yourself pretty quickly that there is no direct connection.</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/05/19/游戏网络开发三之基于UDP的虚拟连接/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/19/游戏网络开发二之数据的发送与接收/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -774,7 +970,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">42</span>
+                    <span class="site-state-item-count">43</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -803,7 +999,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">6</span>
+                      
+                    
+                    <span class="site-state-item-count">7</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -848,7 +1046,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">14</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

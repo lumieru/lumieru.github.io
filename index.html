@@ -349,6 +349,189 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2020/12/04/AC自动机：如何实现敏感词过滤/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2020/12/04/AC自动机：如何实现敏感词过滤/" class="post-title-link" itemprop="url">AC自动机：如何实现敏感词过滤?</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2020-12-04 16:11:36 / 修改时间：16:42:01" itemprop="dateCreated datePublished" datetime="2020-12-04T16:11:36+08:00">2020-12-04</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/算法/" itemprop="url" rel="index"><span itemprop="name">算法</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="AC自动机：如何实现敏感词过滤"><a href="#AC自动机：如何实现敏感词过滤" class="headerlink" title="AC自动机：如何实现敏感词过滤"></a>AC自动机：如何实现敏感词过滤</h1><p><a href="https://www.wangt.cc/2020/10/ac%E8%87%AA%E5%8A%A8%E6%9C%BA%EF%BC%9A%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E6%95%8F%E6%84%9F%E8%AF%8D%E8%BF%87%E6%BB%A4/" target="_blank" rel="noopener">原文链接</a></p>
+<h3 id="文章目录"><a href="#文章目录" class="headerlink" title="文章目录"></a>文章目录</h3><ul>
+<li>敏感词过滤</li>
+<li>AC自动机</li>
+<li>失效指针</li>
+<li>匹配</li>
+<li>完整代码</li>
+<li>性能计算</li>
+</ul>
+<hr>
+<h1 id="敏感词过滤"><a href="#敏感词过滤" class="headerlink" title="敏感词过滤"></a>敏感词过滤</h1><p>在一些社交平台如微博、微信、网络游戏等地方，难免会有一些不法分子散播色情、反动等内容，亦或是网友们的互相谩骂、骚扰等。为了净化网络环境，各大社交平台中都会有敏感词过滤的机制，将那些不好的词汇屏蔽或者替换掉</p>
+<p>那你是否有想过，这个功能是如何实现的呢？</p>
+<p>在我之前的博客中，介绍了四种单模式字符串匹配算法，分别是BF、RK、BM、KMP，以及一种多模式字符串匹配算法，Trie树。</p>
+<p>对于单模式字符串匹配算法来说，如果我们要进行匹配，就需要针对每一个查询词来对我们输入的主串进行匹配，而随着词库的增大，匹配的次数也会变得越来越大，很显然，这种做法是行不通的。</p>
+<p>那么我们再看看多模式字符串匹配算法，Trie树。对于Trie树来说，我们可以一次性将所有的敏感词都加入其中，然后再遍历主串，在树中查找匹配的字符串，如果找不到，则使Trie树重新回到根节点，再从主串的下一个位置开始找起。</p>
+<p>Trie树的这种方法，就有点像BF中的暴力匹配，因为它没有一个合理的减少比较的机制，每当我们不匹配就需要从头开始查，大大的降低了执行的效率，对于一个高流量的社交平台来说这是不能容许的，毕竟没有人希望自己输入了一句话后要隔上一大段时间才能发出去。那么我们是否可以<strong>效仿KMP算法，添加一个类似next数组的机制来减少不必要的匹配</strong>呢？这也就是<strong>AC自动机</strong>的由来</p>
+<hr>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2020/12/04/AC自动机：如何实现敏感词过滤/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2020/04/07/AWS-EC2实例的带宽数据/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2067,182 +2250,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/06/28/KBEngine源码解读五-转载二/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/06/28/KBEngine源码解读五-转载二/" class="post-title-link" itemprop="url">KBEngine源码解读五--转载二</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-06-28 15:05:55 / 修改时间：21:19:26" itemprop="dateCreated datePublished" datetime="2019-06-28T15:05:55+08:00">2019-06-28</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameServer/" itemprop="url" rel="index"><span itemprop="name">GameServer</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p><a href="https://blog.csdn.net/qq98756524aa/article/details/78782156" target="_blank" rel="noopener">原文地址</a></p>
-<p>此笔记是本人在开发及研读的过程中记录下来的，由于没整理，会看得有些吃力，请读者视能力而读，个人理解，如有问题，悉心接受。</p>
-<p>部分引用KBEngine官网的一些句段，感谢kbe。</p>
-<p>每个cell在被创建时当被观察者观察到时（也就是进入到别人的AOI里）那么会被调用kbe底层回调python层onWitnessed方法，</p>
-<p>当然只在增加观察者时第一次被观察到或者删除观察者时观察者个数为0时才回调，通过参数1或者0进行区别，看以下代码</p>
-<p><img src="http://blog.sensedevil.com/image/KBE2_1.png" alt="KBE2_1.png"><br><img src="http://blog.sensedevil.com/image/KBE2_2.png" alt="KBE2_2.png"></p>
-<p>controlledBy:kbe底层提供了可以把一个非客户端持有的cell上的entity给客户端控制，由客户端来进行可以控制的改变权限是改变方向和位置，</p>
-<p>但是这个entity必须是在控制者的entity（demo里的avatar的entity）的Aoi范围内，而且这个控制者是必须被客户端控制的一个entity，</p>
-<p>具有aoi也就是还必须是具有cell的，操作如下：</p>
-<p>在cell上self.controlledBy = base（操作者的base）</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/06/28/KBEngine源码解读五-转载二/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2289,7 +2296,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">42</span>
+                    <span class="site-state-item-count">43</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2318,7 +2325,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">6</span>
+                      
+                    
+                    <span class="site-state-item-count">7</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2363,7 +2372,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">14</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>

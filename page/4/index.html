@@ -349,6 +349,204 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/构建游戏网络协议二之序列化策略/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2019/05/20/构建游戏网络协议二之序列化策略/" class="post-title-link" itemprop="url">构建游戏网络协议二之序列化策略</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-05-20 15:23:07" itemprop="dateCreated datePublished" datetime="2019-05-20T15:23:07+08:00">2019-05-20</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="自我总结本篇概要"><a href="#自我总结本篇概要" class="headerlink" title="自我总结本篇概要"></a>自我总结本篇概要</h1><ul>
+<li>读取数据的时候要特别小心， 因为可能会有攻击者发送过来的恶意的数据包以及错误的包， 在写入数据的时候你可能会轻松很多，因为如果有任何事情出错了，那几乎肯定是你自己导致的错误</li>
+<li><p><strong>统一的数据包序列化功能</strong> ：诀窍在于让流类型的序列化函数模板化。在我的系统中有两个流类型：ReadStream类和WriteStream类。每个类都有相同的一套方法，但实际上它们没有任何关系。一个类负责从比特流读取值到变量中，另外一个类负责把变量的值写到流中。<br>在模板里类似这样写, 通过 Stream::IsWriting 和 Stream::IsReading 模板会自动区分,然后帮你生产你想要的代码, 简洁漂亮</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">WriteStream</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">	<span class="keyword">enum</span> &#123; IsWriting = <span class="number">1</span> &#125;;</span><br><span class="line">	<span class="keyword">enum</span> &#123; IsReading = <span class="number">0</span> &#125;;</span><br><span class="line">	<span class="comment">// ...</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ReadStream</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line"></span><br><span class="line">	<span class="keyword">enum</span> &#123; IsWriting = <span class="number">0</span> &#125;;</span><br><span class="line">	<span class="keyword">enum</span> &#123; IsReading = <span class="number">1</span> &#125;;</span><br><span class="line">	<span class="comment">// ..</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">template</span> &lt;<span class="keyword">typename</span> Stream&gt;</span><br><span class="line"><span class="function"><span class="keyword">bool</span> <span class="title">serialize</span><span class="params">( Stream &amp; stream, <span class="keyword">float</span> &amp; value )</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">   <span class="keyword">union</span> FloatInt</span><br><span class="line">   &#123;</span><br><span class="line">	   <span class="keyword">float</span> float_value;</span><br><span class="line">	   <span class="keyword">uint32_t</span> int_value;</span><br><span class="line">   &#125;;</span><br><span class="line"> </span><br><span class="line">   FloatInt tmp;</span><br><span class="line">   <span class="keyword">if</span> ( Stream::IsWriting )</span><br><span class="line">	   tmp.float_value = value;</span><br><span class="line"> </span><br><span class="line">   <span class="keyword">bool</span> result = stream.SerializeBits( tmp.int_value, <span class="number">32</span> );</span><br><span class="line"> </span><br><span class="line">   <span class="keyword">if</span> ( Stream::IsReading )</span><br><span class="line">	   value = tmp.float_value;</span><br><span class="line"> </span><br><span class="line">   <span class="keyword">return</span> result;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>边界检查和终止读取</strong> ： 把允许的大小范围也传给序列化函数而不仅仅是所需的比特数量。</p>
+</li>
+<li><p><strong>序列化浮点数和向量</strong> ： 计算机根本不知道内存中的这个32位的值到底是一个整数还是一个浮点数还是一个字符串的部分。它知道的就是这仅仅是一个32位的值。代码如下(可以通过一个联合体来访问看上去是整数的浮点数).<br>有些时候，你并不想把一个完整精度的浮点数进行传递。那么该如何压缩这个浮点值？第一步是将它的值限制在某个确定的范围内然后用一个整数表示方式来将它量化。<br>举个例子来说，如果你知道一个浮点类型的值是在区间[-10,+10]，对于这个值来说可以接受的精确度是0.01，那么你可以把这个浮点数乘以100.0让它的值在区间[-1000,+1000]并在网络上将其作为一个整数进行序列化。而在接收的那一端，仅仅需要将它除以100.0来得到最初的浮点值.</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">union</span> FloatInt</span><br><span class="line">&#123;</span><br><span class="line">   <span class="keyword">float</span> float_value;</span><br><span class="line">   <span class="keyword">uint32_t</span> int_value;</span><br><span class="line">&#125;;</span><br><span class="line"> </span><br><span class="line">FloatInt tmp;</span><br><span class="line">tmp.float_value= <span class="number">10.0f</span>;</span><br><span class="line"><span class="built_in">printf</span>(“<span class="keyword">float</span> value as an integer: %x\n”, tmp.int_value );</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>序列化字符串和数组</strong> : 为什么要费那么大精力把一个字节数组按比特打包到你的比特流里?为什么不在序列化写入之前进行按字节进行对齐？Why not align to byte so you can <strong>memcpy</strong> the array of bytes directly into the packet?<br>如何将比特流按字节对齐？只需要在流的当前位置做些计算就可以了，找出还差写入多少个比特就能让当前比特流的比特数量被8整除，然后按照这个数字插入填充比特（比如当前比特流的比特数量是323，那么323+5才能被8整除，所以需要插入5个填充比特）。对于填充比特来说，填充的比特值都是0，这样当你序列化读取的时候你可以进行检测，如果检测的结果是正确的，那么就确实是在读取填充的部分，并且填充的部分确实是0。一直读取到下一个完整字节的比特起始位置（可以被8整除的位置）。如果检测的结果是在应该填充的地方发现了非0的比特值，那么就中止序列化读取并丢弃这个数据包。</p>
+</li>
+<li><strong>序列化数组的子集</strong> : 当实现一个游戏网络协议的时候，或早或晚总会需要序列化一个对象数组然后在网络上传递。比如说服务器也许需要把所有的物体发送给客户端，或者有时候需要发送一组事件或者消息。如果你要发送所有的物体到客户端，这是相当简单直观的，但是如果你只是想发送一个数组的一个子集怎么办？<br>最先想到也是最容易的办法是遍历数组的所有物体然后序列化一个bool数组，这个bool数组标记的是对应的物体是否通过网络发送。如果bool值为1那么后面会跟着物体的数据，否则就会被忽略然后下一个物体的bool值取决于流的下一个值。<br>如果有大量的物体需要发送，举个例子来说，整个场景中有4000个物体，有一半的物体也就是2000个需要通过网络进行发送。每个物体需要一个序号，那么就需要2000个序号，每个序号需要12比特。。。。这就是说数据包里面24000比特或者说接近30000比特（几乎是30000，不是严格是，译注：原文如此）的数据被序号浪费掉了.<br>可以把序号的编码方式修改下来节省数据，序号不再是全局序号，而是相对上一个物体的相对序号。</li>
+<li><strong>如何应对恶意数据包和错误包</strong> : 如果某些人发送一些包含随机信息的恶意数据包给你的服务器。你会不会在解析的时候把服务器弄崩溃掉？<br>有三种技术应对 :<ul>
+<li>协议ID : 在你的数据包里面包含协议ID。一般典型的做法是，头4个字节你可以设定一些比较罕见而且独特的值，你可以通过这３２比特的数据判断出来根本就不是你的应用程序的包，然后就可以直接丢弃了。</li>
+<li>CRC32 : 对你的数据包整体做一个CRC32的校验，并把这个校验码放到数据包的包头。可以不发送这个协议ID，但是发送方和接收方提前确认过这个协议ID是什么，并在计算数据包CRC32值的时候装作这个数据包带上了这个协议ID的前缀来参与计算。这样如果发送方使用的协议ID与接收方不一致的时候，CRC32的校验就会失败，这将为每个数据包节省4个字节.</li>
+<li>序列化检测 : 是在包的中间，在一段复杂的序列化写入之前或者之后写上一个已知的32比特整数，并在另外一端序列化读取的时候用相同的值进行检测判断。如果序列化检查值是不正确的，那么就中止序列化读取并丢弃这个数据包。<br><strong>. . .</strong></li>
+</ul>
+</li>
+</ul>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2019/05/20/构建游戏网络协议二之序列化策略/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/20/构建游戏网络协议一之数据包的读取和写入/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2094,202 +2292,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/05/19/游戏网络开发三之基于UDP的虚拟连接/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/05/19/游戏网络开发三之基于UDP的虚拟连接/" class="post-title-link" itemprop="url">游戏网络开发三之基于UDP的虚拟连接</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-05-19 11:36:58" itemprop="dateCreated datePublished" datetime="2019-05-19T11:36:58+08:00">2019-05-19</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-06-22 17:02:57" itemprop="dateModified" datetime="2019-06-22T17:02:57+08:00">2019-06-22</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Multiplayer/" itemprop="url" rel="index"><span itemprop="name">Multiplayer</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="原文"><a href="#原文" class="headerlink" title="原文"></a>原文</h1><p><a href="https://gafferongames.com/post/virtual_connection_over_udp/" target="_blank" rel="noopener">原文出处</a></p>
-<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>Hi, I’m <a href="https://gafferongames.com/about" target="_blank" rel="noopener">Glenn Fiedler</a> and welcome to <a href="https://gafferongames.com/categories/game-networking/" target="_blank" rel="noopener"><strong>Networking for Game Programmers</strong></a>.</p>
-<p>In the <a href="https://gafferongames.com/post/sending_and_receiving_packets" target="_blank" rel="noopener">previous article</a> we sent and received packets over UDP. Since UDP is connectionless, one UDP socket can be used to exchange packets with any number of different computers. In multiplayer games however, we usually only want to exchange packets between a small set of connected computers.</p>
-<p>As the first step towards a general connection system, we’ll start with the simplest case possible: creating a virtual connection between two computers on top of UDP.</p>
-<p>But first, we’re going to dig in a bit deeper about how the Internet really works!</p>
-<h2 id="The-Internet-NOT-a-series-of-tubes"><a href="#The-Internet-NOT-a-series-of-tubes" class="headerlink" title="The Internet NOT a series of tubes"></a>The Internet NOT a series of tubes</h2><p>In 2006, Senator Ted Stevens made internet history with his <a href="https://en.wikipedia.org/wiki/Series_of_tubes" target="_blank" rel="noopener">famous speech</a> on the net neutrality act:</p>
-<p>“The internet is not something that you just dump something on. It’s not a big truck. It’s a series of tubes”</p>
-<p>When I first started using the Internet, I was just like Ted. Sitting in the computer lab in University of Sydney in 1995, I was “surfing the web” with this new thing called Netscape Navigator, and I had absolutely no idea what was going on.</p>
-<p>You see, I thought each time you connected to a website there was some actual connection going on, like a telephone line. I wondered, how much does it cost each time I connect to a new website? 30 cents? A dollar? Was somebody from the university going to tap me on the shoulder and ask me to pay the long distance charges? :)</p>
-<p>Of course, this all seems silly now.</p>
-<p>There is no switchboard somewhere that directly connects you via a physical phone line to the other computer you want to talk to, let alone a series of pneumatic tubes like Sen. Stevens would have you believe.</p>
-<h2 id="No-Direct-Connections"><a href="#No-Direct-Connections" class="headerlink" title="No Direct Connections"></a>No Direct Connections</h2><p>Instead your data is sent over Internet Protocol (IP) via packets that hop from computer to computer.</p>
-<p>A packet may pass through several computers before it reaches its destination. You cannot know the exact set of computers in advance, as it changes dynamically depending on how the network decides to route packets. You could even send two packets A and B to the same address, and they may take different routes.</p>
-<p>On unix-like systems can inspect the route that packets take by calling “traceroute” and passing in a destination hostname or IP address.</p>
-<p>On windows, replace “traceroute” with “tracert” to get it to work.</p>
-<p>Try it with a few websites like this:</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">traceroute slashdot.org  </span><br><span class="line">traceroute amazon.com  </span><br><span class="line">traceroute google.com  </span><br><span class="line">traceroute bbc.co.uk  </span><br><span class="line">traceroute news.com.au</span><br></pre></td></tr></table></figure>
-<p>Take a look and you should be able to convince yourself pretty quickly that there is no direct connection.</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/05/19/游戏网络开发三之基于UDP的虚拟连接/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2336,7 +2338,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">42</span>
+                    <span class="site-state-item-count">43</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2365,7 +2367,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">6</span>
+                      
+                    
+                    <span class="site-state-item-count">7</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2410,7 +2414,11 @@
                     
                       
                     
-                    <span class="site-state-item-count">14</span>
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
