@@ -1,7 +1,7 @@
 ---
 title: A better method to recalculate normals in unity
 date: 2022-04-28 10:53:22
-tags: normal, Unity
+tags: [normal, Unity]
 categories: Graphics
 ---
 # A BETTER METHOD TO RECALCULATE NORMALS IN UNITY
