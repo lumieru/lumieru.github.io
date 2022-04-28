@@ -24,7 +24,7 @@ The assumption is made that the reader is familiar with [surface normal vectors
 
 Geometry may have 'hard edges' (sometimes called 'sharp edges'), in which case multiple vertex normals may lie at the same vertex position. This is covered here for completeness sake only; the proposed enhancements do not have any effect on the presence or appearance of hard edges.
 
-The included code uses per-polygon smoothing-groups (most popular in 3D content authoring software) to achieve hard edges, though this can be substituted by any (algorithmic) criteria (e.g. angle between surface normals greater than _x_ degrees).
+The included code uses per-polygon smoothing-groups (most popular in 3D content authoring software) to achieve hard edges, though this can be substituted by any (algorithmic) criteria (e.g. angle between surface normals greater than *x* degrees).
 
 Hard edges can also be created by duplicating vertices (for optimal rendering on modern graphics hardware), but for simplicity we'll assume there are no duplicate vertices present in the model.
 
@@ -78,7 +78,7 @@ for each face A in mesh
 }
 ```
 
-In English: vertex _v_ will have a normal _n_ which is the average of the combined facet normals of all connected polygons. In most situations this will look fine. But consider the situation below:
+In English: vertex *v* will have a normal *n* which is the average of the combined facet normals of all connected polygons. In most situations this will look fine. But consider the situation below:
 
 ![vertnormals1](http://blog.sensedevil.com/image/vertnormals1.png)
 
@@ -86,7 +86,7 @@ In this case the triangles that make up the thin beveled edges of the box will '
 
 This is then made worse because two corners of those large sides contribute 2x the facet normal (2 triangles touch the vertex), while the other two corners contribute only 1x (one triangle touches the vertex). This results into a discontinuity (the diagonal artifact in the above illustration) when shaded (problem #2).
 
-A poor solution would be to simply align the normals to the axii of the faces when such geometry is generated (difficult to preserve) and/or to have an artist correct it by hand (labor intensive). However, we are interested in a generic solution that works for arbitrary geometry constructed from triangles (known as '_triangle soup_') and _n_\-sided polygons alike, requiring no artist intervention.
+A poor solution would be to simply align the normals to the axii of the faces when such geometry is generated (difficult to preserve) and/or to have an artist correct it by hand (labor intensive). However, we are interested in a generic solution that works for arbitrary geometry constructed from triangles (known as '_triangle soup_') and *n*\-sided polygons alike, requiring no artist intervention.
 
 * * *
 
@@ -138,12 +138,12 @@ While the above technique does fix the most visible problems, there's another is
 
 ![vertnormals3](http://blog.sensedevil.com/image/vertnormals3.png)
 
-It may be hard to spot, but if you look closely you will notice a subtle shading discontinuity between vertex _A_ and vertex _D_. The three faces that influence vertex _A_, are faces _t_, _u_ and _v_. Although both faces _U_ and _V_ belong to the same polygon (_UV_), the facet normal of that polygon contributes twice. This causes the averaged vertex normal _A_ to point slightly to our right.  
-At vertex _C_ the opposite happens, there _st_ pulls the normal to our left. The result being that the two vertex normals diverge when they should be parallel.
+It may be hard to spot, but if you look closely you will notice a subtle shading discontinuity between vertex *A* and vertex *D*. The three faces that influence vertex *A*, are faces *t*, *u* and *v*. Although both faces *U* and *V* belong to the same polygon (*UV*), the facet normal of that polygon contributes twice. This causes the averaged vertex normal *A* to point slightly to our right.  
+At vertex *C* the opposite happens, there *st* pulls the normal to our left. The result being that the two vertex normals diverge when they should be parallel.
 
 We could potentially determine which faces lie in the same plane and skip accumulating coinciding facet normals, but this works only in a small number of situations.
 
-A robust solution is to calculate the angle of the corners of the polygons, and use that as additional weight (just like surface area) at that corners vertex. In the above figure, at vertex _A_, the combined angles of the two corners of faces _u_ and _v_ will equal the corner angle of face _t_.
+A robust solution is to calculate the angle of the corners of the polygons, and use that as additional weight (just like surface area) at that corners vertex. In the above figure, at vertex *A*, the combined angles of the two corners of faces *u* and *v* will equal the corner angle of face *t*.
 
 In pseudo code, that becomes:
 
@@ -187,7 +187,7 @@ for each face A in mesh
 }
 ```
 
-Here, _angle_ is the angle in radians (or degrees\*) between the two vectors of the two line segments that touch each of the three vertices in a face.
+Here, *angle* is the angle in radians (or degrees\*) between the two vectors of the two line segments that touch each of the three vertices in a face.
 
 \* Because we normalize the end result, the angle may be computed/stored as either radians or degrees. Only the ratio between neighboring triangle features (surface area, corner angle) contributes as weight, so the choice of angular units does not matter.
 
