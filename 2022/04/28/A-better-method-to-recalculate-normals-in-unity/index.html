@@ -1,0 +1,1307 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="A BETTER METHOD TO RECALCULATE NORMALS IN UNITY原文链接   A visible seam showing after recalculating normals in runtime. You might have noticed that, for some meshes, calling Unity’s built-in function to">
+<meta name="keywords" content="normal, Unity">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A better method to recalculate normals in unity">
+<meta property="og:url" content="https://lumieru.github.io/2022/04/28/A-better-method-to-recalculate-normals-in-unity/index.html">
+<meta property="og:site_name" content="Lumieru的知识库">
+<meta property="og:description" content="A BETTER METHOD TO RECALCULATE NORMALS IN UNITY原文链接   A visible seam showing after recalculating normals in runtime. You might have noticed that, for some meshes, calling Unity’s built-in function to">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://blog.sensedevil.com/image/normal1.webp">
+<meta property="og:image" content="http://blog.sensedevil.com/image/normal2.webp">
+<meta property="og:image" content="http://blog.sensedevil.com/image/normal3.webp">
+<meta property="og:updated_time" content="2022-04-28T03:15:05.016Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="A better method to recalculate normals in unity">
+<meta name="twitter:description" content="A BETTER METHOD TO RECALCULATE NORMALS IN UNITY原文链接   A visible seam showing after recalculating normals in runtime. You might have noticed that, for some meshes, calling Unity’s built-in function to">
+<meta name="twitter:image" content="http://blog.sensedevil.com/image/normal1.webp">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://lumieru.github.io/2022/04/28/A-better-method-to-recalculate-normals-in-unity/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>A better method to recalculate normals in unity | Lumieru的知识库</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lumieru的知识库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2022/04/28/A-better-method-to-recalculate-normals-in-unity/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">A better method to recalculate normals in unity
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2022-04-28 10:53:22 / 修改时间：11:15:05" itemprop="dateCreated datePublished" datetime="2022-04-28T10:53:22+08:00">2022-04-28</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Graphics/" itemprop="url" rel="index"><span itemprop="name">Graphics</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="A-BETTER-METHOD-TO-RECALCULATE-NORMALS-IN-UNITY"><a href="#A-BETTER-METHOD-TO-RECALCULATE-NORMALS-IN-UNITY" class="headerlink" title="A BETTER METHOD TO RECALCULATE NORMALS IN UNITY"></a>A BETTER METHOD TO RECALCULATE NORMALS IN UNITY</h1><p><a href="https://schemingdeveloper.com/2017/03/26/better-method-recalculate-normals-unity-part-2/" target="_blank" rel="noopener">原文链接</a></p>
+<p><img src="http://blog.sensedevil.com/image/normal1.webp" alt="normal1"></p>
+<p> A visible seam showing after recalculating normals in runtime.</p>
+<p>You might have noticed that, for some meshes, calling Unity’s built-in function to  RecalculateNormals(), things look different (i.e. worse) than when calculating them from the import settings. A similar problem appears when recalculating normals after combining meshes, with obvious seams between them. For this post I’m going to show you how RecalculateNormals()  in Unity works and how and why it is very different from Normal calculation on importing a model. Moreover, I will offer you a fast solution that fixes this problem.</p>
+<p>This article is also very useful to those who want to generate 3D meshes dynamically during gameplay and not just those who encountered this problem.</p>
+<h2 id="Some-background…"><a href="#Some-background…" class="headerlink" title="Some background…"></a>Some background…</h2><p>I’m going to explain some basic concepts as briefly as I can, just to provide some context. Feel free to skip this section if you wish.</p>
+<a id="more"></a>
+<h3 id="Directional-Vectors"><a href="#Directional-Vectors" class="headerlink" title="Directional Vectors"></a>Directional Vectors</h3><p>Directional vectors are not to be confused with point vectors, even though we use exactly the same representation in code. Vector3(0, 1, 1)  as a <em>point</em> vector simply describes a single point along the X, Y and Z axis respectively. As a <em>directional</em> vector, it describes the direction we have when we stand at the origin point (Vector3(0, 0, 0) ) and look towards the point Vector3(0, 1, 1) .</p>
+<p>If we draw a line from Vector3(0, 0, 0)  towards Vector3(0, 1, 1) , we will notice that this line has a length of 1.414214 units. This is called the magnitude or length of a vector and it is equal to <code>sqrt(X^2 + Y^2 + Z^2)</code>. A <em>normalized</em> vector is one that has a magnitude of 1. The normalized version of Vector3(0, 1, 1 ) is Vector3(0, 0.7, 0.7)  and we get that by dividing the vector by its magnitude. When using directional vectors, it is important to keep them normalized (unless you really know what you’re doing), because a lot of mathematical calculations depend on that.</p>
+<h3 id="Normals"><a href="#Normals" class="headerlink" title="Normals"></a>Normals</h3><p><img src="http://blog.sensedevil.com/image/normal2.webp" alt="normal2"></p>
+<p>Normals are mostly used to calculate the shading of a surface. They are directional vectors that define where a surface is “looking at”, i.e. it is a directional vector that is pointing away from a face (i.e. a surface) made up of three or more vertices (i.e. points). More accurately, normals are actually stored on the vertices themselves instead of the face.  This means that a flat surface of three points actually has three identical normals.</p>
+<p>A normal is not to be confused with a normalized vector, although normals <em>are</em> normalized – otherwise, light calculations would look wrong.</p>
+<h3 id="How-Smoothing-works"><a href="#How-Smoothing-works" class="headerlink" title="How Smoothing works"></a>How Smoothing works</h3><p>Smoothing works by averaging the normals of adjacent faces.  What this means is that the normal of each vertex is not the same as that of its face, but rather the average value of the normals of all the faces it belongs to. This also means that, in smooth shading, vertices of the same face do not necessarily have identical normals.</p>
+<p><img src="http://blog.sensedevil.com/image/normal3.webp" alt="A sphere with flat and smooth shading respectively."></p>
+<p>A sphere with flat and smooth shading.</p>
+<h2 id="How-Unity-recalculates-normals-in-runtime"><a href="#How-Unity-recalculates-normals-in-runtime" class="headerlink" title="How Unity recalculates normals in runtime"></a>How Unity recalculates normals in runtime</h2><p>When you call the RecalculateNormals()  method on a mesh in Unity, what happens is very straightforward.</p>
+<p>Unity stores mesh information for a list of vertices in a few different arrays. There’s one array for vertex positions, one array for normals, another for UVs, etc. All of these arrays have the same size, and each information of one index in the array represent one single vertex. For example, mesh.vertices[N] and mesh.normals[N] are the position and the normal, respectively, of the Nth vertex in our list of vertices.</p>
+<p>However, there is a special array called triangles and it describes the actual faces of the mesh. It is a sequence of integer values, and each integer is the index of a vertex. Each three integers form a single triangle face. This means that the size of this array is always a multiple of 3.</p>
+<p><em>As a side note: Unity assumes that all faces are triangles, so even if you import a model with faces having more than three points (as is the case with the sphere above), they’re automatically converted, upon importing, to multiple smaller faces of three vertices each.</em></p>
+<p>The source code of RecalculateNormals()  is not available, but, guessing from its output, this pseudo-code (sloppily mixed with some real code) follows exactly the same algorithm and produces the same result:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">initialize all normals <span class="title">to</span> (<span class="params"><span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span></span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="keyword">foreach</span> three indices <span class="keyword">in</span> triangles list of mesh:</span></span><br><span class="line"><span class="function">	normal</span> = CalculateSurfaceNormal(</span><br><span class="line">		mesh.vertices[index1],</span><br><span class="line">		mesh.vertices[index2],</span><br><span class="line">		mesh.vertices[index3])</span><br><span class="line">	mesh.normals[index1] += normal</span><br><span class="line">	mesh.normals[index2] += normal</span><br><span class="line">	mesh.normals[index3] += normal</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> vertex <span class="keyword">in</span> mesh:</span><br><span class="line">	normalize vertex.normal</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Notice how I don’t explicitly average the normals, but that’s because CalculateSurfaceNormal(…)  is assumed to return a normalized vector. When normalizing a sum of normalized vectors, we get their average value.</p>
+<h2 id="How-Unity-calculates-normals-while-importing"><a href="#How-Unity-calculates-normals-while-importing" class="headerlink" title="How Unity calculates normals while importing"></a>How Unity calculates normals while importing</h2><p>The exact algorithm Unity uses in this case is more complicated than RecalculateNormals() . I can think of three reasons for that:</p>
+<ol>
+<li>This algorithm is much slower to use, so Unity avoids calling that during runtime.</li>
+<li>Unity has more information while importing.</li>
+<li>Unity combines vertices after importing.</li>
+</ol>
+<p>The first reason is not the real reason because Unity could have still provided an alternative method to calculate normals in runtime that still performs fast enough. The second and third reasons are actually very similar, since they both come down to one thing: After Unity imports a mesh, it becomes a new entity independent from its source model.</p>
+<p>During mesh import, Unity may consider shared vertices among faces to exist multiple times; one time for each face.This means that when importing a cube, which has 8 vertices, Unity actually sees 36 vertices (3 vertices for each of the 2 triangles of each one of the 6 sides).  We will refer to this as the expanded vertex list. However, it can also see the condensed 8 vertex list at the same time. If it can’t, then I’m guessing it first silently builds that structure simply by finding which vertices are at the same position as other vertices.</p>
+<p>As you saw in the previous section, smoothing in RecalculateNormals()  only works when vertices at the same position are assumed to be one and the same. With this new data at hand, a different algorithm is to be used. In the following pseudo-code,  vertex  represents a vertex from the condensed list of vertices and vertexPoint  represents a vertex from the expanded list. We also assume that any vertexPoint  has direct access to the vertex  it is associated to.</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">threshold = ?</span><br><span class="line"></span><br><span class="line"><span class="function">initialize all vertexPoint normals <span class="title">to</span> (<span class="params"><span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span></span>)</span></span><br><span class="line"><span class="function"></span></span><br><span class="line"><span class="function"><span class="keyword">foreach</span> vertexPoint <span class="keyword">in</span> mesh:</span></span><br><span class="line"><span class="function">	<span class="keyword">foreach</span> testFace <span class="keyword">in</span> vertexPoint.vertex.faceList:</span></span><br><span class="line"><span class="function">		<span class="keyword">if</span> angle between vertexPoint.face.normal and testFace.normal &lt; threshold</span></span><br><span class="line"><span class="function">			vertexPoint.normal +</span>= testFace.normal</span><br><span class="line"></span><br><span class="line"><span class="keyword">foreach</span> vertexPoint <span class="keyword">in</span> mesh:</span><br><span class="line">	normalize vertexPoint.normal</span><br></pre></td></tr></table></figure>
+<p>As it turns out, the final result contains neither the expanded vertex list nor the condensed vertex list. It is an optimized version which takes all the identical vertices and merges them together. And by identical, I don’t mean just the position and normals; it also also takes into account all the UV coordinates, tangents, bone weights, colors, etc – any information that is stored for a single vertex.</p>
+<h2 id="The-problem-explained"><a href="#The-problem-explained" class="headerlink" title="The problem explained"></a>The problem explained</h2><p>As you may have guessed from the previous section, the problem is that vertices that differ in one or more aspects are considered as completely different vertices in the final mesh that is used during runtime, even if they share the same position. You will most likely encounter this problem when your model has UV coordinates. In fact, the first image of this article was produced precisely by a model with a UV seam, after RecalculateNormals()  was called.</p>
+<p>I will not get into many details about UV coordinates, but let me just say that they’re used for texturing, which means it is actually a very common problem; if you ever recalculate normals at runtime then this situation is bound to appear sooner or later.</p>
+<p>You can also see this problem if you’re merging two meshes together – say, two opposing halves of a sphere – even if they have identical information. That’s because when merging two meshes, what actually happens is that we simply append the data of one mesh on top of another, which leads common vertices between the two to be distinct in the final mesh.</p>
+<p>The technical cause behind the problem is, as we have pointed out, that RecalculateNormals()  does not know which distinct vertices in our list have the same position as others. Unity knows this while importing, but this information is now lost.</p>
+<p>This is also the reason RecalculateNormals()  does not take any angle threshold as a parameter, contrary to calculating normals during import time. If I import a model with a 0° tolerance, then it will be impossible to have any smooth shading during run-time.</p>
+<h2 id="My-solution"><a href="#My-solution" class="headerlink" title="My solution"></a>My solution</h2><p>My solution to this problem is not very simple, but I have provided the full source code. It is somewhat of a hybrid solution between the two extremes used by Unity. I use hashing to cluster vertices that exist in the same position to achieve a nearly linear complexity (based on the number of vertices in the expanded list) to avoid a brute-force approach. Therefore, it is fast and asymptotically optimal. However, it does allocate a bunch of temporary memory which might cause a bit of a lag.</p>
+<h3 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h3><p>By adding my code to your project (found at the end of this article), you will be able to recalculate normals based on an angle threshold:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> mesh = GetComponentInChildren().mesh;</span><br><span class="line">mesh.RecalculateNormals(<span class="number">60</span>);</span><br></pre></td></tr></table></figure>
+<p>As you probably know, comparing equality between two floating numbers is a bad practice, because of the inherent imprecision of this data type. The usual approach is to check whether the floats have a very small difference between them (say, 0.0001), but this is not enough in this case since I need to produce a hash key as well. I use a different approach that I loosely call “digit tolerance”, which compares floats by converting them to long integers after multiplying them with a power of 10.  This method makes it very easy for Vector3 values to have identical hash codes if they’re identical within a given tolerance.</p>
+<p>My implementation multiplies with the constant 100,000 (for 5 decimal digits), which means that 4.000002 is equal to 4.00000. The tolerance is rounded, so 4.000008 is equal to 4.00001. If we use a number that is either too small or too large then we will probably get wrong results. 100,000 is a good number, you will rarely need to change that. Feel free to do so if you think it’s better.</p>
+<h3 id="Things-to-be-aware-of"><a href="#Things-to-be-aware-of" class="headerlink" title="Things to be aware of"></a>Things to be aware of</h3><p>One thing to keep in mind is that my solution might smoothen normals even with an angle higher than the threshold; this only happens when we try to smoothen with an angle <em>less</em> than the one specified by the import settings. Don’t worry though, it is still possible to get the right result.</p>
+<p>I could have written an alternative method that splits those vertices at runtime, or one that recreates a flat mesh and then merges identical vertices after smoothing. However, I thought that this was much bigger trouble than what it was worth and it would kill performance.</p>
+<p>To achieve a better result, you can import a mesh with a 0° tolerance. This will allow you to smooth normals at any angle during runtime. However, since a 0° tolerance produces a larger model, you can also just import a mesh with the minimum tolerance you’re ever going to need. If you import at 30°, you can still smooth correctly at runtime for any degree that is higher than 30°.</p>
+<p>In any case, a 60° tolerance is good for most applications. You can use that for both import and runtime normal calculation.</p>
+<h3 id="Edit-25-03-2017"><a href="#Edit-25-03-2017" class="headerlink" title="Edit 25/03/2017:"></a><strong>Edit 25/03/2017:</strong></h3><p>The code has been updated, so the old code has been omitted from this post. You can find the new code <a href="http://schemingdeveloper.com/2017/03/26/better-method-recalculate-normals-unity-part-2/" target="_blank" rel="noopener">here</a>!</p>
+<h3 id="Happy-smoothing"><a href="#Happy-smoothing" class="headerlink" title="Happy smoothing!"></a>Happy smoothing!</h3><hr>
+<h1 id="A-BETTER-METHOD-TO-RECALCULATE-NORMALS-IN-UNITY-–-PART-2"><a href="#A-BETTER-METHOD-TO-RECALCULATE-NORMALS-IN-UNITY-–-PART-2" class="headerlink" title="A BETTER METHOD TO RECALCULATE NORMALS IN UNITY – PART 2"></a>A BETTER METHOD TO RECALCULATE NORMALS IN UNITY – PART 2</h1><p><a href="http://schemingdeveloper.com/2014/10/17/better-method-recalculate-normals-unity/" target="_blank" rel="noopener">It’s been over 2 years since I posted about a method to recalculate normals</a> in Unity that fixes on some of the issues of Unity’s default RecalculateNormals()  method. I’ve used this algorithm (and similar variations) myself in non-Unity projects and I’ve since made minor adjustments, but I never bothered to update the Unity version of the code. <a href="http://kenney.nl/projects/assetforge" target="_blank" rel="noopener">Someone </a>recently reported to me that it fails when working with meshes with multiple materials, so I decided to go ahead and update it.</p>
+<p>The most important performance update is that I now use <a href="https://en.wikipedia.org/wiki/Fowler%E2%80%93Noll%E2%80%93Vo_hash_function" target="_blank" rel="noopener">FNV hashing</a> to encode the vertex positions. The first implementation used a very naive hashing which would have many hashing collisions. A mesh with approximately a million vertices would end up with a significant amount of collisions, which was a performance killer.</p>
+<p>Using FNV hashing reduced collisions to a negligible amount, even to 0 in most cases. I don’t have the figures now, as this change happened about a year ago, but I might do some newer measurements later (read: probably never).</p>
+<p>To summarize, here are the changes:</p>
+<ul>
+<li>Fixed issue with multiple materials not working properly.</li>
+<li>Changed VertexKey to use FNV hashing.</li>
+<li>Other (minor) performance improvements.</li>
+</ul>
+<p>And I know you’re here just for the code, so here it is:</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/* </span></span><br><span class="line"><span class="comment"> * The following code was taken from: http://schemingdeveloper.com</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * Visit our game studio website: http://stopthegnomes.com</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * License: You may use this code however you see fit, as long as you include this notice</span></span><br><span class="line"><span class="comment"> *          without any modifications.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *          You may not publish a paid asset on Unity store if its main function is based on</span></span><br><span class="line"><span class="comment"> *          the following code, but you may publish a paid asset that uses this code.</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> *          If you intend to use this in a Unity store asset or a commercial project, it would</span></span><br><span class="line"><span class="comment"> *          be appreciated, but not required, if you let me know with a link to the asset. If I</span></span><br><span class="line"><span class="comment"> *          don't get back to you just go ahead and use it anyway!</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> System;</span><br><span class="line"><span class="keyword">using</span> System.Collections.Generic;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">class</span> <span class="title">NormalSolver</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span>     Recalculate the normals of a mesh based on an angle threshold. This takes</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span>     into account distinct vertices that have the same position.</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/summary&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="mesh"&gt;</span><span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;param name="angle"&gt;</span></span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span>     The smoothing angle. Note that triangles that already share</span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span>     the same vertex will be smooth regardless of the angle! </span></span><br><span class="line">    <span class="comment"><span class="doctag">///</span> <span class="doctag">&lt;/param&gt;</span></span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">RecalculateNormals</span>(<span class="params"><span class="keyword">this</span> Mesh mesh, <span class="keyword">float</span> angle</span>)</span> &#123;</span><br><span class="line">        <span class="keyword">var</span> cosineThreshold = Mathf.Cos(angle * Mathf.Deg2Rad);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> vertices = mesh.vertices;</span><br><span class="line">        <span class="keyword">var</span> normals = <span class="keyword">new</span> Vector3[vertices.Length];</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Holds the normal of each triangle in each sub mesh.</span></span><br><span class="line">        <span class="keyword">var</span> triNormals = <span class="keyword">new</span> Vector3[mesh.subMeshCount][];</span><br><span class="line"></span><br><span class="line">        <span class="keyword">var</span> dictionary = <span class="keyword">new</span> Dictionary&lt;VertexKey, List&lt;VertexEntry&gt;&gt;(vertices.Length);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> subMeshIndex = <span class="number">0</span>; subMeshIndex &lt; mesh.subMeshCount; ++subMeshIndex) &#123;</span><br><span class="line">            </span><br><span class="line">            <span class="keyword">var</span> triangles = mesh.GetTriangles(subMeshIndex);</span><br><span class="line"></span><br><span class="line">            triNormals[subMeshIndex] = <span class="keyword">new</span> Vector3[triangles.Length / <span class="number">3</span>];</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; triangles.Length; i += <span class="number">3</span>) &#123;</span><br><span class="line">                <span class="keyword">int</span> i1 = triangles[i];</span><br><span class="line">                <span class="keyword">int</span> i2 = triangles[i + <span class="number">1</span>];</span><br><span class="line">                <span class="keyword">int</span> i3 = triangles[i + <span class="number">2</span>];</span><br><span class="line"></span><br><span class="line">                <span class="comment">// Calculate the normal of the triangle</span></span><br><span class="line">                Vector3 p1 = vertices[i2] - vertices[i1];</span><br><span class="line">                Vector3 p2 = vertices[i3] - vertices[i1];</span><br><span class="line">                <span class="comment">// By not normalizing the cross product,</span></span><br><span class="line">                <span class="comment">// the face area is pre-multiplied onto the normal for free.</span></span><br><span class="line">                <span class="comment">// Vector3 areaWeightedNormal = Vector3.Cross (p1, p2);</span></span><br><span class="line">                Vector3 normal = Vector3.Cross(p1, p2).normalized;</span><br><span class="line">                <span class="keyword">int</span> triIndex = i / <span class="number">3</span>;</span><br><span class="line">                triNormals[subMeshIndex][triIndex] = normal;</span><br><span class="line"></span><br><span class="line">                List&lt;VertexEntry&gt; entry;</span><br><span class="line">                VertexKey key;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (!dictionary.TryGetValue(key = <span class="keyword">new</span> VertexKey(vertices[i1]), <span class="keyword">out</span> entry)) &#123;</span><br><span class="line">                    entry = <span class="keyword">new</span> List&lt;VertexEntry&gt;(<span class="number">4</span>);</span><br><span class="line">                    dictionary.Add(key, entry);</span><br><span class="line">                &#125;</span><br><span class="line">                entry.Add(<span class="keyword">new</span> VertexEntry(subMeshIndex, triIndex, i1));</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (!dictionary.TryGetValue(key = <span class="keyword">new</span> VertexKey(vertices[i2]), <span class="keyword">out</span> entry)) &#123;</span><br><span class="line">                    entry = <span class="keyword">new</span> List&lt;VertexEntry&gt;();</span><br><span class="line">                    dictionary.Add(key, entry);</span><br><span class="line">                &#125;</span><br><span class="line">                entry.Add(<span class="keyword">new</span> VertexEntry(subMeshIndex, triIndex, i2));</span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> (!dictionary.TryGetValue(key = <span class="keyword">new</span> VertexKey(vertices[i3]), <span class="keyword">out</span> entry)) &#123;</span><br><span class="line">                    entry = <span class="keyword">new</span> List&lt;VertexEntry&gt;();</span><br><span class="line">                    dictionary.Add(key, entry);</span><br><span class="line">                &#125;</span><br><span class="line">                entry.Add(<span class="keyword">new</span> VertexEntry(subMeshIndex, triIndex, i3));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Each entry in the dictionary represents a unique vertex position.</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> vertList <span class="keyword">in</span> dictionary.Values) &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; vertList.Count; ++i) &#123;</span><br><span class="line"></span><br><span class="line">                <span class="keyword">var</span> sum = <span class="keyword">new</span> Vector3();</span><br><span class="line">                <span class="keyword">var</span> lhsEntry = vertList[i];</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">var</span> j = <span class="number">0</span>; j &lt; vertList.Count; ++j) &#123;</span><br><span class="line">                    <span class="keyword">var</span> rhsEntry = vertList[j];</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">if</span> (lhsEntry.VertexIndex == rhsEntry.VertexIndex) &#123;</span><br><span class="line">                        sum += triNormals[rhsEntry.MeshIndex][rhsEntry.TriangleIndex];</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        <span class="comment">// The dot product is the cosine of the angle between the two triangles.</span></span><br><span class="line">                        <span class="comment">// A larger cosine means a smaller angle.</span></span><br><span class="line">                        <span class="keyword">var</span> dot = Vector3.Dot(</span><br><span class="line">                            triNormals[lhsEntry.MeshIndex][lhsEntry.TriangleIndex],</span><br><span class="line">                            triNormals[rhsEntry.MeshIndex][rhsEntry.TriangleIndex]);</span><br><span class="line">                        <span class="keyword">if</span> (dot &gt;= cosineThreshold) &#123;</span><br><span class="line">                            sum += triNormals[rhsEntry.MeshIndex][rhsEntry.TriangleIndex];</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">                normals[lhsEntry.VertexIndex] = sum.normalized;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        mesh.normals = normals;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">struct</span> VertexKey</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="keyword">long</span> _x;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="keyword">long</span> _y;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="keyword">long</span> _z;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Change this if you require a different precision.</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">int</span> Tolerance = <span class="number">100000</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Magic FNV values. Do not change these.</span></span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">long</span> FNV32Init = <span class="number">0x811c9dc5</span>;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">const</span> <span class="keyword">long</span> FNV32Prime = <span class="number">0x01000193</span>;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">VertexKey</span>(<span class="params">Vector3 position</span>)</span> &#123;</span><br><span class="line">            _x = (<span class="keyword">long</span>)(Mathf.Round(position.x * Tolerance));</span><br><span class="line">            _y = (<span class="keyword">long</span>)(Mathf.Round(position.y * Tolerance));</span><br><span class="line">            _z = (<span class="keyword">long</span>)(Mathf.Round(position.z * Tolerance));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">bool</span> <span class="title">Equals</span>(<span class="params"><span class="keyword">object</span> obj</span>)</span> &#123;</span><br><span class="line">            <span class="keyword">var</span> key = (VertexKey)obj;</span><br><span class="line">            <span class="keyword">return</span> _x == key._x &amp;&amp; _y == key._y &amp;&amp; _z == key._z;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">int</span> <span class="title">GetHashCode</span>(<span class="params"></span>)</span> &#123;</span><br><span class="line">            <span class="keyword">long</span> rv = FNV32Init;</span><br><span class="line">            rv ^= _x;</span><br><span class="line">            rv *= FNV32Prime;</span><br><span class="line">            rv ^= _y;</span><br><span class="line">            rv *= FNV32Prime;</span><br><span class="line">            rv ^= _z;</span><br><span class="line">            rv *= FNV32Prime;</span><br><span class="line"></span><br><span class="line">            <span class="keyword">return</span> rv.GetHashCode();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">struct</span> VertexEntry &#123;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">int</span> MeshIndex;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">int</span> TriangleIndex;</span><br><span class="line">        <span class="keyword">public</span> <span class="keyword">int</span> VertexIndex;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">VertexEntry</span>(<span class="params"><span class="keyword">int</span> meshIndex, <span class="keyword">int</span> triIndex, <span class="keyword">int</span> vertIndex</span>)</span> &#123;</span><br><span class="line">            MeshIndex = meshIndex;</span><br><span class="line">            TriangleIndex = triIndex;</span><br><span class="line">            VertexIndex = vertIndex;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>After you include this code in your project, all you have to do is call RecalculateNormals(angle)  on your mesh. Make sure you visit the<a href="http://schemingdeveloper.com/2014/10/17/better-method-recalculate-normals-unity/" target="_blank" rel="noopener"> original post</a> for additional information about the algorithm.</p>
+<h3 id="A-final-note"><a href="#A-final-note" class="headerlink" title="A final note"></a>A final note</h3><p>This is not the most optimal way of doing this. It’s meant for one-off calculation only. If you do this over and over again you’d better use some sort of acceleration structure where you can query nearby vertices quickly (if the faces are expected to change) or build some kind of structure which contains all the proper neighbours per vertex.</p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/normal-Unity/" rel="tag"><i class="fa fa-tag"></i> normal, Unity</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/04/28/Weighted-Vertex-Normals/" rel="next" title="Weighted Vertex Normals">
+                <i class="fa fa-chevron-left"></i> Weighted Vertex Normals
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lumieru</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">46</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#A-BETTER-METHOD-TO-RECALCULATE-NORMALS-IN-UNITY"><span class="nav-number">1.</span> <span class="nav-text">A BETTER METHOD TO RECALCULATE NORMALS IN UNITY</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Some-background…"><span class="nav-number">1.1.</span> <span class="nav-text">Some background…</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Directional-Vectors"><span class="nav-number">1.1.1.</span> <span class="nav-text">Directional Vectors</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Normals"><span class="nav-number">1.1.2.</span> <span class="nav-text">Normals</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Smoothing-works"><span class="nav-number">1.1.3.</span> <span class="nav-text">How Smoothing works</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-Unity-recalculates-normals-in-runtime"><span class="nav-number">1.2.</span> <span class="nav-text">How Unity recalculates normals in runtime</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#How-Unity-calculates-normals-while-importing"><span class="nav-number">1.3.</span> <span class="nav-text">How Unity calculates normals while importing</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-problem-explained"><span class="nav-number">1.4.</span> <span class="nav-text">The problem explained</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#My-solution"><span class="nav-number">1.5.</span> <span class="nav-text">My solution</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Usage"><span class="nav-number">1.5.1.</span> <span class="nav-text">Usage</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Things-to-be-aware-of"><span class="nav-number">1.5.2.</span> <span class="nav-text">Things to be aware of</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Edit-25-03-2017"><span class="nav-number">1.5.3.</span> <span class="nav-text">Edit 25/03/2017:</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Happy-smoothing"><span class="nav-number">1.5.4.</span> <span class="nav-text">Happy smoothing!</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#A-BETTER-METHOD-TO-RECALCULATE-NORMALS-IN-UNITY-–-PART-2"><span class="nav-number">2.</span> <span class="nav-text">A BETTER METHOD TO RECALCULATE NORMALS IN UNITY – PART 2</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#A-final-note"><span class="nav-number">2.0.1.</span> <span class="nav-text">A final note</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lumieru</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.1"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('复制成功');
+        else $(this).text('复制失败');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>

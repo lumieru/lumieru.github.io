@@ -349,6 +349,178 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2022/04/28/A-better-method-to-recalculate-normals-in-unity/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2022/04/28/A-better-method-to-recalculate-normals-in-unity/" class="post-title-link" itemprop="url">A better method to recalculate normals in unity</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2022-04-28 10:53:22 / 修改时间：11:15:05" itemprop="dateCreated datePublished" datetime="2022-04-28T10:53:22+08:00">2022-04-28</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Graphics/" itemprop="url" rel="index"><span itemprop="name">Graphics</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="A-BETTER-METHOD-TO-RECALCULATE-NORMALS-IN-UNITY"><a href="#A-BETTER-METHOD-TO-RECALCULATE-NORMALS-IN-UNITY" class="headerlink" title="A BETTER METHOD TO RECALCULATE NORMALS IN UNITY"></a>A BETTER METHOD TO RECALCULATE NORMALS IN UNITY</h1><p><a href="https://schemingdeveloper.com/2017/03/26/better-method-recalculate-normals-unity-part-2/" target="_blank" rel="noopener">原文链接</a></p>
+<p><img src="http://blog.sensedevil.com/image/normal1.webp" alt="normal1"></p>
+<p> A visible seam showing after recalculating normals in runtime.</p>
+<p>You might have noticed that, for some meshes, calling Unity’s built-in function to  RecalculateNormals(), things look different (i.e. worse) than when calculating them from the import settings. A similar problem appears when recalculating normals after combining meshes, with obvious seams between them. For this post I’m going to show you how RecalculateNormals()  in Unity works and how and why it is very different from Normal calculation on importing a model. Moreover, I will offer you a fast solution that fixes this problem.</p>
+<p>This article is also very useful to those who want to generate 3D meshes dynamically during gameplay and not just those who encountered this problem.</p>
+<h2 id="Some-background…"><a href="#Some-background…" class="headerlink" title="Some background…"></a>Some background…</h2><p>I’m going to explain some basic concepts as briefly as I can, just to provide some context. Feel free to skip this section if you wish.</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2022/04/28/A-better-method-to-recalculate-normals-in-unity/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2022/04/28/Weighted-Vertex-Normals/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2041,204 +2213,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/11/14/UMA-201视频教程备忘录/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/11/14/UMA-201视频教程备忘录/" class="post-title-link" itemprop="url">UMA 201视频教程备忘录</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-11-14 13:19:41 / 修改时间：16:01:57" itemprop="dateCreated datePublished" datetime="2019-11-14T13:19:41+08:00">2019-11-14</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Unity/" itemprop="url" rel="index"><span itemprop="name">Unity</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <ol>
-<li><h2 id="制作Overlay"><a href="#制作Overlay" class="headerlink" title="制作Overlay"></a>制作Overlay</h2><ul>
-<li>先准备好Overlay用到的贴图，每个Overlay单独一个文件夹，把贴图放在文件夹下面。</li>
-<li>菜单UMA-&gt;Core-&gt;Overlay Asset，设置好名字，然后设置Material（是UMA专用的Material），一般选择UMA_Diffuse_Normal_Metallic，选择对应的贴图数量，这个材质是3个贴图。</li>
-<li>把创建好的Overlay放入到UMA Global Library中。</li>
-<li>创建对应的Wardrobe Recipe，菜单UMA-&gt;DCS-&gt;Wardrobe Recipe，选择对应的race，选择Wardrobe Slot，选择对应的Base Slot，最后Add Overlay。</li>
-<li>把创建好的Wardrobe Recipe放入到UMA Global Library中。</li>
-<li><p>PS：如果发现做好的Overlay分辨率比原始素材要低，那是因为UMA在生成最终贴图的时候，会把分辨率减半。这个是可以设置的，在UMA_DCS-&gt;UMAGenerator-&gt;Initial Scale Factor，默认是2，就是贴图尺寸减半，如果改成1，就是保持原来的贴图大小。这样分辨率就高了，当然会占用更多的资源。</p>
-<p><a href="https://www.youtube.com/watch?v=WdnXorLkSSM&amp;list=PLkDHFObfS19yOjGzDUqvoq-oTy97g2G_J&amp;index=2" target="_blank" rel="noopener">UMA 201 - Part 2a Skin Overlays</a></p>
-</li>
-</ul>
-</li>
-<li><h2 id="优化Overlay"><a href="#优化Overlay" class="headerlink" title="优化Overlay"></a>优化Overlay</h2><ul>
-<li>如果制作的Overlay是一张很大的图，但是只用到了其中很小的一部分，其他部分都是空白，那么会浪费很多最后游戏包的空间（runtime内存是不浪费的，因为UMA最终会合成一张贴图）。</li>
-<li>到ps中，找到一个小的长方形区域（2的幂次方），可以完全包含需要的那部分贴图，记住这个区域和整张图的左上角的偏移量。</li>
-<li>然后把原图切小成小的长方形区域大小，并保存放回unity中覆盖原图。</li>
-<li>回到Overlay的设置界面，设置其中的Rect参数。因为ps中偏移量是从原图左上角到小区域的左上角，而unity需要的是原图左下角，到小区域的左下角，所以这里的偏移量需要做计算的，如下图所示。最后还要填上小图的尺寸大小。<br><img src="http://blog.sensedevil.com/image/OverlayOffset.png" alt="OverlayOffset.png"></li>
-<li><p>然后要更新一下对应的Wardrobe Recipe，在其中删除老的Overlay，重新添加修改的Overlay，就大功告成了。</p>
-<p><a href="https://www.youtube.com/watch?v=vPxqvnOuuN4&amp;list=PLkDHFObfS19yOjGzDUqvoq-oTy97g2G_J&amp;index=3" target="_blank" rel="noopener">UMA 201 - Part 2b Optimising Overlays</a></p>
-</li>
-</ul>
-</li>
-<li><h2 id="把其他的模型适配到UMA第一节"><a href="#把其他的模型适配到UMA第一节" class="headerlink" title="把其他的模型适配到UMA第一节"></a>把其他的模型适配到UMA第一节</h2><ul>
-<li>把fbx导入到blender中，注意导入的选项，保证骨骼的方向是正确的。</li>
-<li>通过骨骼的旋转和缩放等，把导入的模型和UMA模型基本重叠起来。</li>
-<li>把旋转和缩放都bake到模型的顶点上，确保骨骼和模型没有旋转和缩放。</li>
-<li><p>把模型和骨骼解除绑定，并删除其中的权重信息。</p>
-<p><a href="https://www.youtube.com/watch?v=bY9n1fO3PnA&amp;list=PLkDHFObfS19yOjGzDUqvoq-oTy97g2G_J&amp;index=4" target="_blank" rel="noopener">UMA 201 - Part 3a Preparing Pre-Rigged Clothing</a></p>
-</li>
-</ul>
-</li>
-</ol>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/11/14/UMA-201视频教程备忘录/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2285,7 +2259,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">45</span>
+                    <span class="site-state-item-count">46</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2369,7 +2343,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">17</span>
+                      
+                    
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
