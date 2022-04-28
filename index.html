@@ -394,7 +394,7 @@
                 
               
 
-              <time title="创建时间：2022-04-28 09:49:04 / 修改时间：10:17:02" itemprop="dateCreated datePublished" datetime="2022-04-28T09:49:04+08:00">2022-04-28</time>
+              <time title="创建时间：2022-04-28 09:49:04 / 修改时间：10:37:23" itemprop="dateCreated datePublished" datetime="2022-04-28T09:49:04+08:00">2022-04-28</time>
             
 
             
@@ -458,7 +458,7 @@
 <h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>When rendering 3D triangle mesh geometry, vertex normal vectors (‘<em>normals</em>‘) need to be computed either in real-time or at design-time, to achieve proper lighting of curved surfaces. There are a few ways to do this, however, the most commonly used method has significant flaws. This article illustrates two of those problems, and proposes a practical and robust solution.</p>
 <p>The assumption is made that the reader is familiar with <a href="http://en.wikipedia.org/wiki/Surface_normal" target="_blank" rel="noopener">surface normal vectors</a> and their <a href="http://en.wikipedia.org/wiki/Phong_shading" target="_blank" rel="noopener">application</a> in 3D graphics rendering.</p>
 <h3 id="Notes"><a href="#Notes" class="headerlink" title="Notes"></a>Notes</h3><p>Geometry may have ‘hard edges’ (sometimes called ‘sharp edges’), in which case multiple vertex normals may lie at the same vertex position. This is covered here for completeness sake only; the proposed enhancements do not have any effect on the presence or appearance of hard edges.</p>
-<p>The included code uses per-polygon smoothing-groups (most popular in 3D content authoring software) to achieve hard edges, though this can be substituted by any (algorithmic) criteria (e.g. angle between surface normals greater than _x_ degrees).</p>
+<p>The included code uses per-polygon smoothing-groups (most popular in 3D content authoring software) to achieve hard edges, though this can be substituted by any (algorithmic) criteria (e.g. angle between surface normals greater than <em>x</em> degrees).</p>
 <p>Hard edges can also be created by duplicating vertices (for optimal rendering on modern graphics hardware), but for simplicity we’ll assume there are no duplicate vertices present in the model.</p>
 <p>Also note that the pseudo-code presented herein is far from optimal, and can be optimized in many ways.</p>
           <!--noindex-->
