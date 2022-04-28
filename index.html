@@ -349,6 +349,362 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2022/04/28/Weighted-Vertex-Normals/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2022/04/28/Weighted-Vertex-Normals/" class="post-title-link" itemprop="url">Weighted Vertex Normals</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2022-04-28 09:49:04 / 修改时间：10:17:02" itemprop="dateCreated datePublished" datetime="2022-04-28T09:49:04+08:00">2022-04-28</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Graphics/" itemprop="url" rel="index"><span itemprop="name">Graphics</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h1 id="Weighted-Vertex-Normals"><a href="#Weighted-Vertex-Normals" class="headerlink" title="Weighted Vertex Normals"></a>Weighted Vertex Normals</h1><hr>
+<p><a href="https://www.bytehazard.com/articles/vertnorm.html" target="_blank" rel="noopener">原文链接</a></p>
+<h3 id="3DSMAX-Plugin"><a href="#3DSMAX-Plugin" class="headerlink" title="3DSMAX Plugin"></a>3DSMAX Plugin</h3><p>A popular MaxScript plugin for 3DSMAX (previously hosted on GitHub) is now available <a href="https://www.bytehazard.com/articles/wnormals.html" target="_blank" rel="noopener">here</a>.</p>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>When rendering 3D triangle mesh geometry, vertex normal vectors (‘<em>normals</em>‘) need to be computed either in real-time or at design-time, to achieve proper lighting of curved surfaces. There are a few ways to do this, however, the most commonly used method has significant flaws. This article illustrates two of those problems, and proposes a practical and robust solution.</p>
+<p>The assumption is made that the reader is familiar with <a href="http://en.wikipedia.org/wiki/Surface_normal" target="_blank" rel="noopener">surface normal vectors</a> and their <a href="http://en.wikipedia.org/wiki/Phong_shading" target="_blank" rel="noopener">application</a> in 3D graphics rendering.</p>
+<h3 id="Notes"><a href="#Notes" class="headerlink" title="Notes"></a>Notes</h3><p>Geometry may have ‘hard edges’ (sometimes called ‘sharp edges’), in which case multiple vertex normals may lie at the same vertex position. This is covered here for completeness sake only; the proposed enhancements do not have any effect on the presence or appearance of hard edges.</p>
+<p>The included code uses per-polygon smoothing-groups (most popular in 3D content authoring software) to achieve hard edges, though this can be substituted by any (algorithmic) criteria (e.g. angle between surface normals greater than _x_ degrees).</p>
+<p>Hard edges can also be created by duplicating vertices (for optimal rendering on modern graphics hardware), but for simplicity we’ll assume there are no duplicate vertices present in the model.</p>
+<p>Also note that the pseudo-code presented herein is far from optimal, and can be optimized in many ways.</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2022/04/28/Weighted-Vertex-Normals/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2021/09/03/Unity动画系统原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                
+                <a href="/2021/09/03/Unity动画系统原理/" class="post-title-link" itemprop="url">Unity动画系统原理</a>
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2021-09-03 15:42:03" itemprop="dateCreated datePublished" datetime="2021-09-03T15:42:03+08:00">2021-09-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2022-04-28 10:19:47" itemprop="dateModified" datetime="2022-04-28T10:19:47+08:00">2022-04-28</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameEngine/" itemprop="url" rel="index"><span itemprop="name">GameEngine</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="通用结构"><a href="#通用结构" class="headerlink" title="通用结构"></a>通用结构</h2><p>float4是一个float[4]的数组，主要对应simd的数据类型，存储的可以是vector4或者quaternion，可以代表平移，旋转或者缩放。<br>xform里面有 float4的t，q，s，就是simd版的transform信息。</p>
+<h2 id="AvatarConstant"><a href="#AvatarConstant" class="headerlink" title="AvatarConstant"></a>AvatarConstant</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> AvatarBuilder::BuildAvatar(Avatar&amp; avatar, <span class="keyword">const</span> Unity::GameObject&amp; go, <span class="keyword">bool</span> doOptimizeTransformHierarchy, <span class="keyword">const</span> HumanDescription&amp; humanDescription, Options options)</span><br></pre></td></tr></table></figure>
+<p>会创建<code>AvatarConstant</code>，会用到下面这些结构体</p>
+          <!--noindex-->
+          
+            <div class="post-button text-center">
+              <a class="btn" href="/2021/09/03/Unity动画系统原理/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2020/12/04/AC自动机：如何实现敏感词过滤/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1883,373 +2239,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/11/14/UMA-101视频教程备忘录/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/11/14/UMA-101视频教程备忘录/" class="post-title-link" itemprop="url">UMA 101视频教程备忘录</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-11-14 11:20:56" itemprop="dateCreated datePublished" datetime="2019-11-14T11:20:56+08:00">2019-11-14</time>
-            
-
-            
-              
-
-              
-                
-                <span class="post-meta-divider">|</span>
-                
-
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">更新于</span>
-                
-                <time title="修改时间：2019-11-15 20:05:59" itemprop="dateModified" datetime="2019-11-15T20:05:59+08:00">2019-11-15</time>
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/Unity/" itemprop="url" rel="index"><span itemprop="name">Unity</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <ol>
-<li><p>UMA_DCS prefab 加上 UMA Dynamic Character Avatar, 选择一个race，然后设置好默认的animator controller就可以运行了。</p>
-<p><a href="https://www.youtube.com/watch?v=Wse9I72YJvc&amp;list=PLkDHFObfS19zFVfbrfB14P-u5QJJQyvtP&amp;index=2" target="_blank" rel="noopener">UMA 101 - Part 2 Up and Running</a></p>
-</li>
-<li><p>base recipe –&gt; 确定一个裸体的人物模型。<br>wardrobe recipe –&gt; 确定人物的衣服，鞋子，饰品等；这里可以设置A物体覆盖B物体。</p>
-<p> <a href="https://www.youtube.com/watch?v=tXbxhSmzlmk&amp;list=PLkDHFObfS19zFVfbrfB14P-u5QJJQyvtP&amp;index=3" target="_blank" rel="noopener">UMA 101 - Part 3 Introducing Recipes</a></p>
-</li>
-<li><p>Dynamic Character Avatar中的Default Recipes可以为这个人物添加默认的衣服裤子等。每个Wardrobe recipe都只能和相对应的race一起才能正常工作。Wardrobe slot是设置这个物体是放在人身上的哪个部位的。还可以设置需要覆盖哪个部位的其他物件和base物件。</p>
-<p> <a href="https://www.youtube.com/watch?v=SZjzVWbiNaQ&amp;list=PLkDHFObfS19zFVfbrfB14P-u5QJJQyvtP&amp;index=4" target="_blank" rel="noopener">UMA 101 - Part 4 Default Recipes</a></p>
-</li>
-<li><p>Dynamic Character Avatar中的Character Colors可以重载recipes中的shared colors，然后在slot中可以用shared color来影响overlay的颜色。这样就可以通过设置Character Colors来方便的设置人物的整体颜色。</p>
-<p> <a href="https://www.youtube.com/watch?v=Oh7gg7NuYEM&amp;list=PLkDHFObfS19zFVfbrfB14P-u5QJJQyvtP&amp;index=5" target="_blank" rel="noopener">UMA 101 - Part 5 Shared Colours</a></p>
-</li>
-<li><p>所有的recipes和他们所用到的components都需要到UMA Global Library中去注册才能使用。制作DCS-&gt;wardrobe recipe</p>
-<p> <a href="https://www.youtube.com/watch?v=IdfpET4CtUw&amp;list=PLkDHFObfS19zFVfbrfB14P-u5QJJQyvtP&amp;index=7" target="_blank" rel="noopener">UMA 101 - Part 7 Creating Custom Recipes</a></p>
-</li>
-<li><p>Misc-&gt;Mesh Hide Asset，可以用来隐藏某个slot上的某些三角形，已解决衣服和身体部分重叠的情况下的穿模问题。UMA内建工具可以编辑需要去掉那些三角形。在编辑的时候还可以把衣服覆盖在身体上，方便查看需要隐藏哪些三角形。</p>
-<p> <a href="https://www.youtube.com/watch?v=tBwai4Yh8Rw&amp;list=PLkDHFObfS19zFVfbrfB14P-u5QJJQyvtP&amp;index=8" target="_blank" rel="noopener">UMA 101 - Part 8 Advanced Occlusion</a></p>
-</li>
-</ol>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/11/14/UMA-101视频教程备忘录/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2019/07/23/Math-Magician-Lerp-Slerp-and-Nlerp/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Lumieru">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Lumieru的知识库">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                
-                <a href="/2019/07/23/Math-Magician-Lerp-Slerp-and-Nlerp/" class="post-title-link" itemprop="url">Math Magician - Lerp, Slerp, and Nlerp</a>
-              
-            
-          </h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2019-07-23 21:36:04 / 修改时间：22:13:52" itemprop="dateCreated datePublished" datetime="2019-07-23T21:36:04+08:00">2019-07-23</time>
-            
-
-            
-              
-
-              
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameEngine/" itemprop="url" rel="index"><span itemprop="name">GameEngine</span></a></span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h1 id="Math-Magician-–-Lerp-Slerp-and-Nlerp"><a href="#Math-Magician-–-Lerp-Slerp-and-Nlerp" class="headerlink" title="Math Magician – Lerp, Slerp, and Nlerp"></a>Math Magician – Lerp, Slerp, and Nlerp</h1><p><a href="https://keithmaggio.wordpress.com/2011/02/15/math-magician-lerp-slerp-and-nlerp/" target="_blank" rel="noopener">原文出处</a></p>
-<p> <img src="http://blog.sensedevil.com/image/slerp1.svg.png" alt="Illustration of linear interpolation on a data..."><div align="center"><small><em>Illustration of linear interpolation on a data set. The same data set is used for other interpolation methods in the interpolation article. (Photo credit: Wikipedia)</em></small></div></p>
-<p>Man, I wish I had this blog going through school, because this place has become my online notebook. Game development is like riding a bike – but math, for me, can have a hard time stickin’. I’ve been working in databases so long that I have a lot of <a href="http://en.wikipedia.org/wiki/Bitwise_operation" title="Bitwise operation" target="_blank" rel="noopener">bit-shifting</a> down, but my matrix and vector math is starting to lack. So, a creative way for me to remember all these algorithms is to try to explain them. Today, I’m going through <a href="http://en.wikipedia.org/wiki/Linear_interpolation" title="Linear interpolation" target="_blank" rel="noopener">Linear Interpolation</a>, Spherical Linear Interpolation, and Normalized Linear Interpolation.</p>
-          <!--noindex-->
-          
-            <div class="post-button text-center">
-              <a class="btn" href="/2019/07/23/Math-Magician-Lerp-Slerp-and-Nlerp/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-      
-    
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2296,7 +2285,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">43</span>
+                    <span class="site-state-item-count">45</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2327,7 +2316,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">7</span>
+                      
+                    
+                    <span class="site-state-item-count">8</span>
                     <span class="site-state-item-name">分类</span>
                   </a>
                 </div>
@@ -2376,7 +2367,9 @@
                     
                       
                     
-                    <span class="site-state-item-count">16</span>
+                      
+                    
+                    <span class="site-state-item-count">17</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
@@ -2418,7 +2411,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
   <span class="with-love" id="animate">
     <i class="fa fa-user"></i>
   </span>

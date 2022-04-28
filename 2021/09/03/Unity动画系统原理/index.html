@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=7.1.1">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.1.1">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.1.1">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=7.1.1" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '7.1.1',
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false,"dimmer":false},
+    back2top: true,
+    back2top_sidebar: false,
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="通用结构float4是一个float[4]的数组，主要对应simd的数据类型，存储的可以是vector4或者quaternion，可以代表平移，旋转或者缩放。xform里面有 float4的t，q，s，就是simd版的transform信息。 AvatarConstant1std::string AvatarBuilder::BuildAvatar(Avatar&amp;amp; avatar, cons">
+<meta name="keywords" content="Unity">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Unity动画系统原理">
+<meta property="og:url" content="https://lumieru.github.io/2021/09/03/Unity动画系统原理/index.html">
+<meta property="og:site_name" content="Lumieru的知识库">
+<meta property="og:description" content="通用结构float4是一个float[4]的数组，主要对应simd的数据类型，存储的可以是vector4或者quaternion，可以代表平移，旋转或者缩放。xform里面有 float4的t，q，s，就是simd版的transform信息。 AvatarConstant1std::string AvatarBuilder::BuildAvatar(Avatar&amp;amp; avatar, cons">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2022-04-28T02:19:47.083Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Unity动画系统原理">
+<meta name="twitter:description" content="通用结构float4是一个float[4]的数组，主要对应simd的数据类型，存储的可以是vector4或者quaternion，可以代表平移，旋转或者缩放。xform里面有 float4的t，q，s，就是simd版的transform信息。 AvatarConstant1std::string AvatarBuilder::BuildAvatar(Avatar&amp;amp; avatar, cons">
+
+
+
+
+
+  
+  
+  <link rel="canonical" href="https://lumieru.github.io/2021/09/03/Unity动画系统原理/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Unity动画系统原理 | Lumieru的知识库</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Lumieru的知识库</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://lumieru.github.io/2021/09/03/Unity动画系统原理/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lumieru">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Lumieru的知识库">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Unity动画系统原理
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2021-09-03 15:42:03" itemprop="dateCreated datePublished" datetime="2021-09-03T15:42:03+08:00">2021-09-03</time>
+            
+
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2022-04-28 10:19:47" itemprop="dateModified" datetime="2022-04-28T10:19:47+08:00">2022-04-28</time>
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/GameEngine/" itemprop="url" rel="index"><span itemprop="name">GameEngine</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="通用结构"><a href="#通用结构" class="headerlink" title="通用结构"></a>通用结构</h2><p>float4是一个float[4]的数组，主要对应simd的数据类型，存储的可以是vector4或者quaternion，可以代表平移，旋转或者缩放。<br>xform里面有 float4的t，q，s，就是simd版的transform信息。</p>
+<h2 id="AvatarConstant"><a href="#AvatarConstant" class="headerlink" title="AvatarConstant"></a>AvatarConstant</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">std</span>::<span class="built_in">string</span> AvatarBuilder::BuildAvatar(Avatar&amp; avatar, <span class="keyword">const</span> Unity::GameObject&amp; go, <span class="keyword">bool</span> doOptimizeTransformHierarchy, <span class="keyword">const</span> HumanDescription&amp; humanDescription, Options options)</span><br></pre></td></tr></table></figure>
+<p>会创建<code>AvatarConstant</code>，会用到下面这些结构体</p>
+<a id="more"></a>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">enum</span> Bones</span><br><span class="line">&#123;</span><br><span class="line">    kHips = <span class="number">0</span>,</span><br><span class="line">    kLeftUpperLeg,</span><br><span class="line">    kRightUpperLeg,</span><br><span class="line">    kLeftLowerLeg,</span><br><span class="line">    kRightLowerLeg,</span><br><span class="line">    kLeftFoot,</span><br><span class="line">    kRightFoot,</span><br><span class="line">    kSpine,</span><br><span class="line">    kChest,</span><br><span class="line">    kNeck,</span><br><span class="line">    kHead,</span><br><span class="line">    kLeftShoulder,</span><br><span class="line">    kRightShoulder,</span><br><span class="line">    kLeftUpperArm,</span><br><span class="line">    kRightUpperArm,</span><br><span class="line">    kLeftLowerArm,</span><br><span class="line">    kRightLowerArm,</span><br><span class="line">    kLeftHand,</span><br><span class="line">    kRightHand,</span><br><span class="line">    kLeftToes,</span><br><span class="line">    kRightToes,</span><br><span class="line">    kLeftEye,</span><br><span class="line">    kRightEye,</span><br><span class="line">    kJaw,</span><br><span class="line">    kLastBone</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">HumanBone</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	UnityStr			m_BoneName; <span class="comment">//对应的fbx中的骨骼的名字</span></span><br><span class="line">	UnityStr			m_HumanName; <span class="comment">//对应的是human.cpp中定义的骨骼名。</span></span><br><span class="line">	SkeletonBoneLimit   m_Limit;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">SkeletonBone</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	UnityStr	m_Name; <span class="comment">//对应的fbx中的骨骼的名字</span></span><br><span class="line">	Vector3f	m_Position; <span class="comment">// 对应骨骼的本地平移</span></span><br><span class="line">	Quaternionf m_Rotation; <span class="comment">// 对应骨骼的本地旋转</span></span><br><span class="line">	Vector3f	m_Scale; <span class="comment">// 对应骨骼的本地缩放</span></span><br><span class="line">	<span class="keyword">bool</span>		m_TransformModified;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">HumanDescription</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	HumanBoneList m_Human; <span class="comment">// HumanBone的数组，排列顺序不一定</span></span><br><span class="line">	SkeletonBoneList m_Skeleton; <span class="comment">// SkeletonBone的数组，按照fbx中导入的顺序排列。</span></span><br><span class="line"></span><br><span class="line">	<span class="keyword">float</span>	m_ArmTwist;</span><br><span class="line">	<span class="keyword">float</span>	m_ForeArmTwist;</span><br><span class="line">	<span class="keyword">float</span>	m_UpperLegTwist;</span><br><span class="line">	<span class="keyword">float</span>	m_LegTwist;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">float</span>	m_ArmStretch;</span><br><span class="line">	<span class="keyword">float</span>	m_LegStretch;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">float</span>	m_FeetSpacing;</span><br><span class="line"></span><br><span class="line">	UnityStr	m_RootMotionBoneName;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Hand</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int32_t</span>		m_HandBoneIndex[s_BoneCount]; <span class="comment">// index分别是左右手的15个手指关节的enum，对应的值是Human::m_Skeleton的索引</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Human</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="comment">// root motion的平移是骨骼按重量世界位置加权平均得来的（躯干处的骨骼权重高，四肢权重地，所以重心一般在hip这里）</span></span><br><span class="line">    <span class="comment">// root motion的方向：up是两个upLeg的平均位置指向两个upArm的平均位置得来的向量，right：Normalize((rightUpLeg - leftUpLeg) + (rightUpArm - leftUpArm)), front = right X up， right = up X front</span></span><br><span class="line">    math::xform				m_RootX; <span class="comment">// m_SkeletonPose所对应的root motion的t的y（人物重心的y）tr，s是1</span></span><br><span class="line"></span><br><span class="line">    OffsetPtr&lt;skeleton::Skeleton&gt;		m_Skeleton; <span class="comment">// 去掉了fbx中一些没有用到的叶子节点骨骼后的所有骨骼的skeleton。</span></span><br><span class="line">    OffsetPtr&lt;skeleton::SkeletonPose&gt;	m_SkeletonPose; <span class="comment">// 用户在编辑avatar时所调整的T pose的transform信息。</span></span><br><span class="line">    OffsetPtr&lt;hand::Hand&gt;				m_LeftHand;</span><br><span class="line">    OffsetPtr&lt;hand::Hand&gt;				m_RightHand;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">uint32_t</span>							m_HandlesCount;		</span><br><span class="line">    OffsetPtr&lt;human::Handle&gt;			m_Handles;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">uint32_t</span>							m_ColliderCount;</span><br><span class="line">    OffsetPtr&lt;math::Collider&gt;			m_ColliderArray;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int32_t</span>					m_HumanBoneIndex[kLastBone]; <span class="comment">// index是mecanim::human::Bones这个枚举，对应的值是m_Skeleton的索引</span></span><br><span class="line">    <span class="keyword">float</span>					m_HumanBoneMass[kLastBone];</span><br><span class="line">    <span class="keyword">int32_t</span>					m_ColliderIndex[kLastBone];</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="keyword">float</span>					m_Scale; <span class="comment">// m_SkeletonPose所对应的root motion的t的y（人物重心的y）</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span>					m_ArmTwist;</span><br><span class="line">    <span class="keyword">float</span>					m_ForeArmTwist;</span><br><span class="line">    <span class="keyword">float</span>					m_UpperLegTwist;</span><br><span class="line">    <span class="keyword">float</span>					m_LegTwist;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span>					m_ArmStretch;</span><br><span class="line">    <span class="keyword">float</span>					m_LegStretch;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span>					m_FeetSpacing;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">bool</span>					m_HasLeftHand;</span><br><span class="line">    <span class="keyword">bool</span>					m_HasRightHand;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">AvatarConstant</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    OffsetPtr&lt;skeleton::Skeleton&gt;			m_AvatarSkeleton; <span class="comment">// 包含所有fbx中骨骼的skeleton</span></span><br><span class="line">    OffsetPtr&lt;skeleton::SkeletonPose&gt;		m_AvatarSkeletonPose; <span class="comment">// 用户在编辑avatar时所调整的T pose的transform信息。</span></span><br><span class="line"></span><br><span class="line">    OffsetPtr&lt;skeleton::SkeletonPose&gt;		m_DefaultPose;	<span class="comment">// 导入fbx时的transform信息，没有包括用户的编辑操作。</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">uint32_t</span>								m_SkeletonNameIDCount;  <span class="comment">// m_AvatarSkeleton的数组大小</span></span><br><span class="line">    OffsetPtr&lt;<span class="keyword">uint32_t</span>&gt;						m_SkeletonNameIDArray;	<span class="comment">// fbx中所有骨骼的名字的crc，只是名字，没有路径，顺序和m_AvatarSkeleton一致</span></span><br><span class="line"></span><br><span class="line">    OffsetPtr&lt;human::Human&gt;					m_Human;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">uint32_t</span>								m_HumanSkeletonIndexCount; <span class="comment">// m_Human.m_Skeleton的数组大小</span></span><br><span class="line">    OffsetPtr&lt;<span class="keyword">int32_t</span>&gt;						m_HumanSkeletonIndexArray; <span class="comment">// index就是m_Human.m_Skeleton的index，对应的值是m_AvatarSkeleton的index</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// needed to update human pose and additonal bones in optimize mode</span></span><br><span class="line">    <span class="comment">// decided to put the info in constant for perf and memory reason vs doing masking at runtime</span></span><br><span class="line">    <span class="keyword">uint32_t</span>								m_HumanSkeletonReverseIndexCount; <span class="comment">// m_AvatarSkeleton的数组大小</span></span><br><span class="line">    OffsetPtr&lt;<span class="keyword">int32_t</span>&gt;						m_HumanSkeletonReverseIndexArray; <span class="comment">// index是m_AvatarSkeleton的index，对应的值是m_Human.m_Skeleton的index，-1表示没有对应</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 下面这些信息对应humanoid的动画是没有作用的，只有对于generic的动画有效</span></span><br><span class="line">    <span class="keyword">int32_t</span>									m_RootMotionBoneIndex;</span><br><span class="line">    math::xform								m_RootMotionBoneX;</span><br><span class="line">    OffsetPtr&lt;skeleton::Skeleton&gt;			m_RootMotionSkeleton;</span><br><span class="line">    OffsetPtr&lt;skeleton::SkeletonPose&gt;		m_RootMotionSkeletonPose;</span><br><span class="line">    <span class="keyword">uint32_t</span>								m_RootMotionSkeletonIndexCount;</span><br><span class="line">    OffsetPtr&lt;<span class="keyword">int32_t</span>&gt;						m_RootMotionSkeletonIndexArray;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><code>mecanim::skeleton::Skeleton</code>是所有骨骼的父子关系信息，Axes目前不知道是什么，Axes中的Min、Max是绕着某个轴转的角度范围(角度制)</p>
+<p><code>mecanim::skeleton::SkeletonPose</code>是对应于某个Skeleton的某一个动作的快照，存的是所有骨骼的transform信息（t,r,s）</p>
+<p>AnimationClip是对应fbx中定义的一个动画take。<br>void ModelImporter::ImportMuscleClip(GameObject&amp; rootGameObject, AnimationClip** clips, size_t size)把fbx中的一个AnimationClip中的所有的动画曲线，转换成Muscle Space中的动画曲线。</p>
+<p>std::string GenerateMecanimClipsCurves(AnimationClip** clips, size_t size, ModelImporter::ClipAnimations const&amp; clipsInfo, mecanim::animation::AvatarConstant const&amp; avatarConstant, bool isHuman, HumanDescription const&amp; humanDescription, Unity::GameObject&amp; rootGameObject, AvatarBuilder::NamedTransforms const&amp; namedTransform)这个函数是执行曲线转换的核心</p>
+<p>人物的动画数据都是存在<code>AnimationClip::m_FloatCurves</code>中，骨骼的动画信息只包含每个骨骼的旋转信息(x,y,z)，而且不是每个骨骼都包含xyz，有的只有两项或者一项。这些旋转信息都被拆分成独立的float曲线存放。除了骨骼动画信息外，还保存了RootMotion的信息（T.xyz, Q.xyzw）和双手双脚的动画信息（T.xyz, Q.xyzw）。最后才是用户在动画中定义的曲线。</p>
+<p>这些曲线的顺序是这样的，这个就是attribute的名字<br><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">"RootT.x"</span></span><br><span class="line"><span class="string">"RootT.y"</span></span><br><span class="line"><span class="string">"RootT.z"</span></span><br><span class="line"><span class="string">"RootQ.x"</span></span><br><span class="line"><span class="string">"RootQ.y"</span></span><br><span class="line"><span class="string">"RootQ.z"</span></span><br><span class="line"><span class="string">"RootQ.w"</span></span><br><span class="line"></span><br><span class="line"><span class="string">"LeftFootT.x"</span></span><br><span class="line"><span class="string">"LeftFootT.y"</span></span><br><span class="line"><span class="string">"LeftFootT.z"</span></span><br><span class="line"><span class="string">"LeftFootQ.x"</span></span><br><span class="line"><span class="string">"LeftFootQ.y"</span></span><br><span class="line"><span class="string">"LeftFootQ.z"</span></span><br><span class="line"><span class="string">"LeftFootQ.w"</span></span><br><span class="line"></span><br><span class="line"><span class="string">"RightFootT.x"</span></span><br><span class="line"><span class="string">"RightFootT.y"</span></span><br><span class="line"><span class="string">"RightFootT.z"</span></span><br><span class="line"><span class="string">"RightFootQ.x"</span></span><br><span class="line"><span class="string">"RightFootQ.y"</span></span><br><span class="line"><span class="string">"RightFootQ.z"</span></span><br><span class="line"><span class="string">"RightFootQ.w"</span></span><br><span class="line"></span><br><span class="line"><span class="string">"LeftHandT.x"</span></span><br><span class="line"><span class="string">"LeftHandT.y"</span></span><br><span class="line"><span class="string">"LeftHandT.z"</span></span><br><span class="line"><span class="string">"LeftHandQ.x"</span></span><br><span class="line"><span class="string">"LeftHandQ.y"</span></span><br><span class="line"><span class="string">"LeftHandQ.z"</span></span><br><span class="line"><span class="string">"LeftHandQ.w"</span></span><br><span class="line"></span><br><span class="line"><span class="string">"RightHandT.x"</span></span><br><span class="line"><span class="string">"RightHandT.y"</span></span><br><span class="line"><span class="string">"RightHandT.z"</span></span><br><span class="line"><span class="string">"RightHandQ.x"</span></span><br><span class="line"><span class="string">"RightHandQ.y"</span></span><br><span class="line"><span class="string">"RightHandQ.z"</span></span><br><span class="line"><span class="string">"RightHandQ.w"</span></span><br><span class="line"></span><br><span class="line"><span class="string">"Spine Front-Back"</span>,</span><br><span class="line"><span class="string">"Spine Left-Right"</span>,</span><br><span class="line"><span class="string">"Spine Twist Left-Right"</span>,</span><br><span class="line"><span class="string">"Chest Front-Back"</span>,</span><br><span class="line"><span class="string">"Chest Left-Right"</span>,</span><br><span class="line"><span class="string">"Chest Twist Left-Right"</span>,</span><br><span class="line"></span><br><span class="line"><span class="string">"Neck Nod Down-Up"</span>,</span><br><span class="line"><span class="string">"Neck Tilt Left-Right"</span>,</span><br><span class="line"><span class="string">"Neck Turn Left-Right"</span>,</span><br><span class="line"><span class="string">"Head Nod Down-Up"</span>,</span><br><span class="line"><span class="string">"Head Tilt Left-Right"</span>,</span><br><span class="line"><span class="string">"Head Turn Left-Right"</span>,</span><br><span class="line"></span><br><span class="line"><span class="string">"Left Eye Down-Up"</span>,</span><br><span class="line"><span class="string">"Left Eye In-Out"</span>,</span><br><span class="line"><span class="string">"Right Eye Down-Up"</span>,</span><br><span class="line"><span class="string">"Right Eye In-Out"</span>,</span><br><span class="line"></span><br><span class="line"><span class="string">"Jaw Close"</span>,</span><br><span class="line"><span class="string">"Jaw Left-Right"</span>,</span><br><span class="line"></span><br><span class="line"><span class="string">"Left Upper Leg Front-Back"</span>,</span><br><span class="line"><span class="string">"Left Upper Leg In-Out"</span>,</span><br><span class="line"><span class="string">"Left Upper Leg Twist In-Out"</span>,</span><br><span class="line"><span class="string">"Left Lower Leg Stretch"</span>,</span><br><span class="line"><span class="string">"Left Lower Leg Twist In-Out"</span>,</span><br><span class="line"><span class="string">"Left Foot Up-Down"</span>,</span><br><span class="line"><span class="string">"Left Foot Twist In-Out"</span>,</span><br><span class="line"><span class="string">"Left Toes Up-Down"</span>,</span><br><span class="line"></span><br><span class="line"><span class="string">"Right Upper Leg Front-Back"</span>,</span><br><span class="line"><span class="string">"Right Upper Leg In-Out"</span>,</span><br><span class="line"><span class="string">"Right Upper Leg Twist In-Out"</span>,</span><br><span class="line"><span class="string">"Right Lower Leg Stretch"</span>,</span><br><span class="line"><span class="string">"Right Lower Leg Twist In-Out"</span>,</span><br><span class="line"><span class="string">"Right Foot Up-Down"</span>,</span><br><span class="line"><span class="string">"Right Foot Twist In-Out"</span>,</span><br><span class="line"><span class="string">"Right Toes Up-Down"</span>,</span><br><span class="line"></span><br><span class="line"><span class="string">"Left Shoulder Down-Up"</span>,</span><br><span class="line"><span class="string">"Left Shoulder Front-Back"</span>,</span><br><span class="line"><span class="string">"Left Arm Down-Up"</span>,</span><br><span class="line"><span class="string">"Left Arm Front-Back"</span>,</span><br><span class="line"><span class="string">"Left Arm Twist In-Out"</span>,</span><br><span class="line"><span class="string">"Left Forearm Stretch"</span>,</span><br><span class="line"><span class="string">"Left Forearm Twist In-Out"</span>,</span><br><span class="line"><span class="string">"Left Hand Down-Up"</span>,</span><br><span class="line"><span class="string">"Left Hand In-Out"</span>,</span><br><span class="line"></span><br><span class="line"><span class="string">"Right Shoulder Down-Up"</span>,</span><br><span class="line"><span class="string">"Right Shoulder Front-Back"</span>,</span><br><span class="line"><span class="string">"Right Arm Down-Up"</span>,</span><br><span class="line"><span class="string">"Right Arm Front-Back"</span>,</span><br><span class="line"><span class="string">"Right Arm Twist In-Out"</span>,</span><br><span class="line"><span class="string">"Right Forearm Stretch"</span>,</span><br><span class="line"><span class="string">"Right Forearm Twist In-Out"</span>,</span><br><span class="line"><span class="string">"Right Hand Down-Up"</span>,</span><br><span class="line"><span class="string">"Right Hand In-Out"</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 左手的5 * 4 = 20个自由度</span></span><br><span class="line"><span class="comment">// 右手的5 * 4 = 20个自由度</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 最后是用户自己定义的float曲线</span></span><br></pre></td></tr></table></figure></p>
+<p>这些muscle曲线都经过Skeleton中定义的Axes转换到muscle space的（RegartFrom），然后运行的时候再从msucle space转换回来（RetargetTo）。转换的算法目前没有看懂。</p>
+<p>优化措施，这个曲线会被分成三类StreamedClip (hermite曲线)，DenseClip （线性的折线），ConstantClip （常数）。</p>
+<h2 id="AnimationClip"><a href="#AnimationClip" class="headerlink" title="AnimationClip"></a>AnimationClip</h2><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">GenericBinding</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	BindingHash    path; <span class="comment">// 0</span></span><br><span class="line">	BindingHash    attribute; <span class="comment">// attribute字符串的crc32值，对于kBindMuscle的，会替换成muscleIndex，即上面的attribute字符串表的索引。</span></span><br><span class="line">	PPtr&lt;Object&gt;   script;  <span class="comment">// 空的</span></span><br><span class="line">	UInt16         classID; <span class="comment">// Animator = 95</span></span><br><span class="line">	UInt8          customType;  <span class="comment">// 对于动画中定义的muscle曲线，是kBindMuscle = 8，对于我们定义的曲线是kUnbound=0</span></span><br><span class="line">	UInt8          isPPtrCurve; <span class="comment">// 0</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">AnimationClipBindingConstant</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	dynamic_array&lt;GenericBinding&gt;    genericBindings; <span class="comment">//顺序是，所有的m_FloatCurves先被分成三类（Streamed，Dense，Constant），然后按照三类的顺序依次append在后面</span></span><br><span class="line">	dynamic_array&lt;PPtr&lt;Object&gt; &gt;     pptrCurveMapping; <span class="comment">//是空的</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// StreamedClip用到的结构</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">CurveTimeData</span></span></span><br><span class="line"><span class="class">&#123;</span>	</span><br><span class="line">	<span class="keyword">float</span>  time; <span class="comment">// 后面跟着的所有CurveKey的时间</span></span><br><span class="line">	UInt32 count; <span class="comment">// 后面总共有多少个CurveKey，他们的时间都是相同的</span></span><br><span class="line">	<span class="comment">// This is implicitly followed by CurveKey in the stream</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// StreamedClip用到的结构</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">CurveKey</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="keyword">int</span>    curveIndex; <span class="comment">// 这个CurveKey是属于哪个curveIndex的</span></span><br><span class="line">	<span class="keyword">float</span>  coeff[<span class="number">4</span>];  <span class="comment">// 这个CurveKey的四个系数</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// hermite曲线</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">StreamedClip</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	<span class="keyword">uint32_t</span>            dataSize;</span><br><span class="line">    <span class="comment">// 所有曲线的所有key按照时间从小到大排序，如果时间相同就按照curveIndex从小到打排序。</span></span><br><span class="line">    <span class="comment">// 把时间相同的key的时间统一用一个CurveTimeData记录，后面跟着这些CurveKey，所以data的结构如下</span></span><br><span class="line">    <span class="comment">// CurveTimeData|CurveKey|...|CurveKey| ... |CurveTimeData|CurveKey|...|CurveKey| ... |CurveTimeData</span></span><br><span class="line">    <span class="comment">// 最后有一个time是infinity的CurveTimeData</span></span><br><span class="line">	OffsetPtr&lt;<span class="keyword">uint32_t</span>&gt; data; </span><br><span class="line">	UInt32              curveCount; <span class="comment">// 曲线数量</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 线性的折线</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">DenseClip</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">int</span>                     m_FrameCount; <span class="comment">// 根据动画时间长度和m_SampleRate计算出来</span></span><br><span class="line">    <span class="keyword">uint32_t</span>                m_CurveCount; <span class="comment">// 曲线数量</span></span><br><span class="line">    <span class="keyword">float</span>                   m_SampleRate; <span class="comment">// 一般是60</span></span><br><span class="line">    <span class="keyword">float</span>                   m_BeginTime;  <span class="comment">// 一般是0</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">uint32_t</span>                m_SampleArraySize; <span class="comment">//  = m_FrameCount * m_CurveCount</span></span><br><span class="line">    OffsetPtr&lt;<span class="keyword">float</span>&gt;		m_SampleArray;  <span class="comment">//每条曲线有m_FrameCount 个 float</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 常数</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ConstantClip</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">	UInt32              curveCount; <span class="comment">// 曲线数量</span></span><br><span class="line">	OffsetPtr&lt;<span class="keyword">float</span>&gt;    data;   <span class="comment">// 每条曲线的值</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">Clip</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    StreamedClip					m_StreamedClip; <span class="comment">// curveIndex</span></span><br><span class="line">    DenseClip                       m_DenseClip; <span class="comment">// curveIndex - m_StreamedClip.curveCount</span></span><br><span class="line">    ConstantClip                    m_ConstantClip;  <span class="comment">// curveIndex - m_DenseClip.m_CurveCount - m_StreamedClip.curveCount</span></span><br><span class="line">    </span><br><span class="line">    OffsetPtr&lt;ValueArrayConstant&gt;	m_DeprecatedBinding; <span class="comment">// 空的</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 人物四肢的transform信息</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">HumanGoal</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    math::xform m_X;</span><br><span class="line">    <span class="keyword">float</span> m_WeightT;</span><br><span class="line">    <span class="keyword">float</span> m_WeightR;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 人物手和手指的transform信息</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">HandPose</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    math::xform m_GrabX;</span><br><span class="line">    <span class="keyword">float</span> m_DoFArray[s_DoFCount];</span><br><span class="line">    <span class="keyword">float</span> m_Override;</span><br><span class="line">    <span class="keyword">float</span> m_CloseOpen;</span><br><span class="line">    <span class="keyword">float</span> m_InOut;</span><br><span class="line">    <span class="keyword">float</span> m_Grab;	</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 从clip中采样得来的人物姿势</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">HumanPose</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    math::xform		m_RootX;</span><br><span class="line">    math::float4	m_LookAtPosition;</span><br><span class="line">    math::float4	m_LookAtWeight;</span><br><span class="line"></span><br><span class="line">    HumanGoal		m_GoalArray[kLastGoal];</span><br><span class="line">    hand::HandPose	m_LeftHandPose;</span><br><span class="line">    hand::HandPose	m_RightHandPose;	</span><br><span class="line"></span><br><span class="line">    <span class="keyword">float</span>			m_DoFArray[kLastDoF];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 动画在开始和结束时候的sample结果</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ValueDelta</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    <span class="keyword">float</span> m_Start; <span class="comment">// 对应m_StartTime时的值</span></span><br><span class="line">    <span class="keyword">float</span> m_Stop; <span class="comment">// 对应m_StopTime时的值</span></span><br><span class="line">&#125;; </span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">ClipMuscleConstant</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">    human::HumanPose m_DeltaPose; <span class="comment">// 动画结束时的人物姿势减去动画开始时的人物姿势得到的人物姿势的差	</span></span><br><span class="line">    </span><br><span class="line">    math::xform	m_StartX; <span class="comment">// 动画开始时人物重心root的transform</span></span><br><span class="line">    math::xform m_LeftFootStartX; <span class="comment">// 动画开始时人物左脚的transform</span></span><br><span class="line">    math::xform m_RightFootStartX; <span class="comment">// 动画开始时人物右脚的transform</span></span><br><span class="line">    </span><br><span class="line">    math::xform	m_MotionStartX; <span class="comment">// 在start时的motion（muscle index：0~6）的transfrom</span></span><br><span class="line">    math::xform	m_MotionStopX; <span class="comment">// 在end时的motion（muscle index：0~6）的transfrom</span></span><br><span class="line">    </span><br><span class="line">    math::float4 m_AverageSpeed; <span class="comment">// 整个动画期间，人物重心root的平均速度，分成20份来计算的。</span></span><br><span class="line"></span><br><span class="line">    OffsetPtr&lt;Clip&gt;	m_Clip; <span class="comment">// 对应一个Clip</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">float</span>	m_StartTime; <span class="comment">// 动画的起始时间，都是0</span></span><br><span class="line">    <span class="keyword">float</span>	m_StopTime;  <span class="comment">// 动画的结束时间，等于动画的长度，单位秒</span></span><br><span class="line">    <span class="keyword">float</span>	m_OrientationOffsetY; <span class="comment">// 对应Root Transform Rotation的Offset设置</span></span><br><span class="line">    <span class="keyword">float</span>	m_Level; <span class="comment">// 对应Root Transform Position(Y)的Offset设置</span></span><br><span class="line">    <span class="keyword">float</span>	m_CycleOffset; <span class="comment">// 对应Cycle Offset设置</span></span><br><span class="line">    <span class="keyword">float</span>	m_AverageAngularSpeed;  <span class="comment">// 整个动画期间，人物重心root的绕着y轴的平均角速度，分成20份来计算的。</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">int32_t</span>				m_IndexArray[s_ClipMuscleCurveCount]; <span class="comment">// 用muscleIndex作为索引，然后值是genericBindings数组的索引curveIndex</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">uint32_t</span>				m_ValueArrayCount; <span class="comment">// 所有曲线的数量和：m_StreamedClip.curveCount + m_DenseClip.m_CurveCount + m_ConstantClip.curveCount</span></span><br><span class="line">    OffsetPtr&lt;ValueDelta&gt; m_ValueArrayDelta; <span class="comment">// 记录了动画在m_StartTime和m_StopTime时的所有曲线的值，数组索引就是curveIndex</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">bool</span>	m_Mirror; <span class="comment">// 对应Mirror设置</span></span><br><span class="line">    <span class="keyword">bool</span>	m_LoopTime; <span class="comment">// 对应Loop Time设置</span></span><br><span class="line">    <span class="keyword">bool</span>	m_LoopBlend; <span class="comment">// 对应Loop Pose设置</span></span><br><span class="line">    <span class="keyword">bool</span>	m_LoopBlendOrientation; <span class="comment">// 对应Root Transform Rotation的Bake Into Pose设置</span></span><br><span class="line">    <span class="keyword">bool</span>	m_LoopBlendPositionY; <span class="comment">// 对应Root Transform Position(Y)的Bake Into Pose设置</span></span><br><span class="line">    <span class="keyword">bool</span>	m_LoopBlendPositionXZ; <span class="comment">// 对应Root Transform Position(XZ)的Bake Into Pose设置</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">bool</span>	m_KeepOriginalOrientation; <span class="comment">// 对应Root Transform Rotation的Based Upon设置: Original =&gt; true, Body Orientation =&gt; false</span></span><br><span class="line">    <span class="keyword">bool</span>	m_KeepOriginalPositionY; <span class="comment">// 对应Root Transform Position(Y)的Based Upon (at Start)设置: Original =&gt; true, Center of Mass/Feet =&gt; false</span></span><br><span class="line">    <span class="keyword">bool</span>	m_KeepOriginalPositionXZ; <span class="comment">// 对应Root Transform Position(XZ)的Based Upon (at Start)设置:Original =&gt; true, Center of Mass =&gt; false</span></span><br><span class="line">    <span class="keyword">bool</span>	m_HeightFromFeet; <span class="comment">// 对应Root Transform Position(Y)的Based Upon (at Start)设置: Feet =&gt; true, 其它的是false</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AnimationClip</span> &#123;</span></span><br><span class="line">    AnimationStateList m_AnimationStates;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">float</span>           m_SampleRate;  <span class="comment">// 一般是60</span></span><br><span class="line">	<span class="keyword">bool</span>			m_Compressed;  <span class="comment">// 一般是false</span></span><br><span class="line">	<span class="keyword">bool</span>            m_UseHighQualityCurve; <span class="comment">// 一般是false</span></span><br><span class="line">	<span class="keyword">int</span>             m_WrapMode; <span class="comment">///&lt; enum &#123; Default = 0, Once = 1, Loop = 2, PingPong = 4, ClampForever = 8 &#125;， 一般是0</span></span><br><span class="line">	</span><br><span class="line">	QuaternionCurves   m_RotationCurves; <span class="comment">// 都是空的</span></span><br><span class="line">	Vector3Curves      m_PositionCurves; <span class="comment">// 都是空的</span></span><br><span class="line">	Vector3Curves      m_ScaleCurves; <span class="comment">// 都是空的</span></span><br><span class="line">	FloatCurves        m_FloatCurves; <span class="comment">// 都是空的</span></span><br><span class="line">	PPtrCurves         m_PPtrCurves; <span class="comment">// 都是空的</span></span><br><span class="line">	Events             m_Events; <span class="comment">// 都是空的</span></span><br><span class="line">	AnimationType      m_AnimationType; <span class="comment">// kHumanoid - 3</span></span><br><span class="line"></span><br><span class="line">    mecanim::animation::ClipMuscleConstant*		m_MuscleClip; <span class="comment">// 动画自带的曲线和我们定义的曲线都在m_MuscleClip中</span></span><br><span class="line">	mecanim::<span class="keyword">uint32_t</span>							m_MuscleClipSize;</span><br><span class="line">	UnityEngine::Animation::AnimationClipBindingConstant m_ClipBindingConstant;</span><br><span class="line"></span><br><span class="line">    AABB m_Bounds; <span class="comment">// 一般都是0</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<h2 id="AnimatorController"><a href="#AnimatorController" class="headerlink" title="AnimatorController"></a>AnimatorController</h2>
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Unity/" rel="tag"><i class="fa fa-tag"></i> Unity</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/12/04/AC自动机：如何实现敏感词过滤/" rel="next" title="AC自动机：如何实现敏感词过滤?">
+                <i class="fa fa-chevron-left"></i> AC自动机：如何实现敏感词过滤?
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/04/28/Weighted-Vertex-Normals/" rel="prev" title="Weighted Vertex Normals">
+                Weighted Vertex Normals <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Lumieru</p>
+              <div class="site-description motion-element" itemprop="description"></div>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">45</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  
+                    
+                      <a href="/categories/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  
+                    
+                      <a href="/tags/">
+                    
+                  
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+
+          
+
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#通用结构"><span class="nav-number">1.</span> <span class="nav-text">通用结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AvatarConstant"><span class="nav-number">2.</span> <span class="nav-text">AvatarConstant</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AnimationClip"><span class="nav-number">3.</span> <span class="nav-text">AnimationClip</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AnimatorController"><span class="nav-number">4.</span> <span class="nav-text">AnimatorController</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+  
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lumieru</span>
+
+  
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> v7.1.1</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/utils.js?v=7.1.1"></script>
+
+  <script src="/js/motion.js?v=7.1.1"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/affix.js?v=7.1.1"></script>
+
+  <script src="/js/schemes/pisces.js?v=7.1.1"></script>
+
+
+
+  
+  <script src="/js/scrollspy.js?v=7.1.1"></script>
+<script src="/js/post-details.js?v=7.1.1"></script>
+
+
+
+  
+
+
+  <script src="/js/next-boot.js?v=7.1.1"></script>
+
+
+  
+
+  
+
+  
+
+  
+
+
+  
+
+
+  
+  <script>
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url).replace(/\/{2,}/g, '/');
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x"></i></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x"></i></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+<script>
+  $('.highlight').each(function(i, e) {
+    var $wrap = $('<div>').addClass('highlight-wrap');
+    $(e).after($wrap);
+    $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function(e) {
+      var code = $(this).parent().find('.code').find('.line').map(function(i, e) {
+        return $(e).text();
+      }).toArray().join('\n');
+      var ta = document.createElement('textarea');
+      var yPosition = window.pageYOffset || document.documentElement.scrollTop;
+      ta.style.top = yPosition + 'px'; // Prevent page scroll
+      ta.style.position = 'absolute';
+      ta.style.opacity = '0';
+      ta.readOnly = true;
+      ta.value = code;
+      document.body.appendChild(ta);
+      ta.select();
+      ta.setSelectionRange(0, code.length);
+      ta.readOnly = false;
+      var result = document.execCommand('copy');
+      
+        if (result) $(this).text('复制成功');
+        else $(this).text('复制失败');
+      
+      ta.blur(); // For iOS
+      $(this).blur();
+    })).on('mouseleave', function(e) {
+      var $b = $(this).find('.copy-btn');
+      setTimeout(function() {
+        $b.text('复制');
+      }, 300);
+    }).append(e);
+  })
+</script>
+
+
+  
+
+  
+
+</body>
+</html>
